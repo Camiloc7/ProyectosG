@@ -1,0 +1,5 @@
+export const ORANGE = '#ed4e05'
+export const FONDO = '#f5f5f5'
+export const FONDO_COMPONENTES = '#ffffff'
+export const COLOR_INPUT_BG = '#f5f5f5'
+export const COLOR_ERROR = '#f56565'

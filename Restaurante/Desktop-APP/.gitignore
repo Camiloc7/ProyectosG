@@ -1,0 +1,11 @@
+node_modules
+dist
+out
+.DS_Store
+.eslintcache
+*.log*
+hola.ts
+release
+post-backend.exe
+back
+backend

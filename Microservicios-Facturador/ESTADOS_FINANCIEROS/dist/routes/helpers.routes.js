@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const csv_1 = require("../controllers/helper/csv");
+const router = (0, express_1.Router)();
+router.get("/secciones", csv_1.getSecciones);
+router.get("/descripciones", csv_1.getDescripciones);
+router.get("/items", csv_1.getItems);
+// router.get("/import", asyncHandler(importAll));
+exports.default = router;

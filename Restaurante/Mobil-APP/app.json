@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "Gastro-Pos",
+    "slug": "my-pos-restaurant",
+    "version": "1.0.2",
+    "orientation": "portrait",
+    "icon": "./assets/ICONO.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/ICONO.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ed4e05"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.qualitydev.myposrestaurant"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/ICONO.png",
+        "backgroundColor": "#ed4e05"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.qualitydev.myposrestaurant"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b60e611d-7b3f-4ef8-9fe9-765fc6a76dd6"
+      }
+    },
+    "plugins": ["expo-font"]
+  },
+  "build": {
+    "android": {
+      "image": "latest"
+    }
+  }
+}

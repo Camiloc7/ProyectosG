@@ -1,0 +1,59 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+build-1753904149774.apk
+
+build-1753910166891.apk
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+# Ignorar las carpetas nativas generadas por Expo
+android/
+ios/
+
+# Excepciones para archivos nativos esenciales (si los modificas directamente)
+# Si no planeas modificar archivos nativos a mano, puedes omitir estas excepciones
+!android/app/src/main/assets/
+!android/app/src/main/java/
+!android/app/src/main/res/
+!android/app/src/main/AndroidManifest.xml
+!ios/*.xcodeproj
+!ios/*.xcworkspace
+!ios/*-Bridging-Header.h
+!ios/*.plist
+!ios/Podfile
+!ios/Podfile.lock
+!ios/Pods/
+
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo

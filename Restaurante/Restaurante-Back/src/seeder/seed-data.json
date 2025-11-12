@@ -1,0 +1,181 @@
+[
+  {
+    "name": "Datos de Producción para Pizzería Maranatha",
+    "establecimientos": [
+      {
+        "id": "e1-uuid-maranatha-produccion",
+        "nombre": "PIZZERIA MARANATHA SH SAS",
+        "nit": "901243928",
+        "email": "pizzeria.maranathafunza@gmail.com",
+        "direccion": "Av, Facatativa",
+        "telefono": "3109876543",
+        "activo": true,
+        "codigo_postal" : 111051,
+        "impuesto_porcentaje": 19.00,
+        "api_key": "foptzUxfzBL5iEfNZnkGj5mv8VYZb6"
+      },
+      {
+        "id": "e3-uuid-monpetite-produccion",
+        "nombre": "MON PETIT CAFE",
+        "nit": "52837921",
+        "email": "sand.montanez@gmail.com",
+        "direccion": "CL 17 8 ESTE 04 TO 4 AP 202 BRR RESERVAS DE MALLO",
+        "telefono": "3219623032",
+        "activo": true,
+        "codigo_postal" : 111051,
+        "impuesto_porcentaje": 19.00,
+        "api_key": "8DZaHv7gLrsbHDMkiTW7k8vU7pajskH-7"
+      },
+      {
+        "id": "e2-uuid-establecimiento-pruebas",
+        "nombre": "Restaurante de Pruebas",
+        "direccion": "Pruebas en establecimiento, Bogotá",
+        "telefono": "312609216",
+        "activo": true,
+        "codigo_postal" : 111051,
+        "impuesto_porcentaje": 19.00
+      }
+    ],
+    "roles": [
+      {
+        "nombre": "SUPER_ADMIN"
+      },
+      {
+        "nombre": "ADMIN"
+      },
+      {
+        "nombre": "SUPERVISOR"
+      },
+      {
+        "nombre": "CAJERO"
+      },
+      {
+        "nombre": "COCINERO"
+      },
+      {
+        "nombre": "MESERO"
+      },
+      {
+        "nombre": "DOMICILIARIO"
+      }
+    ],
+    "usuarios": [
+      {
+        "id": "u1-uuid-admin-maranatha",
+        "username": "admin.maranatha",
+        "password": "contraseña123",
+        "nombre": "Sofia",
+        "apellido": "Gómez",
+        "activo": true,
+        "roleName": "ADMIN",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "u2-uuid-cajero-maranatha",
+        "username": "cajero.maranatha",
+        "password": "contraseña123",
+        "nombre": "Andrés",
+        "apellido": "Castro",
+        "activo": true,
+        "roleName": "CAJERO",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "u3-uuid-mesero-maranatha",
+        "username": "mesero.maranatha",
+        "password": "contraseña123",
+        "nombre": "Valentina",
+        "apellido": "Rojas",
+        "activo": true,
+        "roleName": "MESERO",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "u4-uuid-cocinero-maranatha",
+        "username": "cocinero.maranatha",
+        "password": "contraseña123",
+        "nombre": "Ricardo",
+        "apellido": "Méndez",
+        "activo": true,
+        "roleName": "COCINERO",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "u5-uuid-domiciliario-maranatha",
+        "username": "domiciliario.maranatha",
+        "password": "contraseña123",
+        "nombre": "Juan",
+        "apellido": "Pérez",
+        "activo": true,
+        "roleName": "DOMICILIARIO",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "u6-uuid-admin-pruebas",
+        "username": "lucas",
+        "password": "123",
+        "nombre": "Lucas",
+        "apellido": "Meneses",
+        "activo": true,
+        "roleName": "ADMIN",
+        "establecimientoId": "e2-uuid-establecimiento-pruebas"
+      }
+    ],
+    "mediosPago": [
+      {
+        "id": "mp1-uuid-efectivo-maranatha",
+        "nombre": "Efectivo",
+        "activo": true,
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "mp2-uuid-tarjeta-credito-maranatha",
+        "nombre": "Tarjeta Crédito",
+        "activo": true,
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "mp3-uuid-tarjeta-debito-maranatha",
+        "nombre": "Tarjeta Débito",
+        "activo": true,
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "mp4-uuid-transferencia-maranatha",
+        "nombre": "Transferencia",
+        "activo": true,
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      }
+    ],
+    "mesas": [
+      {
+        "id": "m1-uuid-mesa-maranatha-1",
+        "numero": "Mesa 1",
+        "capacidad": 4,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "m2-uuid-mesa-maranatha-2",
+        "numero": "Mesa 2",
+        "capacidad": 6,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "m3-uuid-mesa-maranatha-3",
+        "numero": "Mesa 3",
+        "capacidad": 2,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      },
+      {
+        "id": "m4-uuid-mesa-maranatha-4",
+        "numero": "Mesa 4",
+        "capacidad": 8,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-maranatha-produccion"
+      }
+    ]
+  }
+]

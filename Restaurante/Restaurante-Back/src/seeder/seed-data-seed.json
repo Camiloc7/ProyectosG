@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Escenario de Datos Iniciales y Pruebas de Facturación",
+    "establecimientos": [
+      {
+        "id": "e1-uuid-establecimiento-principal",
+        "nombre": "Cafetería Central",
+        "direccion": "Calle 10 # 5-20, Centro",
+        "telefono": "3101234567",
+        "activo": true,
+        "impuesto_porcentaje": 19.00
+      },
+      {
+        "id": "e2-uuid-maranatha-principal",
+        "nombre": "Pizzería Maranatha",
+        "direccion": "Calle 10 # 5-20, Centro",
+        "telefono": "3109876543",
+        "activo": true,
+        "impuesto_porcentaje": 19.00
+      },
+      {
+        "id": "e2-uuid-establecimiento-secundario",
+        "nombre": "Restaurante El Sabor",
+        "direccion": "Carrera 7 # 70-30, Chapinero",
+        "telefono": "3209876543",
+        "activo": true,
+        "impuesto_porcentaje": 16.00
+      }
+    ],
+    "roles": [
+      {
+        "nombre": "SUPER_ADMIN"
+      },
+      {
+        "nombre": "ADMIN"
+      },
+      {
+        "nombre": "SUPERVISOR"
+      },
+      {
+        "nombre": "CAJERO"
+      },
+      {
+        "nombre": "COCINERO"
+      },
+      {
+        "nombre": "MESERO"
+      },
+      {
+        "nombre": "DOMICILIARIO"
+      }
+    ],
+    "usuarios": [
+      {
+        "id": "u1-uuid-admin-cafe",
+        "username": "admin.cafe",
+        "password": "contraseña123",
+        "nombre": "Ana",
+        "apellido": "García",
+        "activo": true,
+        "roleName": "ADMIN",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "u2-uuid-cajero-cafe",
+        "username": "cajero.cafe",
+        "password": "contraseña123",
+        "nombre": "Carlos",
+        "apellido": "Pérez",
+        "activo": true,
+        "roleName": "CAJERO",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "u3-uuid-mesero-cafe",
+        "username": "mesero.cafe",
+        "password": "contraseña123",
+        "nombre": "Laura",
+        "apellido": "Díaz",
+        "activo": true,
+        "roleName": "MESERO",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "u4-uuid-admin-sabor",
+        "username": "admin.sabor",
+        "password": "contraseña123",
+        "nombre": "Pedro",
+        "apellido": "Martínez",
+        "activo": true,
+        "roleName": "ADMIN",
+        "establecimientoId": "e2-uuid-establecimiento-secundario"
+      },
+      {
+        "id": "u5-uuid-cocina-sabor",
+        "username": "cocina.sabor",
+        "password": "contraseña123",
+        "nombre": "Laura",
+        "apellido": "Rozo",
+        "activo": true,
+        "roleName": "COCINERO",
+        "establecimientoId": "e2-uuid-establecimiento-secundario"
+      },
+      {
+        "id": "u6-uuid-cocina-cafe",
+        "username": "cocina.cafe",
+        "password": "contraseña123",
+        "nombre": "Luis",
+        "apellido": "Guillen",
+        "activo": true,
+        "roleName": "COCINERO",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      }
+
+    ],
+    "mediosPago": [
+      {
+        "id": "mp1-uuid-efectivo",
+        "nombre": "Efectivo",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "mp2-uuid-tarjeta-credito",
+        "nombre": "Tarjeta Crédito",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "mp3-uuid-transferencia",
+        "nombre": "Transferencia",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      }
+    ],
+    "categorias": [
+      {
+        "id": "c1-uuid-bebidas",
+        "nombre": "Bebidas",
+        "descripcion": "Cafés, tés y jugos",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "c2-uuid-panaderia",
+        "nombre": "Panadería",
+        "descripcion": "Panes y pasteles",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "c3-uuid-platos-fuertes",
+        "nombre": "Platos Fuertes",
+        "descripcion": "Comidas principales",
+        "establecimientoId": "e2-uuid-establecimiento-secundario"
+      },
+      {
+        "id": "c4-uuid-hamburguesas",
+        "nombre": "Hamburguesas",
+        "descripcion": "Especialidades en hamburguesas.",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "c5-uuid-acompanamientos",
+        "nombre": "Acompañamientos",
+        "descripcion": "Guarniciones y entradas para tu comida.",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "c6-uuid-tacos",
+        "nombre": "Tacos",
+        "descripcion": "Variedad de tacos mexicanos.",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      }
+    ],
+    "mesas": [
+      {
+        "id": "m1-uuid-mesa1",
+        "numero": "Mesa 1",
+        "capacidad": 4,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      },
+      {
+        "id": "m2-uuid-mesa2",
+        "numero": "Mesa 2",
+        "capacidad": 2,
+        "estado": "LIBRE",
+        "establecimientoId": "e1-uuid-establecimiento-principal"
+      }
+    ],
+    "proveedores": [
+      {
+        "id": "pr1-uuid-granos-cafe",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "900123456-7",
+        "nombre": "Granos del Café S.A.S.",
+        "contacto": "Juan Valdés",
+        "telefono": "6011234567",
+        "email": "juan@granoscafe.com"
+      },
+      {
+        "id": "pr2-uuid-lacteos",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "800987654-3",
+        "nombre": "Lácteos La Vaca",
+        "contacto": "María Leche",
+        "telefono": "6017654321",
+        "email": "maria@lacteosvaca.com"
+      },
+      {
+        "id": "pr3-uuid-vegetales",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "700555444-2",
+        "nombre": "Frescos del Campo",
+        "contacto": "Pedro Hortaliza",
+        "telefono": "6012223333",
+        "email": "pedro@frescoscampo.com"
+      },
+      {
+        "id": "pr4-uuid-panaderia-local",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "900111222-3",
+        "nombre": "Panadería Artesanal",
+        "contacto": "Fernando Pan",
+        "telefono": "6019998888",
+        "email": "info@panartesanal.com"
+      },
+      {
+        "id": "pr5-uuid-carnes-frescas",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "800777666-5",
+        "nombre": "Carnes Premium S.A.",
+        "contacto": "Luisa Carne",
+        "telefono": "6014445555",
+        "email": "ventas@carnespremium.com"
+      },
+      {
+        "id": "pr6-uuid-distribuidora-congelados",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "700111222-1",
+        "nombre": "Congelados Ya S.A.S.",
+        "contacto": "Marta Frío",
+        "telefono": "6017778888",
+        "email": "pedidos@congeladosya.com"
+      },
+      {
+        "id": "pr7-uuid-cerveceria-local",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "nit": "600333444-9",
+        "nombre": "Cervecería La Artesanal",
+        "contacto": "Roberto Malta",
+        "telefono": "6016667777",
+        "email": "hola@laartesanal.com"
+      }
+    ],
+    "ingredientes": [
+     {
+  "id": "i1-uuid-pan-brioche",
+  "nombre": "Pan Brioche",
+  "unidad_medida": "unidades",
+  "stock_actual": 100.00,
+  "stock_minimo": 20.00,
+  "costo_unitario": 2500.00,
+  "fecha_ultima_compra": "2025-06-28T10:00:00Z",
+  "cantidad_ultima_compra": 50.00,
+  "observaciones": "Pan brioche artesanal para hamburguesas",
+  "establecimientoId": "e1-uuid-establecimiento-principal",
+  "volumen_por_unidad": 0.100 
+},
+{
+  "id": "i2-uuid-carne-res",
+  "nombre": "Carne de Res Molida",
+  "unidad_medida": "kg",
+  "stock_actual": 50.00,
+  "stock_minimo": 10.00,
+  "costo_unitario": 28000.00,
+  "fecha_ultima_compra": "2025-06-27T11:30:00Z",
+  "cantidad_ultima_compra": 20.00,
+  "observaciones": "Mezcla de res 80/20 para hamburguesas",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i3-uuid-queso-cheddar",
+  "nombre": "Queso Cheddar",
+  "unidad_medida": "gramos",
+  "stock_actual": 5000.00,
+  "stock_minimo": 1000.00,
+  "costo_unitario": 40.00,
+  "fecha_ultima_compra": "2025-06-29T09:00:00Z",
+  "cantidad_ultima_compra": 2000.00,
+  "observaciones": "Queso cheddar en lonchas",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i4-uuid-papas-fritas",
+  "nombre": "Papas Fritas Congeladas",
+  "unidad_medida": "kg",
+  "stock_actual": 80.00,
+  "stock_minimo": 15.00,
+  "costo_unitario": 8000.00,
+  "fecha_ultima_compra": "2025-06-26T14:00:00Z",
+  "cantidad_ultima_compra": 30.00,
+  "observaciones": "Papas precocidas corte delgado",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i5-uuid-cerveza-artesanal-barril",
+  "nombre": "Cerveza Artesanal (Barril)",
+  "unidad_medida": "litros",
+  "stock_actual": 60.00,
+  "stock_minimo": 10.00,
+  "costo_unitario": 15000.00,
+  "fecha_ultima_compra": "2025-06-25T16:00:00Z",
+  "cantidad_ultima_compra": 20.00,
+  "observaciones": "IPA artesanal local",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i6-uuid-pechuga-pollo",
+  "nombre": "Pechuga de Pollo",
+  "unidad_medida": "kg",
+  "stock_actual": 30.00,
+  "stock_minimo": 5.00,
+  "costo_unitario": 12000.00,
+  "fecha_ultima_compra": "2025-06-28T09:30:00Z",
+  "cantidad_ultima_compra": 10.00,
+  "observaciones": "Pechuga de pollo fresca sin hueso",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i7-uuid-tortilla-maiz",
+  "nombre": "Tortilla de Maíz",
+  "unidad_medida": "unidades",
+  "stock_actual": 200.00,
+  "stock_minimo": 50.00,
+  "costo_unitario": 300.00,
+  "fecha_ultima_compra": "2025-06-29T13:00:00Z",
+  "cantidad_ultima_compra": 100.00,
+  "observaciones": "Tortillas de maíz blandas para tacos",
+  "establecimientoId": "e1-uuid-establecimiento-principal",
+  "volumen_por_unidad": 0.050 
+},
+{
+  "id": "i8-uuid-aguacate",
+  "nombre": "Aguacate",
+  "unidad_medida": "unidades",
+  "stock_actual": 40.00,
+  "stock_minimo": 10.00,
+  "costo_unitario": 1500.00,
+  "fecha_ultima_compra": "2025-06-29T10:00:00Z",
+  "cantidad_ultima_compra": 20.00,
+  "observaciones": "Aguacate Hass maduro",
+  "establecimientoId": "e1-uuid-establecimiento-principal",
+  "volumen_por_unidad": 0.200 
+},
+{
+  "id": "i9-uuid-cafe-grano",
+  "nombre": "Café en Grano",
+  "unidad_medida": "kg",
+  "stock_actual": 25.00,
+  "stock_minimo": 5.00,
+  "costo_unitario": 35000.00,
+  "fecha_ultima_compra": "2025-06-20T08:00:00Z",
+  "cantidad_ultima_compra": 10.00,
+  "observaciones": "Café 100% arábica",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+},
+{
+  "id": "i10-uuid-leche",
+  "nombre": "Leche Entera",
+  "unidad_medida": "litros",
+  "stock_actual": 50.00,
+  "stock_minimo": 10.00,
+  "costo_unitario": 3000.00,
+  "fecha_ultima_compra": "2025-06-21T09:00:00Z",
+  "cantidad_ultima_compra": 20.00,
+  "observaciones": "Leche fresca para bebidas",
+  "establecimientoId": "e1-uuid-establecimiento-principal"
+}
+    ],
+    "productos": [
+      {
+        "id": "p1-uuid-hamburguesa-clasica",
+        "nombre": "Hamburguesa Clásica",
+        "descripcion": "Jugosa carne de res, queso cheddar, lechuga, tomate, cebolla y salsa especial en pan brioche.",
+        "precio": 28000.00,
+        "imagen_url": "https://placehold.co/150x150/FF5733/FFFFFF?text=Hamburguesa",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c4-uuid-hamburguesas",
+        "receta": [
+          {
+            "ingredienteId": "i1-uuid-pan-brioche",
+            "cantidad_necesaria": 1.00
+          },
+          {
+            "ingredienteId": "i2-uuid-carne-res",
+            "cantidad_necesaria": 0.180
+          },
+          {
+            "ingredienteId": "i3-uuid-queso-cheddar",
+            "cantidad_necesaria": 50.00
+          }
+        ]
+      },
+      {
+        "id": "p2-uuid-papas-rusticas",
+        "nombre": "Papas Rústicas",
+        "descripcion": "Crujientes papas fritas con un toque de sal marina y hierbas, perfectas para acompañar.",
+        "precio": 12000.00,
+        "imagen_url": "https://placehold.co/150x150/33FF57/FFFFFF?text=Papas",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c5-uuid-acompanamientos",
+        "receta": [
+          {
+            "ingredienteId": "i4-uuid-papas-fritas",
+            "cantidad_necesaria": 0.200
+          }
+        ]
+      },
+      {
+        "id": "p3-uuid-tacos-pollo",
+        "nombre": "Tacos de Pollo al Pastor",
+        "descripcion": "Dos tortillas de maíz rellenas de pollo marinado al pastor, piña, cilantro y cebolla.",
+        "precio": 22000.00,
+        "imagen_url": "https://placehold.co/150x150/3357FF/FFFFFF?text=Tacos",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c6-uuid-tacos",
+        "receta": [
+          {
+            "ingredienteId": "i6-uuid-pechuga-pollo",
+            "cantidad_necesaria": 0.150
+          },
+          {
+            "ingredienteId": "i7-uuid-tortilla-maiz",
+            "cantidad_necesaria": 2.00
+          }
+        ]
+      },
+      {
+        "id": "p4-uuid-cerveza-ipa",
+        "nombre": "Cerveza Artesanal IPA",
+        "descripcion": "Cerveza India Pale Ale con notas cítricas y amargor equilibrado.",
+        "precio": 18000.00,
+        "imagen_url": "https://placehold.co/150x150/FFC300/FFFFFF?text=IPA",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c1-uuid-bebidas",
+        "receta": [
+          {
+            "ingredienteId": "i5-uuid-cerveza-artesanal-barril",
+            "cantidad_necesaria": 0.350
+          }
+        ]
+      },
+      {
+        "id": "p5-uuid-nachos-supremos",
+        "nombre": "Nachos Supremos",
+        "descripcion": "Crujientes totopos de maíz cubiertos con queso fundido, pico de gallo, guacamole y frijoles refritos.",
+        "precio": 35000.00,
+        "imagen_url": "https://placehold.co/150x150/DAF7A6/FFFFFF?text=Nachos",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c5-uuid-acompanamientos",
+        "receta": [
+          {
+            "ingredienteId": "i7-uuid-tortilla-maiz",
+            "cantidad_necesaria": 10.00
+          },
+          {
+            "ingredienteId": "i3-uuid-queso-cheddar",
+            "cantidad_necesaria": 100.00
+          },
+          {
+            "ingredienteId": "i8-uuid-aguacate",
+            "cantidad_necesaria": 0.50
+          }
+        ]
+      },
+      {
+        "id": "p6-uuid-espresso",
+        "nombre": "Espresso",
+        "descripcion": "Shot de café intenso.",
+        "precio": 6000.00,
+        "imagen_url": "https://placehold.co/150x150/6F4E37/FFFFFF?text=Espresso",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c1-uuid-bebidas",
+        "receta": [
+          {
+            "ingredienteId": "i9-uuid-cafe-grano",
+            "cantidad_necesaria": 0.02
+          }
+        ]
+      },
+      {
+        "id": "p7-uuid-latte",
+        "nombre": "Latte",
+        "descripcion": "Café con leche espumosa.",
+        "precio": 8500.00,
+        "imagen_url": "https://placehold.co/150x150/A3C1AD/FFFFFF?text=Latte",
+        "activo": true,
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "categoriaId": "c1-uuid-bebidas",
+        "receta": [
+          {
+            "ingredienteId": "i9-uuid-cafe-grano",
+            "cantidad_necesaria": 0.02
+          },
+          {
+            "ingredienteId": "i10-uuid-leche",
+            "cantidad_necesaria": 0.2
+          }
+        ]
+      }
+    ],
+    "comprasIngredientes": [
+      {
+        "id": "ci1-uuid-compra-pan-brioche",
+        "ingredienteId": "i1-uuid-pan-brioche",
+        "proveedorId": "pr4-uuid-panaderia-local",
+        "cantidad_comprada": 50.00,
+        "costo_unitario_compra": 2300.00,
+        "costo_total_compra": 115000.00,
+        "fecha_compra": "2025-06-28T10:00:00Z",
+        "establecimientoId": "e1-uuid-establecimiento-principal" 
+      },
+      {
+        "id": "ci2-uuid-compra-carne-res",
+        "ingredienteId": "i2-uuid-carne-res",
+        "proveedorId": "pr5-uuid-carnes-frescas",
+        "cantidad_comprada": 20.00,
+        "costo_unitario_compra": 27000.00,
+        "costo_total_compra": 540000.00,
+        "fecha_compra": "2025-06-27T11:30:00Z",
+          "establecimientoId": "e1-uuid-establecimiento-principal" 
+
+      },
+      {
+        "id": "ci3-uuid-compra-queso-cheddar",
+        "ingredienteId": "i3-uuid-queso-cheddar",
+        "proveedorId": "pr2-uuid-lacteos",
+        "cantidad_comprada": 2000.00,
+        "costo_unitario_compra": 38.00,
+        "costo_total_compra": 76000.00,
+        "fecha_compra": "2025-06-29T09:00:00Z",
+          "establecimientoId": "e1-uuid-establecimiento-principal" 
+
+      },
+      {
+        "id": "ci4-uuid-compra-papas-fritas",
+        "ingredienteId": "i4-uuid-papas-fritas",
+        "proveedorId": "pr6-uuid-distribuidora-congelados",
+        "cantidad_comprada": 30.00,
+        "costo_unitario_compra": 7500.00,
+        "costo_total_compra": 225000.00,
+        "fecha_compra": "2025-06-26T14:00:00Z",
+          "establecimientoId": "e1-uuid-establecimiento-principal"
+
+      },
+      {
+        "id": "ci5-uuid-compra-cerveza-barril",
+        "ingredienteId": "i5-uuid-cerveza-artesanal-barril",
+        "proveedorId": "pr7-uuid-cerveceria-local",
+        "cantidad_comprada": 20.00,
+        "costo_unitario_compra": 14500.00,
+        "costo_total_compra": 290000.00,
+        "fecha_compra": "2025-06-25T16:00:00Z",
+        "establecimientoId": "e1-uuid-establecimiento-principal" 
+
+      }
+    ],
+    "pedidos": [
+      {
+        "id": "ped1-uuid-pedido-mesa1",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "mesa_id": "m1-uuid-mesa1",
+        "usuarioCreadorId": "u3-uuid-mesero-cafe",
+        "estado": "CERRADO",
+        "tipo_pedido": "MESA",
+        "cliente_nombre": null,
+        "cliente_telefono": null,
+        "cliente_direccion": null,
+        "total_estimado": 14500.00,
+        "descuentos_aplicados": 0.00,
+        "notas": "Pedido de prueba para mesa 1",
+        "fecha_hora_pedido": "2024-06-26T14:00:00Z",
+        "fecha_hora_cierre": "2024-06-26T14:30:00Z",
+        "items": [
+          {
+            "productoId": "p6-uuid-espresso",
+            "cantidad": 1,
+            "precio_unitario_al_momento_venta": 6000.00,
+            "notas_item": null,
+            "estado_cocina": "LISTO"
+          },
+          {
+            "productoId": "p7-uuid-latte",
+            "cantidad": 1,
+            "precio_unitario_al_momento_venta": 8500.00,
+            "notas_item": null,
+            "estado_cocina": "LISTO"
+          }
+        ]
+      },
+      {
+        "id": "ped2-uuid-pedido-mesa2",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "mesa_id": "m2-uuid-mesa2",
+        "usuarioCreadorId": "u3-uuid-mesero-cafe",
+        "estado": "ABIERTO",
+        "tipo_pedido": "MESA",
+        "cliente_nombre": null,
+        "cliente_telefono": null,
+        "cliente_direccion": null,
+        "total_estimado": 40000.00,
+        "descuentos_aplicados": 0.00,
+        "notas": "Pedido de prueba para mesa 2",
+        "fecha_hora_pedido": "2024-06-27T10:00:00Z",
+        "fecha_hora_cierre": null,
+        "items": [
+          {
+            "productoId": "p1-uuid-hamburguesa-clasica",
+            "cantidad": 1,
+            "precio_unitario_al_momento_venta": 28000.00,
+            "notas_item": null,
+            "estado_cocina": "LISTO"
+          },
+          {
+            "productoId": "p2-uuid-papas-rusticas",
+            "cantidad": 1,
+            "precio_unitario_al_momento_venta": 12000.00,
+            "notas_item": null,
+            "estado_cocina": "LISTO"
+          }
+        ]
+      }
+    ],
+    "facturas": [
+      {
+        "id": "f1-uuid-factura-pedido1",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "usuarioCajeroId": "u2-uuid-cajero-cafe",
+        "subtotal": 14500.00,
+        "impuestos": 2755.00,
+        "descuentos": 0.00,
+        "propina": 1450.00,
+        "total_factura": 18705.00,
+        "tipo_factura": "TOTAL",
+        "notas": "Factura completa del pedido 1",
+        "fecha_hora_factura": "2024-06-26T14:45:00Z",
+        "pedidosAsociados": [
+          {
+            "pedidoId": "ped1-uuid-pedido-mesa1",
+            "monto_aplicado": 14500.00
+          }
+        ],
+        "pagos": [
+          {
+            "monto_pagado": 10000.00,
+            "metodo_pago": "Efectivo",
+            "tipo_documento": "Cédula de ciudadanía",
+            "numero_documento": "123456789",
+            "nombre_completo": "Ana García",
+            "correo_electronico": "ana.garcia@example.com"
+          },
+          {
+            "monto_pagado": 8705.00,
+            "metodo_pago": "Tarjeta de Crédito",
+            "tipo_documento": "NIT",
+            "numero_documento": "987654321",
+            "nombre_completo": "Empresa de Pruebas S.A.S.",
+            "correo_electronico": "info@empresadepruebas.com"
+          }
+        ]
+      },
+      {
+        "id": "f2-uuid-factura-ped2-total",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "usuarioCajeroId": "u2-uuid-cajero-cafe",
+        "subtotal": 40000.00,
+        "impuestos": 7600.00,
+        "descuentos": 0.00,
+        "propina": 4000.00,
+        "total_factura": 51600.00,
+        "tipo_factura": "TOTAL",
+        "notas": "Factura total para pedido 2, un solo pago",
+        "fecha_hora_factura": "2024-06-27T11:00:00Z",
+        "pedidosAsociados": [
+          {
+            "pedidoId": "ped2-uuid-pedido-mesa2",
+            "monto_aplicado": 40000.00
+          }
+        ],
+        "pagos": [
+          {
+            "monto_pagado": 51600.00,
+            "metodo_pago": "Transferencia",
+            "tipo_documento": "Cédula de ciudadanía",
+            "numero_documento": "9876543210",
+            "nombre_completo": "Roberto Gómez",
+            "correo_electronico": "roberto.gomez@example.com"
+          }
+        ]
+      },
+      {
+        "id": "f3-uuid-factura-parcial-ped1-part1",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "usuarioCajeroId": "u2-uuid-cajero-cafe",
+        "subtotal": 7000.00,
+        "impuestos": 1330.00,
+        "descuentos": 0.00,
+        "propina": 700.00,
+        "total_factura": 9030.00,
+        "tipo_factura": "PARCIAL",
+        "notas": "Primera factura parcial para pedido 1",
+        "fecha_hora_factura": "2024-06-26T14:40:00Z",
+        "pedidosAsociados": [
+          {
+            "pedidoId": "ped1-uuid-pedido-mesa1",
+            "monto_aplicado": 7000.00
+          }
+        ],
+        "pagos": [
+          {
+            "monto_pagado": 9030.00,
+            "metodo_pago": "Efectivo",
+            "tipo_documento": "Cédula de ciudadanía",
+            "numero_documento": "123456789",
+            "nombre_completo": "Ana García",
+            "correo_electronico": "ana.garcia@example.com"
+          }
+        ]
+      },
+      {
+        "id": "f4-uuid-factura-parcial-ped1-part2",
+        "establecimientoId": "e1-uuid-establecimiento-principal",
+        "usuarioCajeroId": "u2-uuid-cajero-cafe",
+        "subtotal": 7500.00,
+        "impuestos": 1425.00,
+        "descuentos": 0.00,
+        "propina": 750.00,
+        "total_factura": 9675.00,
+        "tipo_factura": "PARCIAL",
+        "notas": "Segunda factura parcial para pedido 1",
+        "fecha_hora_factura": "2024-06-26T14:48:00Z",
+        "pedidosAsociados": [
+          {
+            "pedidoId": "ped1-uuid-pedido-mesa1",
+            "monto_aplicado": 7500.00
+          }
+        ],
+        "pagos": [
+          {
+            "monto_pagado": 9675.00,
+            "metodo_pago": "Tarjeta de Crédito",
+            "tipo_documento": "Cédula de ciudadanía",
+            "numero_documento": "123456789",
+            "nombre_completo": "Ana García",
+            "correo_electronico": "ana.garcia@example.com"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,42 @@
+openapi: 3.0.0
+info:
+  title: API de ejemplo
+  description: Esta es una API de ejemplo usando Node.js y TypeScript con Swagger.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:3000
+paths:
+  /users:
+    get:
+      summary: Obtiene la lista de usuarios
+      responses:
+        "200":
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string
+  /reviews:
+    get:
+      summary: Obtiene la lista reviews
+      responses:
+        "200":
+          description: Lista de reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    name:
+                      type: string

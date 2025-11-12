@@ -1,0 +1,396 @@
+Impuesto,Año,Mes_Vencimiento,Ultimo_digito_nit,Dia_vencimeinto
+Grandes Contribuyentes,2025,2,1,11
+Grandes Contribuyentes,2025,2,2,12
+Grandes Contribuyentes,2025,2,3,13
+Grandes Contribuyentes,2025,2,4,14
+Grandes Contribuyentes,2025,2,5,17
+Grandes Contribuyentes,2025,2,6,18
+Grandes Contribuyentes,2025,2,7,19
+Grandes Contribuyentes,2025,2,8,20
+Grandes Contribuyentes,2025,2,9,21
+Grandes Contribuyentes,2025,2,0,24
+Grandes Contribuyentes,2025,4,1,9
+Grandes Contribuyentes,2025,4,2,10
+Grandes Contribuyentes,2025,4,3,11
+Grandes Contribuyentes,2025,4,4,14
+Grandes Contribuyentes,2025,4,5,15
+Grandes Contribuyentes,2025,4,6,16
+Grandes Contribuyentes,2025,4,7,21
+Grandes Contribuyentes,2025,4,8,22
+Grandes Contribuyentes,2025,4,9,23
+Grandes Contribuyentes,2025,4,0,24
+Grandes Contribuyentes,2025,6,1,11
+Grandes Contribuyentes,2025,6,2,12
+Grandes Contribuyentes,2025,6,3,13
+Grandes Contribuyentes,2025,6,4,14
+Grandes Contribuyentes,2025,6,5,17
+Grandes Contribuyentes,2025,6,6,18
+Grandes Contribuyentes,2025,6,7,19
+Grandes Contribuyentes,2025,6,8,20
+Grandes Contribuyentes,2025,6,9,24
+Grandes Contribuyentes,2025,6,0,25
+Personas Juridicas,2025,5,1,12
+Personas Juridicas,2025,5,2,13
+Personas Juridicas,2025,5,3,14
+Personas Juridicas,2025,5,4,15
+Personas Juridicas,2025,5,5,16
+Personas Juridicas,2025,5,6,19
+Personas Juridicas,2025,5,7,20
+Personas Juridicas,2025,5,8,21
+Personas Juridicas,2025,5,9,22
+Personas Juridicas,2025,5,0,23
+Personas Juridicas,2025,7,1,9
+Personas Juridicas,2025,7,2,10
+Personas Juridicas,2025,7,3,11
+Personas Juridicas,2025,7,4,14
+Personas Juridicas,2025,7,5,15
+Personas Juridicas,2025,7,6,16
+Personas Juridicas,2025,7,7,17
+Personas Juridicas,2025,7,8,18
+Personas Juridicas,2025,7,9,21
+Personas Juridicas,2025,7,0,22
+Personas Naturales,2025,8,"[01,02]",12
+Personas Naturales,2025,8,"[03,04]",13
+Personas Naturales,2025,8,"[05,06]",14
+Personas Naturales,2025,8,"[07,08]",15
+Personas Naturales,2025,8,"[09,10]",19
+Personas Naturales,2025,8,"[11,12]",20
+Personas Naturales,2025,8,"[13,14]",21
+Personas Naturales,2025,8,"[15,16]",22
+Personas Naturales,2025,8,"[17,18]",25
+Personas Naturales,2025,8,"[19,20]",26
+Personas Naturales,2025,8,"[21,22]",27
+Personas Naturales,2025,8,"[23,24]",28
+Personas Naturales,2025,8,"[25,26]",29
+Personas Naturales,2025,9,"[27,28]",1
+Personas Naturales,2025,9,"[29,30]",2
+Personas Naturales,2025,9,"[31,32]",3
+Personas Naturales,2025,9,"[33,34]",4
+Personas Naturales,2025,9,"[35,36]",5
+Personas Naturales,2025,9,"[37,38]",8
+Personas Naturales,2025,9,"[39,40]",9
+Personas Naturales,2025,9,"[41,42]",10
+Personas Naturales,2025,9,"[43,44]",11
+Personas Naturales,2025,9,"[45,46]",12
+Personas Naturales,2025,9,"[47,48]",15
+Personas Naturales,2025,9,"[49,50]",16
+Personas Naturales,2025,9,"[51,52]",17
+Personas Naturales,2025,9,"[53,54]",18
+Personas Naturales,2025,9,"[55,56]",19
+Personas Naturales,2025,9,"[57,58]",22
+Personas Naturales,2025,9,"[59,60]",23
+Personas Naturales,2025,9,"[61,62]",24
+Personas Naturales,2025,9,"[63,64]",25
+Personas Naturales,2025,9,"[65,66]",26
+Personas Naturales,2025,10,"[67,68]",1
+Personas Naturales,2025,10,"[69,70]",2
+Personas Naturales,2025,10,"[71,72]",3
+Personas Naturales,2025,10,"[73,74]",6
+Personas Naturales,2025,10,"[75,76]",7
+Personas Naturales,2025,10,"[77,78]",8
+Personas Naturales,2025,10,"[79,80]",9
+Personas Naturales,2025,10,"[81,82]",10
+Personas Naturales,2025,10,"[83,84]",14
+Personas Naturales,2025,10,"[85,86]",15
+Personas Naturales,2025,10,"[87,88]",16
+Personas Naturales,2025,10,"[89,90]",17
+Personas Naturales,2025,10,"[91,92]",20
+Personas Naturales,2025,10,"[93,94]",21
+Personas Naturales,2025,10,"[95,96]",22
+Personas Naturales,2025,10,"[97,98]",23
+Personas Naturales,2025,10,"[99,00]",24
+IVA Bimestral,2025,3,1,11
+IVA Bimestral,2025,3,2,12
+IVA Bimestral,2025,3,3,13
+IVA Bimestral,2025,3,4,14
+IVA Bimestral,2025,3,5,17
+IVA Bimestral,2025,3,6,18
+IVA Bimestral,2025,3,7,19
+IVA Bimestral,2025,3,8,20
+IVA Bimestral,2025,3,9,21
+IVA Bimestral,2025,3,0,25
+IVA Bimestral,2025,5,1,12
+IVA Bimestral,2025,5,2,13
+IVA Bimestral,2025,5,3,14
+IVA Bimestral,2025,5,4,15
+IVA Bimestral,2025,5,5,16
+IVA Bimestral,2025,5,6,19
+IVA Bimestral,2025,5,7,20
+IVA Bimestral,2025,5,8,21
+IVA Bimestral,2025,5,9,22
+IVA Bimestral,2025,5,0,23
+IVA Bimestral,2025,7,1,9
+IVA Bimestral,2025,7,2,10
+IVA Bimestral,2025,7,3,11
+IVA Bimestral,2025,7,4,14
+IVA Bimestral,2025,7,5,15
+IVA Bimestral,2025,7,6,16
+IVA Bimestral,2025,7,7,17
+IVA Bimestral,2025,7,8,18
+IVA Bimestral,2025,7,9,21
+IVA Bimestral,2025,7,0,22
+IVA Bimestral,2025,9,1,9
+IVA Bimestral,2025,9,2,10
+IVA Bimestral,2025,9,3,11
+IVA Bimestral,2025,9,4,12
+IVA Bimestral,2025,9,5,15
+IVA Bimestral,2025,9,6,16
+IVA Bimestral,2025,9,7,17
+IVA Bimestral,2025,9,8,18
+IVA Bimestral,2025,9,9,19
+IVA Bimestral,2025,9,0,22
+IVA Bimestral,2025,11,1,12
+IVA Bimestral,2025,11,2,13
+IVA Bimestral,2025,11,3,14
+IVA Bimestral,2025,11,4,18
+IVA Bimestral,2025,11,5,19
+IVA Bimestral,2025,11,6,20
+IVA Bimestral,2025,11,7,21
+IVA Bimestral,2025,11,8,24
+IVA Bimestral,2025,11,9,25
+IVA Bimestral,2025,11,0,26
+IVA Bimestral,2026,1,1,13
+IVA Bimestral,2026,1,2,14
+IVA Bimestral,2026,1,3,15
+IVA Bimestral,2026,1,4,16
+IVA Bimestral,2026,1,5,19
+IVA Bimestral,2026,1,6,20
+IVA Bimestral,2026,1,7,21
+IVA Bimestral,2026,1,8,22
+IVA Bimestral,2026,1,9,23
+IVA Bimestral,2026,1,0,26
+IVA Cuatrimestral,2025,5,1,12
+IVA Cuatrimestral,2025,5,2,13
+IVA Cuatrimestral,2025,5,3,14
+IVA Cuatrimestral,2025,5,4,15
+IVA Cuatrimestral,2025,5,5,16
+IVA Cuatrimestral,2025,5,6,19
+IVA Cuatrimestral,2025,5,7,20
+IVA Cuatrimestral,2025,5,8,21
+IVA Cuatrimestral,2025,5,9,22
+IVA Cuatrimestral,2025,5,0,23
+IVA Cuatrimestral,2025,7,1,9
+IVA Cuatrimestral,2025,7,2,10
+IVA Cuatrimestral,2025,7,3,11
+IVA Cuatrimestral,2025,7,4,12
+IVA Cuatrimestral,2025,7,5,15
+IVA Cuatrimestral,2025,7,6,16
+IVA Cuatrimestral,2025,7,7,17
+IVA Cuatrimestral,2025,7,8,18
+IVA Cuatrimestral,2025,7,9,19
+IVA Cuatrimestral,2025,7,0,22
+IVA Cuatrimestral,2026,1,1,13
+IVA Cuatrimestral,2026,1,2,14
+IVA Cuatrimestral,2026,1,3,15
+IVA Cuatrimestral,2026,1,4,16
+IVA Cuatrimestral,2026,1,5,19
+IVA Cuatrimestral,2026,1,6,20
+IVA Cuatrimestral,2026,1,7,21
+IVA Cuatrimestral,2026,1,8,22
+IVA Cuatrimestral,2026,1,9,23
+IVA Cuatrimestral,2026,1,0,26
+Retencion en la fuente,2025,2,1,11
+Retencion en la fuente,2025,2,2,12
+Retencion en la fuente,2025,2,3,13
+Retencion en la fuente,2025,2,4,14
+Retencion en la fuente,2025,2,5,17
+Retencion en la fuente,2025,2,6,18
+Retencion en la fuente,2025,2,7,19
+Retencion en la fuente,2025,2,8,20
+Retencion en la fuente,2025,2,9,21
+Retencion en la fuente,2025,2,0,24
+Retencion en la fuente,2025,3,1,11
+Retencion en la fuente,2025,3,2,12
+Retencion en la fuente,2025,3,3,13
+Retencion en la fuente,2025,3,4,14
+Retencion en la fuente,2025,3,5,17
+Retencion en la fuente,2025,3,6,18
+Retencion en la fuente,2025,3,7,19
+Retencion en la fuente,2025,3,8,20
+Retencion en la fuente,2025,3,9,21
+Retencion en la fuente,2025,3,0,25
+Retencion en la fuente,2025,4,1,9
+Retencion en la fuente,2025,4,2,10
+Retencion en la fuente,2025,4,3,11
+Retencion en la fuente,2025,4,4,14
+Retencion en la fuente,2025,4,5,15
+Retencion en la fuente,2025,4,6,16
+Retencion en la fuente,2025,4,7,21
+Retencion en la fuente,2025,4,8,22
+Retencion en la fuente,2025,4,9,23
+Retencion en la fuente,2025,4,0,24
+Retencion en la fuente,2025,5,1,12
+Retencion en la fuente,2025,5,2,13
+Retencion en la fuente,2025,5,3,14
+Retencion en la fuente,2025,5,4,15
+Retencion en la fuente,2025,5,5,16
+Retencion en la fuente,2025,5,6,19
+Retencion en la fuente,2025,5,7,20
+Retencion en la fuente,2025,5,8,21
+Retencion en la fuente,2025,5,9,22
+Retencion en la fuente,2025,5,0,23
+Retencion en la fuente,2025,6,1,11
+Retencion en la fuente,2025,6,2,12
+Retencion en la fuente,2025,6,3,13
+Retencion en la fuente,2025,6,4,16
+Retencion en la fuente,2025,6,5,17
+Retencion en la fuente,2025,6,6,18
+Retencion en la fuente,2025,6,7,19
+Retencion en la fuente,2025,6,8,20
+Retencion en la fuente,2025,6,9,24
+Retencion en la fuente,2025,6,0,25
+Retencion en la fuente,2025,7,1,9
+Retencion en la fuente,2025,7,2,10
+Retencion en la fuente,2025,7,3,11
+Retencion en la fuente,2025,7,4,14
+Retencion en la fuente,2025,7,5,15
+Retencion en la fuente,2025,7,6,16
+Retencion en la fuente,2025,7,7,17
+Retencion en la fuente,2025,7,8,18
+Retencion en la fuente,2025,7,9,21
+Retencion en la fuente,2025,7,0,22
+Retencion en la fuente,2025,8,1,12
+Retencion en la fuente,2025,8,2,13
+Retencion en la fuente,2025,8,3,14
+Retencion en la fuente,2025,8,4,15
+Retencion en la fuente,2025,8,5,19
+Retencion en la fuente,2025,8,6,20
+Retencion en la fuente,2025,8,7,21
+Retencion en la fuente,2025,8,8,22
+Retencion en la fuente,2025,8,9,25
+Retencion en la fuente,2025,8,0,26
+Retencion en la fuente,2025,9,1,9
+Retencion en la fuente,2025,9,2,10
+Retencion en la fuente,2025,9,3,11
+Retencion en la fuente,2025,9,4,12
+Retencion en la fuente,2025,9,5,15
+Retencion en la fuente,2025,9,6,16
+Retencion en la fuente,2025,9,7,17
+Retencion en la fuente,2025,9,8,18
+Retencion en la fuente,2025,9,9,19
+Retencion en la fuente,2025,9,0,22
+Retencion en la fuente,2025,10,1,9
+Retencion en la fuente,2025,10,2,10
+Retencion en la fuente,2025,10,3,14
+Retencion en la fuente,2025,10,4,15
+Retencion en la fuente,2025,10,5,16
+Retencion en la fuente,2025,10,6,17
+Retencion en la fuente,2025,10,7,20
+Retencion en la fuente,2025,10,8,21
+Retencion en la fuente,2025,10,9,22
+Retencion en la fuente,2025,10,0,23
+Retencion en la fuente,2025,11,1,12
+Retencion en la fuente,2025,11,2,13
+Retencion en la fuente,2025,11,3,14
+Retencion en la fuente,2025,11,4,18
+Retencion en la fuente,2025,11,5,19
+Retencion en la fuente,2025,11,6,20
+Retencion en la fuente,2025,11,7,21
+Retencion en la fuente,2025,11,8,24
+Retencion en la fuente,2025,11,9,25
+Retencion en la fuente,2025,11,0,26
+Retencion en la fuente,2025,12,1,10
+Retencion en la fuente,2025,12,2,11
+Retencion en la fuente,2025,12,3,12
+Retencion en la fuente,2025,12,4,15
+Retencion en la fuente,2025,12,5,16
+Retencion en la fuente,2025,12,6,17
+Retencion en la fuente,2025,12,7,18
+Retencion en la fuente,2025,12,8,19
+Retencion en la fuente,2025,12,9,22
+Retencion en la fuente,2025,12,0,23
+Retencion en la fuente,2025,1,1,13
+Retencion en la fuente,2025,1,2,14
+Retencion en la fuente,2025,1,3,15
+Retencion en la fuente,2025,1,4,16
+Retencion en la fuente,2025,1,5,19
+Retencion en la fuente,2025,1,6,20
+Retencion en la fuente,2025,1,7,21
+Retencion en la fuente,2025,1,8,22
+Retencion en la fuente,2025,1,9,23
+Retencion en la fuente,2025,1,0,26
+RST Anual,2025,2,"[1,2]",15
+RST Anual,2025,2,"[3,4]",16
+RST Anual,2025,2,"[5,6]",21
+RST Anual,2025,2,"[7,8]",22
+RST Anual,2025,2,"[9,0]",23
+RST Anual,2025,4,"[1,2]",17
+RST Anual,2025,4,"[3,4]",18
+RST Anual,2025,4,"[5,6]",19
+RST Anual,2025,4,"[7,8]",20
+RST Anual,2025,4,"[9,0]",21
+RST Bimestral,2025,5,1,12
+RST Bimestral,2025,5,2,13
+RST Bimestral,2025,5,3,14
+RST Bimestral,2025,5,4,15
+RST Bimestral,2025,5,5,16
+RST Bimestral,2025,5,6,19
+RST Bimestral,2025,5,7,20
+RST Bimestral,2025,5,8,21
+RST Bimestral,2025,5,9,22
+RST Bimestral,2025,5,0,23
+RST Bimestral,2025,6,1,11
+RST Bimestral,2025,6,2,12
+RST Bimestral,2025,6,3,13
+RST Bimestral,2025,6,4,16
+RST Bimestral,2025,6,5,17
+RST Bimestral,2025,6,6,18
+RST Bimestral,2025,6,7,19
+RST Bimestral,2025,6,8,20
+RST Bimestral,2025,6,9,24
+RST Bimestral,2025,6,0,25
+RST Bimestral,2025,7,1,9
+RST Bimestral,2025,7,2,10
+RST Bimestral,2025,7,3,11
+RST Bimestral,2025,7,4,14
+RST Bimestral,2025,7,5,15
+RST Bimestral,2025,7,6,16
+RST Bimestral,2025,7,7,17
+RST Bimestral,2025,7,8,18
+RST Bimestral,2025,7,9,21
+RST Bimestral,2025,7,0,22
+RST Bimestral,2025,9,1,9
+RST Bimestral,2025,9,2,10
+RST Bimestral,2025,9,3,11
+RST Bimestral,2025,9,4,14
+RST Bimestral,2025,9,5,15
+RST Bimestral,2025,9,6,16
+RST Bimestral,2025,9,7,17
+RST Bimestral,2025,9,8,18
+RST Bimestral,2025,9,9,19
+RST Bimestral,2025,9,0,22
+RST Bimestral,2025,11,1,12
+RST Bimestral,2025,11,2,13
+RST Bimestral,2025,11,3,14
+RST Bimestral,2025,11,4,18
+RST Bimestral,2025,11,5,19
+RST Bimestral,2025,11,6,20
+RST Bimestral,2025,11,7,21
+RST Bimestral,2025,11,8,24
+RST Bimestral,2025,11,9,25
+RST Bimestral,2025,11,0,26
+RST Bimestral,2026,1,1,12
+RST Bimestral,2026,1,2,13
+RST Bimestral,2026,1,3,14
+RST Bimestral,2026,1,4,15
+RST Bimestral,2026,1,5,16
+RST Bimestral,2026,1,6,19
+RST Bimestral,2026,1,7,20
+RST Bimestral,2026,1,8,21
+RST Bimestral,2026,1,9,22
+RST Bimestral,2026,1,0,23
+Impuesto al Patrimonio,2025,5,1,12
+Impuesto al Patrimonio,2025,5,2,13
+Impuesto al Patrimonio,2025,5,3,14
+Impuesto al Patrimonio,2025,5,4,15
+Impuesto al Patrimonio,2025,5,5,16
+Impuesto al Patrimonio,2025,5,6,19
+Impuesto al Patrimonio,2025,5,7,20
+Impuesto al Patrimonio,2025,5,8,21
+Impuesto al Patrimonio,2025,5,9,22
+Impuesto al Patrimonio,2025,5,0,23
+Impuesto al Patrimonio,2025,4,"[1,2,3,4,5,6,7,8,9,0]",12
+RUB, 2025,2,"[1,2,3,4,5,6,7,8,9,0]",1
+RUB, 2025,5,"[1,2,3,4,5,6,7,8,9,0]",1
+RUB, 2025,8,"[1,2,3,4,5,6,7,8,9,0]",1
+RUB, 2025,11,"[1,2,3,4,5,6,7,8,9,0]",1

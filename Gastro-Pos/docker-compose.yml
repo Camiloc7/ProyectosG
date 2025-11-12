@@ -1,0 +1,32 @@
+services:
+  laravel:
+    build:
+      context: ./factura_pos
+      dockerfile: Dockerfile
+    container_name: facturador-app
+    ports:
+      - "9000:9000"
+    env_file:
+      - ./factura_pos/.env
+    networks:
+      - app-network
+
+  node:
+    build:
+      context: ./Restaurante-Back
+      dockerfile: Dockerfile
+    container_name: gastro-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./Restaurante-Back/.env
+    depends_on:
+      - laravel
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

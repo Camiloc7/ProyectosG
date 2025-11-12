@@ -1,0 +1,15 @@
+sqlalchemy===2.0.41
+mysql-connector-python 
+imap-tools
+python-dotenv
+pydantic
+pydantic-settings
+lxml                    
+fastapi
+uvicorn
+bcrypt
+fastapi-mail
+cryptography
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart

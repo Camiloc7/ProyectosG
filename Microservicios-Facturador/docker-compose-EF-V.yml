@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  estados_financieros:
+    build:
+      context: ./ESTADOS_FINANCIEROS
+      dockerfile: Dockerfile
+    container_name: estados_financieros
+    ports:
+      - "3002:3002"  # Cambiá el puerto si es necesario
+    # Volúmenes, variables de entorno, etc, los podés agregar acá si querés
+
+  ventas:
+    build:
+      context: ./VENTAS
+      dockerfile: Dockerfile
+    container_name: ventas
+    ports:
+      - "3001:3001"  # Cambiá el puerto si es necesario
+

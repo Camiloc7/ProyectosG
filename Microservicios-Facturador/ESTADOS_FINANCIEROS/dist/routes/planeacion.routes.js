@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const validateToken_1 = require("../middlewares/validateToken");
+const pdf_1 = require("../controllers/planeacion/pdf");
+const asyncHandler_1 = require("../utils/asyncHandler");
+const itemsUsuarios_1 = require("../controllers/planeacion/itemsUsuarios");
+const multer = require("multer");
+const router = (0, express_1.Router)();
+router.get("/pdf/:itemID", validateToken_1.validateTokenMiddleware, (0, asyncHandler_1.asyncHandler)(pdf_1.getPdfById));
+// router.post("/get-pdf", validateTokenMiddleware, asyncHandler(getPDFInfo));
+router.get("/lista", validateToken_1.validateTokenMiddleware, (0, asyncHandler_1.asyncHandler)(pdf_1.getListaPlanear));
+router.post("/pdf", validateToken_1.validateTokenMiddleware, (0, asyncHandler_1.asyncHandler)(pdf_1.createPdf));
+// router.delete("/pdf", validateTokenMiddleware, asyncHandler(deletePDF));
+router.post("/item-usuario", validateToken_1.validateTokenMiddleware, (0, asyncHandler_1.asyncHandler)(itemsUsuarios_1.createOrUpdate));
+exports.default = router;

@@ -1,0 +1,358 @@
+{
+  "roles": [
+    {
+      "name": "Director de Proyecto",
+      "description": "Responsable de la planificación y ejecución de obras"
+    },
+    {
+      "name": "Jefe de Obra",
+      "description": "Supervisa las actividades diarias en el sitio de construcción"
+    },
+    {
+      "name": "Almacenista",
+      "description": "Gestiona el inventario de materiales y equipos"
+    },
+    {
+      "name": "Comprador",
+      "description": "Encargado de la adquisición de materiales y suministros"
+    }
+  ],
+  "users": [
+    {
+      "username": "javier.rodriguez",
+      "password_hash": "hash_seguro_javier",
+      "roleName": "Director de Proyecto",
+      "is_active": true
+    },
+    {
+      "username": "luisa.fernandez",
+      "password_hash": "hash_seguro_luisa",
+      "roleName": "Almacenista",
+      "is_active": true
+    },
+    {
+      "username": "carlos.gomez",
+      "password_hash": "hash_seguro_carlos",
+      "roleName": "Comprador",
+      "is_active": true
+    }
+  ],
+  "supplierCategories": [
+  {
+    "name": "Compra EPPS",
+    "description": "Casco, guantes",
+    "imageUrl": "https://img.icons8.com/plasticine/400/workers-male.png"
+  },
+  {
+    "name": "Materiales de construcción",
+    "description": "Cemento, pintura",
+    "imageUrl": "https://img.icons8.com/fluency/240/construction-materials.png"
+  },
+  {
+    "name": "Arrendamientos",
+    "description": "Andamios, casas, locales, maquinas",
+    "imageUrl": "https://img.icons8.com/papercut/480/key-exchange.png"
+
+  },
+  {
+    "name": "Compras de papeleria",
+    "description": "Papeles",
+    "imageUrl": "https://img.icons8.com/dusk/512/note.png"
+  },
+  {
+
+    "name": "Compra de servicios administrativos",
+    "description": "Mantenimiento, limpieza, seguridad",
+    "imageUrl": "https://img.icons8.com/office/480/id-verified.png"
+  },
+  {
+    "name": "Compra de otros activos",
+    "description": "Otros",
+    "imageUrl": "https://img.icons8.com/matisse/500/investment.png"
+  }
+  ],
+  "suppliers": [
+    {
+      "nit": "901180649",
+      "name": "Quality Pruebas",
+      "contact_person": "Sofia García",
+      "phone": "3015554433",
+      "email": "quality@pruebas.com",
+      "address": "Avenida 68 #45-10",
+      "city": "Bogota",
+      "verification_digit": "9",
+      "categoryName": "Materiales de construcción",
+      "document_type": "NIT",
+      "commercial_name": "Quality Pruebas",
+      "bank_name": "Bancolombia",
+      "bank_account_number": "2009876548",
+      "bank_account_type": "Ahorros",
+      "contact_first_name": "Sofia",
+      "contact_last_name": "García"
+    },
+    {
+      "nit": "900789123",
+      "name": "Concreto Fuerte S.A.S.",
+      "contact_person": "Pedro Martinez",
+      "phone": "3109876543",
+      "email": "pedro@concretosf.com",
+      "address": "Carrera 7 #120-50",
+      "city": "Bogota",
+      "verification_digit": "2",
+      "categoryName": "Materiales de construcción",
+      "document_type": "NIT",
+      "commercial_name": "Concreto Fuerte",
+      "bank_name": "Banco Constructor",
+      "bank_account_number": "1001234567",
+      "bank_account_type": "Corriente",
+      "contact_first_name": "Pedro",
+      "contact_last_name": "Martinez"
+    },
+    {
+      "nit": "800555666",
+      "name": "Acabados Premium Ltda.",
+      "contact_person": "Sofia García",
+      "phone": "3015554433",
+      "email": "sofia@acabadospremium.com",
+      "address": "Carrera 68 #80-10",
+      "city": "Bogota",
+      "verification_digit": "8",
+      "categoryName": "Materiales de construcción",
+      "document_type": "NIT",
+      "commercial_name": "Acabados Premium",
+      "bank_name": "Banco Materiales",
+      "bank_account_number": "2009876543",
+      "bank_account_type": "Ahorros",
+      "contact_first_name": "Sofia",
+      "contact_last_name": "García"
+    }
+  ],
+  "productCategories": [
+    {
+      "name": "Materiales Estructurales",
+      "description": "Cimientos, columnas, vigas"
+    },
+    {
+      "name": "Materiales de Mampostería",
+      "description": "Ladrillos, bloques, morteros"
+    },
+    {
+      "name": "Equipos Menores",
+      "description": "Herramientas eléctricas, andamios"
+    },
+    {
+      "name": "Elementos Prefabricados",
+      "description": "Paneles de muro, losas"
+    }
+  ],
+  "locations": [
+    {
+      "name": "Patio Central de Almacenamiento",
+      "description": "Almacén principal para materiales a granel y equipos",
+      "is_active": true
+    },
+    {
+      "name": "Bodega de Obra #1",
+      "description": "Almacén temporal en el sitio de construcción del Proyecto Sol",
+      "is_active": true
+    },
+    {
+      "name": "Taller de Prefabricados",
+      "description": "Área donde se producen elementos de concreto prefabricados",
+      "is_active": true
+    }
+  ],
+  "products": [
+    {
+      "name": "Saco de Cemento Portland Tipo I",
+      "sku": "CEM-PT1",
+      "barcode": "00123456789012",
+      "description": "Saco de 50kg de cemento para uso general en construcción",
+      "cost_price": 25.00,
+      "sale_price": 30.00,
+      "categoryName": "Materiales de Mampostería",
+      "lots": [
+        {
+          "lot_number": "LOTCEM001",
+          "supplierName": "Concreto Fuerte S.A.S.",
+          "initial_quantity": 500,
+          "current_quantity": 500,
+          "manufacture_date": "2025-04-10",
+          "expiration_date": "2025-10-10",
+          "status": "available"
+        }
+      ],
+      "inventory": [
+        {
+          "lotNumber": "LOTCEM001",
+          "locationName": "Patio Central de Almacenamiento",
+          "quantity": 500
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "reception",
+          "lotNumber": "LOTCEM001",
+          "fromLocationName": "Patio Central de Almacenamiento",
+          "quantity": 500,
+          "notes": "Recepción inicial de cemento para obra"
+        }
+      ]
+    },
+    {
+      "name": "Varilla de Acero Corrugada Ø 1/2 pulg.",
+      "sku": "ACERO-1/2",
+      "barcode": "00234567890123",
+      "description": "Varilla de acero de 6 metros para refuerzo de concreto",
+      "cost_price": 8.50,
+      "sale_price": 12.00,
+      "categoryName": "Materiales Estructurales",
+      "lots": [
+        {
+          "lot_number": "LOTACERO001",
+          "supplierName": "Concreto Fuerte S.A.S.",
+          "initial_quantity": 1000,
+          "current_quantity": 1000,
+          "manufacture_date": "2025-03-20",
+          "expiration_date": "2035-03-20",
+          "status": "available"
+        }
+      ],
+      "inventory": [
+        {
+          "lotNumber": "LOTACERO001",
+          "locationName": "Patio Central de Almacenamiento",
+          "quantity": 1000
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "reception",
+          "lotNumber": "LOTACERO001",
+          "fromLocationName": "Patio Central de Almacenamiento",
+          "quantity": 1000,
+          "notes": "Recepción inicial de varilla de acero"
+        }
+      ]
+    },
+    {
+      "name": "Panel de Muro Prefabricado 3x2m",
+      "sku": "PANEL-3X2",
+      "barcode": "00345678901234",
+      "description": "Panel de concreto prefabricado para muros divisorios",
+      "cost_price": 150.00,
+      "sale_price": 250.00,
+      "categoryName": "Elementos Prefabricados",
+      "lots": [
+        {
+          "lot_number": "LOTPANEL001",
+          "supplierName": "Concreto Fuerte S.A.S.",
+          "initial_quantity": 50,
+          "current_quantity": 50,
+          "manufacture_date": "2025-05-25",
+          "expiration_date": "2045-05-25",
+          "status": "available"
+        }
+      ],
+      "serials": [
+        { "serial_number": "PANEL-S001", "status": "available" },
+        { "serial_number": "PANEL-S002", "status": "available" }
+      ],
+      "inventory": [
+        {
+          "lotNumber": "LOTPANEL001",
+          "serialNumber": "PANEL-S001",
+          "locationName": "Taller de Prefabricados",
+          "quantity": 1
+        },
+        {
+          "lotNumber": "LOTPANEL001",
+          "serialNumber": "PANEL-S002",
+          "locationName": "Taller de Prefabricados",
+          "quantity": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "production_output",
+          "lotNumber": "LOTPANEL001",
+          "serialNumber": "PANEL-S001",
+          "fromLocationName": "Taller de Prefabricados",
+          "quantity": 1,
+          "notes": "Producción de panel prefabricado en taller"
+        }
+      ]
+    },
+    {
+      "name": "Taladro Percutor Industrial",
+      "sku": "TALADRO-IND",
+      "barcode": "00456789012345",
+      "description": "Taladro de alto rendimiento para perforación en concreto",
+      "cost_price": 180.00,
+      "sale_price": 250.00,
+      "categoryName": "Equipos Menores",
+      "serials": [
+        { "serial_number": "TALD-IND-001", "status": "available" },
+        { "serial_number": "TALD-IND-002", "status": "available" }
+      ],
+      "inventory": [
+        {
+          "lotNumber": "N/A",
+          "serialNumber": "TALD-IND-001",
+          "locationName": "Patio Central de Almacenamiento",
+          "quantity": 1
+        },
+        {
+          "lotNumber": "N/A",
+          "serialNumber": "TALD-IND-002",
+          "locationName": "Bodega de Obra #1",
+          "quantity": 1
+        }
+      ],
+      "movements": [
+        {
+          "movement_type": "transfer",
+          "serialNumber": "TALD-IND-002",
+          "fromLocationName": "Patio Central de Almacenamiento",
+          "toLocationName": "Bodega de Obra #1",
+          "quantity": 1,
+          "notes": "Movimiento de taladro a obra #1"
+        }
+      ]
+    }
+  ],
+  "boms": [
+    {
+      "name": "BOM_Muro_Prefabricado",
+      "description": "Lista de materiales para la fabricación de un Panel de Muro Prefabricado",
+      "quantity_produced": 1,
+      "productSku": "PANEL-3X2",
+      "items": [
+        { "componentProductSku": "CEM-PT1", "quantity": 0.5 },
+        { "componentProductSku": "ACERO-1/2", "quantity": 4 }
+      ]
+    }
+  ],
+  "productionOrders": [
+    {
+      "order_number": "OP-2025-001", 
+      "productSku": "PANEL-3X2",
+      "bomName": "BOM_Muro_Prefabricado",
+      "quantity_to_produce": 10,
+      "status": "pending",
+      "productionLocationName": "Taller de Prefabricados",
+      "start_date": "2025-06-25",
+      "createdByUser": "javier.rodriguez"
+    },
+    {
+      "order_number": "OP-2025-002",  
+      "productSku": "CEM-PT1",
+      "bomName": "BOM_Muro_Prefabricado",
+      "quantity_to_produce": 50,
+      "status": "pending",
+      "productionLocationName": "Bodega de Obra #1",
+      "start_date": "2025-06-26",
+      "createdByUser": "carlos.gomez"
+    }
+  ]
+}

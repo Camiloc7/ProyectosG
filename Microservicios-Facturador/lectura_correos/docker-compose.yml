@@ -1,0 +1,64 @@
+services:  
+  api:
+    build:
+      context: ./python
+      dockerfile: Dockerfile.api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      IMAP_SERVER: ${IMAP_SERVER}
+      EMAIL_CHECK_INTERVAL_SECONDS: ${EMAIL_CHECK_INTERVAL_SECONDS}
+      EMAIL_FETCH_LIMIT: ${EMAIL_FETCH_LIMIT}
+      PROCESSING_INTERVAL_SECONDS: ${PROCESSING_INTERVAL_SECONDS}
+      LOG_LEVEL: ${LOG_LEVEL}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    volumes:
+      - ./python/data/pdf_inbox:/app/data/pdf_inbox
+      - ./python/data/pdf_processed:/app/data/pdf_processed
+      - ./python/data/pdf_errors:/app/data/pdf_errors
+      - ./python/tmp:/app/tmp
+      - ./python/learning/learned_patterns.json:/app/learning/learned_patterns.json
+  email_worker:
+    build:
+      context: ./python
+      dockerfile: Dockerfile.worker
+    restart: always
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      IMAP_SERVER: ${IMAP_SERVER}
+      EMAIL_CHECK_INTERVAL_SECONDS: ${EMAIL_CHECK_INTERVAL_SECONDS}
+      EMAIL_FETCH_LIMIT: ${EMAIL_FETCH_LIMIT}
+      PROCESSING_INTERVAL_SECONDS: ${PROCESSING_INTERVAL_SECONDS}
+      LOG_LEVEL: ${LOG_LEVEL}
+    volumes:
+      - ./python/data/pdf_inbox:/app/data/pdf_inbox
+      - ./python/data/pdf_processed:/app/data/pdf_processed
+      - ./python/data/pdf_errors:/app/data/pdf_errors
+      - ./python/tmp:/app/tmp
+      - ./python/learning/learned_patterns.json:/app/learning/learned_patterns.json
+
+  nodejs_api:
+    build:
+      context: ./node
+      dockerfile: Dockerfile.node
+    restart: always
+    ports:
+      - "3004:3000"
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_PORT: ${DB_PORT} 
+      NODE_ENV: ${NODE_ENV} 
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET}
+   

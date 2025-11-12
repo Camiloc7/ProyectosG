@@ -1,0 +1,17 @@
+.middle-promo {
+  position: relative;
+}
+
+.middle-promo::before {
+  content: 'POPULAR';
+  display: block;
+  background-color: #333332;
+  font-size: 12px;
+  font-weight: 500;
+  position: absolute;
+  top: 0;
+  padding: 3px 12px;
+  border-radius: 20px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

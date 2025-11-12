@@ -1,0 +1,53 @@
+.header {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los elementos bajen de línea en pantallas pequeñas */
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding: 16px 24px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.icon-button {
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.icon-button:hover {
+  color: #28a745;
+}
+
+/* Media query para pantallas pequeñas */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-buttons {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .header-buttons > * {
+    flex: 1 1 auto; /* Cada botón puede crecer y ocupar espacio */
+  }
+}
