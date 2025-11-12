@@ -54,7 +54,7 @@ export default function PagoElectronico() {
     }
     setShowPdfModal(false);
     setPdfUrl(null);
-    router.push(`/cajero/tarjetas?pedidoId=${pedidoId}`);
+    router.push(`/tarjetas-por-pagar?pedidoId=${pedidoId}`);
   };
 
   const handleSubmit = async () => {
@@ -63,12 +63,12 @@ export default function PagoElectronico() {
       toast.error("Por favor selecciona una cuenta bancaria.");
       return;
     }
-
-    setIsSubmitting(true);
     if (!pedidoId) {
       toast.error("No se encontró el ID del pedido.");
       return;
     }
+
+    setIsSubmitting(true);
     try {
       const divisionFinal: IDataOpcional = {
         direccion:
@@ -77,6 +77,7 @@ export default function PagoElectronico() {
         dv: division.dv === "" ? "0" : division.dv,
         nota: division.nota === "" ? "SIN NOTA" : division.nota,
       };
+
       const result = await generarPayloadPago({
         pedidoId,
         idx: parsedIdx,
@@ -88,71 +89,28 @@ export default function PagoElectronico() {
 
       if (!result) {
         toast.error("No se encontró la información de pago.");
+        setIsSubmitting(false); // ⬅️ Asegurar que se detiene el envío
         return;
       }
 
+      // ⬅️ LOGICA PARA PAGAR Y OBTENER EL PDF
       const factura: FacturaEntity | null = await pagarPedido(result.payload);
 
       if (!factura) {
         setIsSubmitting(false);
         return;
       }
-
-      const pdfBlob = await getFacturaPdf(factura.id, false);
-
+      
+      const pdfBlob = await getFacturaPdf(factura.id);
       if (pdfBlob instanceof Blob && pdfBlob.type === "application/pdf") {
         const url = URL.createObjectURL(pdfBlob);
         setPdfUrl(url);
         setShowPdfModal(true);
         toast.success("Factura generada correctamente.");
       } else {
-        toast.error(
-          "Factura procesada, pero no se pudo obtener el PDF válido."
-        );
+        toast.error("Factura procesada, pero no se pudo obtener el PDF válido.");
         handleClosePdfModal();
       }
-
-      // ✅ Marcar como pagado en el store
-      const respaldoUnicoStr = localStorage.getItem(
-        `respaldo_unico_${pedidoId}`
-      );
-      const respaldoDivididoStr = localStorage.getItem(
-        `respaldo_dividido_${pedidoId}`
-      );
-
-      // const respaldoUnico = await window.electron.storeGet(`respaldo_unico_${pedido_id}`)
-      // const respaldoDividido = await window.electron.storeGet(`respaldo_dividido_${pedido_id}`)
-
-      if (respaldoUnicoStr) {
-        const respaldoUnico = JSON.parse(respaldoUnicoStr);
-
-        respaldoUnico.pagada = true;
-
-        localStorage.setItem(
-          `respaldo_unico_${pedidoId}`,
-          JSON.stringify(respaldoUnico)
-        );
-        // await window.electron.storeSet(`respaldo_unico_${pedido_id}`, respaldoUnico)
-      } else if (respaldoDivididoStr) {
-        const respaldoDividido = JSON.parse(respaldoDivididoStr);
-        const parsedIdx = Number(idx);
-
-        // Asegúrate de que `idx` esté dentro de los límites
-        if (
-          Array.isArray(respaldoDividido.pagos) &&
-          !isNaN(parsedIdx) &&
-          parsedIdx >= 0 &&
-          parsedIdx < respaldoDividido.pagos.length
-        ) {
-          respaldoDividido.pagos[parsedIdx].pagada = true;
-          localStorage.setItem(
-            `respaldo_dividido_${pedidoId}`,
-            JSON.stringify(respaldoDividido)
-          );
-        }
-      }
-
-      // navigate('/tarjetas-por-pagar', { state: { pedidoId: pedido_id } })
     } catch (error) {
       console.error(error);
       toast.error("Ocurrió un error al procesar el pago.");
@@ -180,7 +138,9 @@ export default function PagoElectronico() {
       >
         <ArrowLeft
           size={24}
-          onClick={() => router.push(`/cajero/tarjetas?pedidoId=${pedidoId}`)}
+          onClick={() =>
+            router.push(`/tarjetas-por-pagar?pedidoId=${pedidoId}`)
+          }
           style={{ cursor: "pointer", stroke: ORANGE }}
         />
         <h1 style={{ fontSize: 24, fontWeight: 700, color: "#333" }}>
@@ -239,7 +199,7 @@ export default function PagoElectronico() {
       </div>
 
       {(loading || loadingCuentas) && <Spinner />}
-
+      
       {/* ⬅️ NUEVO: MODAL DEL PDF */}
       {showPdfModal && pdfUrl && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

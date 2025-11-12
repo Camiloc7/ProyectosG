@@ -1,32 +1,45 @@
 import React from "react";
+import { FONDO, ORANGE } from "../../styles/colors";
+
+const baseStyle: React.CSSProperties = {
+  height: 40,
+  padding: "8px 16px",
+  fontWeight: 500,
+  borderRadius: 25,
+  fontSize: 14,
+  cursor: "pointer",
+  boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+  transition: "all 0.3s ease",
+};
 
 interface BotonRestauranteProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   label: string;
-  variacion?: "default" | "claro" | "verde";
+  variacion?: "default" | "claro";
 }
 
 const BotonRestaurante: React.FC<BotonRestauranteProps> = ({
   label,
   variacion = "default",
-  className = "",
   ...props
 }) => {
-  const baseClasses =
-    "h-10 px-4 font-medium rounded-full text-sm cursor-pointer shadow-md transition-all duration-300";
-
-  const clasesVariacion =
-    variacion === "claro"
-      ? "bg-white text-orange-500 border border-orange-500 hover:bg-orange-50"
-      : variacion === "verde"
-      ? "bg-green-500 text-white hover:bg-green-600"
-      : "bg-orange-500 text-white hover:bg-orange-600";
+  const style: React.CSSProperties = {
+    ...baseStyle,
+    ...(variacion === "claro"
+      ? {
+          backgroundColor: FONDO,
+          color: ORANGE,
+          border: `1px solid ${ORANGE}`,
+        }
+      : {
+          backgroundColor: ORANGE,
+          color: "#ffffff",
+          border: "none",
+        }),
+  };
 
   return (
-    <button
-      className={`${baseClasses} ${clasesVariacion} ${className}`}
-      {...props}
-    >
+    <button style={style} {...props}>
       {label}
     </button>
   );

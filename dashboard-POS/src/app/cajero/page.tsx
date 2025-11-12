@@ -3,13 +3,7 @@ import { FONDO, FONDO_COMPONENTES, ORANGE } from "../../styles/colors";
 import { useCallback, useEffect, useState } from "react";
 import FormCancelacion from "../../features/listaDePedidos/FormCancelacion";
 import { useConfirm } from "../../components/feedback/confirmModal";
-import {
-  ArrowDownCircle,
-  ArrowUpCircle,
-  CircleDollarSign,
-  Flag,
-  RefreshCcw,
-} from "lucide-react";
+import { RefreshCcw } from "lucide-react";
 import Spinner from "@/components/feedback/Spinner";
 import { conectarSocket } from "../../helpers/socket";
 import { PlayCircle, Lock } from "lucide-react";
@@ -31,35 +25,23 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IItemsPedidos, IPedidos } from "@/types/models";
-import { BiMoney } from "react-icons/bi";
-import FormExtraMoney from "@/features/listaDePedidos/FormIngresosEgresosExtra";
 export default function Pedidos() {
   const router = useRouter();
   const confirm = useConfirm();
   const {
     cajaActiva,
-    generarTicketX,
-    traerCajaActiva,
+    cierreDeCaja,
     aperturaDeCaja,
     loading: loadingCaja,
   } = useCajaStore();
-  const {
-    traerPedidos,
-    pedidos,
-    loading,
-    pedidosPendientes,
-    actualizarEstadoPedido,
-  } = usePedidosStore();
-
-  const { imprimirComanda, loading: loadingComanda } = usePedidosStore();
+  const { traerPedidos, pedidos, loading, pedidosPendientes } =
+    usePedidosStore();
+  const imprimirComanda = usePedidosStore((state) => state.imprimirComanda);
   const [cancelarOpen, setCancelarOpen] = useState<boolean>(false);
   const [openCaja, setOpenCaja] = useState<boolean>(false);
   const [cierreDeCajaAbierto, setCierreDeCajaAbierto] =
     useState<boolean>(false);
   const [idCancelar, setIdCancelar] = useState<string>("");
-  const [gastosEIngresosOpen, setGastosEIngresosOpen] =
-    useState<boolean>(false);
-
   const [pedidosGuardados, setPedidosGuardados] = useState<any[]>([]);
   const { user, isAuthenticated, logout } = useAuthStore();
   const formatearPedidos = useCallback(
@@ -71,19 +53,13 @@ export default function Pedidos() {
     },
     []
   );
-
-  useEffect(() => {
-    traerCajaActiva();
-    handleFetch();
-  }, [formatearPedidos]);
-
   useEffect(() => {
     async function init() {
       try {
         if (!user?.establecimiento_id) return;
         const socket = await conectarSocket(user.establecimiento_id);
         socket.on("pedidoCreated", ({ pedidoId }) => {
-          console.warn("[WS] Nuevo pedido recibido:", pedidoId);
+          console.log("[WS] Nuevo pedido recibido:", pedidoId);
           usePedidosStore.getState().traerPedidos();
         });
         socket.on("pedidos_actualizados", (nuevosPedidos: IPedidos[]) => {
@@ -95,10 +71,10 @@ export default function Pedidos() {
       }
     }
     init();
-  }, [user]);
-
+  }, [formatearPedidos, user]);
   useEffect(() => {
     const checkPedidosEnProceso = async () => {
+      await traerPedidos();
       if (pedidosPendientes.length > 0) {
         const confirmado = await confirm({
           title: "Hay pedidos en proceso de pago",
@@ -116,8 +92,8 @@ export default function Pedidos() {
       }
     };
     checkPedidosEnProceso();
+    traerPedidos();
   }, [traerPedidos, traerPedidos, pedidosPendientes, router, confirm]);
-
   const handleEliminarPedidoPendiente = async (pedidoId: string) => {
     const confirmado = await confirm({
       title: "¿Cancelar proceso de pago?",
@@ -151,6 +127,19 @@ export default function Pedidos() {
       console.error("Error al iniciar la caja:", error);
     }
   };
+  const handleCierreDeCaja = async (data: IFormCierreCaja) => {
+    try {
+      if (!user?.establecimiento_id) return;
+      const formattedData: IDataParaCierreDeCaja = {
+        denominaciones_cierre: data.denominaciones_cierre,
+        observaciones: data.observaciones,
+      };
+      cierreDeCaja(formattedData);
+      setCierreDeCajaAbierto(false);
+    } catch (error) {
+      console.error("Error al cerrar la caja:", error);
+    }
+  };
 
   const handleBotonCajaClick = () => {
     if (cajaActiva) {
@@ -165,6 +154,7 @@ export default function Pedidos() {
       await usePedidosStore
         .getState()
         .cambiarEstadoPedido(idCancelar, "CANCELADO");
+      toast.success(`El pedido ${idCancelar} ha sido cancelado.`);
       setCancelarOpen(false);
       setIdCancelar("");
     } catch (error) {
@@ -198,103 +188,94 @@ export default function Pedidos() {
       }}
     >
       <div style={{ margin: "0 auto" }}>
-        <header className="relative flex flex-wrap items-center justify-between bg-white p-3 md:p-6 rounded-xl shadow-md mb-6 gap-3">
-          {/* Título principal */}
-          <h2 className="text-lg md:text-2xl font-semibold text-gray-800">
+        <header
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 32,
+            padding: "16px 24px",
+            backgroundColor: "#ffffff",
+            borderRadius: 12,
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+            color: "#333",
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 22,
+              fontWeight: 600,
+              margin: 0,
+              color: "#333",
+            }}
+          >
             Lista de Pedidos
           </h2>
-
-          {/* Estado central de la caja */}
-          <div
-            className={`hidden [@media(min-width:1115px)]:block absolute left-1/2 transform -translate-x-1/2 text-xl font-bold uppercase ${
-              cajaActiva ? "text-green-500" : "text-red-500"
-            }`}
-          >
-            {cajaActiva ? "Caja Abierta" : "Caja Cerrada"}
-          </div>
-
-          {/* Botones e íconos */}
-          <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 md:gap-4 flex-1">
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             {loading ? (
-              <span className="text-gray-500 font-medium">Cargando...</span>
+              <h1>Cargando...</h1>
             ) : (
               <>
-                {/* Refrescar */}
                 <span
                   data-tooltip-id="tooltip"
                   data-tooltip-content="Refrescar"
-                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
                 >
                   <RefreshCcw
                     onClick={handleFetch}
-                    size={20}
-                    className="md:w-6 md:h-6"
+                    style={{ cursor: "pointer", color: "#666" }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.color = "#28a745")
+                    }
+                    onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
                   />
                 </span>
-
-                {/* Bloqueo/Caja */}
-                <span
-                  data-tooltip-id="tooltip"
-                  data-tooltip-content={
-                    cajaActiva ? "Cerrar caja" : "Abrir caja"
-                  }
-                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
-                >
-                  <Lock
-                    onClick={handleBotonCajaClick}
-                    size={20}
-                    className={`cursor-pointer md:w-6 md:h-6 ${
-                      cajaActiva ? "text-green-500" : "text-red-500"
-                    }`}
-                  />
-                </span>
-
-                {/* Gastos e ingresos extra */}
-                <span
-                  data-tooltip-id="tooltip"
-                  data-tooltip-content="Gastos e Ingresos Extra"
-                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
-                >
-                  <CircleDollarSign
-                    onClick={() => setGastosEIngresosOpen(true)}
-                    size={20}
-                    className="md:w-6 md:h-6"
-                  />
-                </span>
-
-                {/* Reporte */}
-                <span
-                  data-tooltip-id="tooltip"
-                  data-tooltip-content="Reporte de caja"
-                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
-                >
-                  <Flag
-                    onClick={() => generarTicketX()}
-                    size={20}
-                    className="md:w-6 md:h-6"
-                  />
-                </span>
-
-                {/* Botones principales */}
-                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                  <BotonRestaurante
-                    label="Agregar Pedido"
-                    onClick={() => {
-                      if (cajaActiva) {
-                        router.push("/cajero/crear_pedido");
-                      } else {
-                        toast.error(
-                          "Debes abrir la caja antes de pagar un pedido."
-                        );
-                        setOpenCaja(true);
-                      }
-                    }}
-                  />
-                </div>
-
-                <Tooltip id="tooltip" place="bottom" />
               </>
             )}
+            {/* <span data-tooltip-id="tooltip" data-tooltip-content="Inicio de caja">
+                            <PlayCircle
+                                onClick={() => setOpenCaja(true)}
+                                style={{ cursor: 'pointer', color: '#666' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = '#28a745')}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = '#666')}
+                            />
+                        </span>
+                        <span data-tooltip-id="tooltip" data-tooltip-content="Cierre de caja">
+                            <Lock
+                                onClick={() => setCierreDeCajaAbierto(true)}
+                                style={{ cursor: 'pointer', color: '#666' }}
+                                onMouseEnter={(e) => (e.currentTarget.style.color = '#28a745')}
+                                onMouseLeave={(e) => (e.currentTarget.style.color = '#666')}
+                            />
+                        </span> */}
+
+            <Lock
+              onClick={handleBotonCajaClick}
+              color={cajaActiva ? "green" : "red"}
+            />
+
+            <BotonRestaurante
+              label="Agregar Pedido"
+              onClick={() => router.push("/cajero/crear_pedido")}
+            />
+            {/* <BotonRestaurante
+                            label="Agregar Pedido"
+                            onClick={() => {
+                                const { cajaActiva } = useCajaStore.getState();
+                                if (cajaActiva) {
+                                    router.push('/cajero/crear_pedido');
+                                } else {
+                                    toast.error('Debes abrir la caja antes de agregar un pedido.');
+                                    setOpenCaja(true);
+                                }
+                            }}
+                        />*/}
+
+            <BotonRestaurante
+              label="Cerrar Sesión"
+              variacion="claro"
+              onClick={handleLogout}
+            />
+            <Tooltip id="tooltip" place="bottom" />
           </div>
         </header>
 
@@ -417,8 +398,6 @@ export default function Pedidos() {
                       position: "relative",
                     }}
                   >
-                    {loadingComanda && <Spinner />}
-
                     <button
                       onClick={() => imprimirComanda(pedido.id)}
                       style={{
@@ -589,10 +568,17 @@ export default function Pedidos() {
                           router.push("/cajero/editar/" + pedido.id);
                         }}
                       />
+                      {/* <BotonRestaurante
+                                                label="Pagar"
+                                                onClick={() => {
+                                                    router.push('/cajero/pagar?pedidoId=' + pedido.id)
+                                                }}
+                                            /> */}
 
                       <BotonRestaurante
                         label="Pagar"
                         onClick={() => {
+                          const { cajaActiva } = useCajaStore.getState();
                           if (cajaActiva) {
                             router.push("/cajero/pagar?pedidoId=" + pedido.id);
                           } else {
@@ -703,15 +689,11 @@ export default function Pedidos() {
         />
         <FormCierreCaja
           onClose={() => setCierreDeCajaAbierto(false)}
+          onSave={(e) => handleCierreDeCaja(e)}
           isOpen={cierreDeCajaAbierto}
         />
-        <FormExtraMoney
-          onClose={() => setGastosEIngresosOpen(false)}
-          isOpen={gastosEIngresosOpen}
-        />
       </div>
-      {loadingComanda && <Spinner />}
-      {loading || loadingCaja || (loadingComanda && <Spinner />)}
+      {loading || (loadingCaja && <Spinner />)}
     </div>
   );
 }

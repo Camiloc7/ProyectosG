@@ -19,7 +19,6 @@ type CategoriasState = {
   loading: boolean;
   categorias: ICategoria[];
   selectCategorias: ISelectCategorias[];
-  categoriasNames: string[];
   error: string | null;
   fetchCategorias: () => Promise<void>;
   fetchCategoriaById: (id: string) => Promise<ICategoria | undefined>;
@@ -31,14 +30,12 @@ type CategoriasState = {
     categoriaData: ICategoria
   ) => Promise<ICategoria | undefined>;
   deleteCategoria: (id: string) => Promise<boolean>;
-  fetchCategoriasNames: () => Promise<void>;
 };
 
 export const useCategoriasStore = create<CategoriasState>((set, get) => ({
   loading: false,
   categorias: [],
   selectCategorias: [],
-  categoriasNames: [],
   error: null,
 
   fetchCategorias: async () => {
@@ -123,6 +120,7 @@ export const useCategoriasStore = create<CategoriasState>((set, get) => ({
   createCategoria: async (categoriaData: ICategoria) => {
     set({ loading: true, error: null });
     const token = useAuthStore.getState().token;
+    console.warn(categoriaData);
     try {
       const res = await fetch(`${RUTA}/categorias`, {
         method: "POST",
@@ -161,6 +159,8 @@ export const useCategoriasStore = create<CategoriasState>((set, get) => ({
     set({ loading: true, error: null });
     const token = useAuthStore.getState().token;
 
+    console.warn(categoriaData);
+
     try {
       const res = await fetch(`${RUTA}/categorias/${id}`, {
         method: "PATCH",
@@ -172,6 +172,7 @@ export const useCategoriasStore = create<CategoriasState>((set, get) => ({
       });
 
       const data = await res.json();
+      console.log(data);
       if (!res.ok) {
         throw new Error(
           data.message || `Error al actualizar categoría con ID ${id}`
@@ -239,47 +240,6 @@ export const useCategoriasStore = create<CategoriasState>((set, get) => ({
         error: error.message || "Error al eliminar categoría",
       });
       return false;
-    }
-  },
-  fetchCategoriasNames: async () => {
-    set({ loading: true, error: null });
-    const token = useAuthStore.getState().token;
-    if (!token) {
-      toast.error("No hay token de autenticación disponible.");
-      set({ loading: false, error: "No token" });
-      return;
-    }
-
-    try {
-      const res = await fetch(`${RUTA}/categorias`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Error al obtener categorías");
-      }
-
-      // Extraer solo los nombres
-      const categoriasNames = data.data.map(
-        (categoria: any) => categoria.nombre
-      );
-
-      set({
-        categoriasNames,
-        loading: false,
-      });
-    } catch (error: any) {
-      console.error("Fetch categorias fallido:", error);
-      toast.error(error.message || "No se pudieron cargar las categorías");
-      set({
-        loading: false,
-        error: error.message || "Error al cargar categorías",
-      });
     }
   },
 }));

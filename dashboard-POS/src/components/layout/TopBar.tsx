@@ -23,7 +23,6 @@ import {
   MenuIcon,
   X,
   BarChart3,
-  ChefHat,
 } from "lucide-react";
 import { TbCashRegister } from "react-icons/tb";
 import { useState, useRef, useEffect } from "react";
@@ -32,7 +31,6 @@ import toast from "react-hot-toast";
 import { RUTA } from "@/helpers/rutas";
 import { GrGraphQl } from "react-icons/gr";
 import { PiGraphicsCardLight } from "react-icons/pi";
-import { useEstablecimientosStore } from "@/stores/establecimientosStore";
 
 type Route =
   | { label: string; href: string; icon: any; external?: boolean }
@@ -47,18 +45,6 @@ export default function TopBar() {
   const profileRef = useRef<HTMLDivElement>(null);
   const logout = useAuthStore((state) => state.logout);
   const token = useAuthStore((state) => state.token);
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsVisible(window.innerWidth >= 1100);
-    };
-
-    handleResize(); // verificar en el primer render
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -88,12 +74,13 @@ export default function TopBar() {
     ];
   } else if (user?.rol === "ADMIN" || user?.rol === "SUPERADMIN") {
     routes = [
-      // { label: "Dashboard", href: "/dashboard", icon: Home },
+      { label: "Dashboard", href: "/dashboard", icon: Home },
       { label: "Mesas", href: "/mesas", icon: Table },
       { label: "Categorias", href: "/categorias", icon: Pizza },
       { label: "Ingredientes", href: "/ingredientes", icon: Apple },
-      { label: "Productos", href: "/productos", icon: Utensils },
       { label: "Empleados", href: "/empleados", icon: Users },
+      { label: "Productos", href: "/productos", icon: Utensils },
+      { label: "Configuración", href: "/configuracion", icon: Settings },
       { label: "Proveedores", href: "/proveedores", icon: Truck },
       { label: "Cuentas", href: "/cuentas", icon: CreditCardIcon },
       { label: "Lista Cierre Caja", href: "/cierre-de-caja", icon: Package },
@@ -125,9 +112,10 @@ export default function TopBar() {
                 event.origin
               );
               return;
-            }
+            } 
             try {
               if (event.data?.ready) {
+                console.log("Facturador listo, enviando token...");
                 nuevaVentana.postMessage(
                   { gastroToken: token },
                   RUTA_FACTURADOR
@@ -194,7 +182,7 @@ export default function TopBar() {
 
   return (
     <header
-      className="w-full flex items-center justify-between px-4 h-16 shadow-md relative"
+      className="w-full flex items-center justify-between px-4 h-16 shadow-md relative" 
       style={{
         background: "linear-gradient(90deg, #000 0%, #ff7f00 100%)",
         color: "#fff",
@@ -208,36 +196,17 @@ export default function TopBar() {
       </button>
 
       <div className="flex items-center space-x-6">
-        <div className="flex flex-col leading-none">
-          <Link
-            href="/dashboard"
-            className="flex flex-col text-xl font-bold tracking-wide px-3 py-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors duration-200 hover:text-orange-500"
-          >
-            Gastro POS
-            <span
-              style={{
-                display: isVisible ? "inline" : "none",
-                fontSize: "10px",
-                color: "#9ca3af", // similar a text-gray-400
-                marginTop: 0,
-              }}
-            >
-              Construya con liquidez. Facture con Quality
-            </span>
-          </Link>
-        </div>
-
+        <span className="text-xl font-bold tracking-wide">Gastro POS</span>
         <nav className="hidden md:flex items-center space-x-4">
           <NavLinks />
         </nav>
       </div>
 
       <div className="flex items-center space-x-4">
-        <span className="text-sm font-medium flex items-center gap-2">
-          <span>{user?.username}</span>
-          <span>|</span>
-          <span>{user?.rol}</span>
-        </span>
+        <div className="hidden md:flex items-center space-x-2 text-white">
+          <User size={16} />
+          <span className="text-sm font-medium">{user?.username}</span>
+        </div>
 
         {[
           { title: "Buscar", Icon: Search },
@@ -278,22 +247,10 @@ export default function TopBar() {
           </Tooltip.Root>
           {menuOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-md z-50">
-              <div className="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-sm">
-                <ChefHat size={16} className="mr-2" />
-                ROL: {user?.rol}
-              </div>
-              <Link
-                href="/configuracion"
-                className="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-sm"
-                onClick={() => setMenuOpen(false)}
-              >
-                <Settings size={16} className="mr-2" />
-                Configuración
-              </Link>
               <button
-                onClick={async () => {
-                  await router.push("/");
+                onClick={() => {
                   logout();
+                  router.push("/");
                 }}
                 className="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-sm"
               >

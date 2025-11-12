@@ -124,6 +124,7 @@ const FormCuentas: React.FC<ModalFormProps> = ({
     };
     setErrors(newErrors);
 
+    console.log(errors);
     if (Object.values(newErrors).some(Boolean)) {
       toast.error("Por favor completa todos los campos requeridos.");
       return;

@@ -197,6 +197,10 @@ const FormProducto: React.FC<ModalFormProps> = ({
   }, []);
 
   useEffect(() => {
+    // console.log("Producto FRONT FORM; ", producto);
+  }, [producto]);
+
+  useEffect(() => {
     if (producto) {
       const esConfigurable =
         !!producto.opciones && producto.opciones.length > 0;
@@ -343,6 +347,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
     }
 
     setErrors(newErrors);
+    // console.log(newErrors);
     if (Object.values(newErrors).some(Boolean)) {
       toast.error("Por favor completa todos los campos requeridos.");
       return;
@@ -631,7 +636,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <label className="text-gray-700 font-semibold">
               Tipo de Producto:
             </label>
@@ -663,7 +668,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
                 Configurable
               </label>
             </div>
-          </div> */}
+          </div>
 
           <SimpleSelect
             label="Categoría"
@@ -701,7 +706,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
           {tipoProducto === "SIMPLE" ? (
             <>
               <InputField
-                label="Precio"
+                label="Precio DE EL SIMPLE"
                 name="precio"
                 type="number"
                 value={formDataSimple.precio ?? ""}

@@ -17,7 +17,7 @@ import Checkbox from "@/components/ui/CheckBox";
 
 export default function Home() {
   const router = useRouter();
-  const { loginAsync } = useAuthStore();
+  const { isAuthenticated, loginAsync } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,30 +26,22 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(true);
 
+  useEffect(() => {
+    if (isAuthenticated && !loading) {
+      router.push("/dashboard");
+    }
+  }, [isAuthenticated, loading]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      const response = await loginAsync(email, password);
-      if (response === "error") return;
-      switch (response) {
-        case "MESERO":
-          router.push("/mesero");
-          break;
-        case "COCINERO":
-          router.push("/cocinero");
-          break;
-        case "CAJERO":
-          router.push("/cajero");
-          break;
-        default:
-          router.push("/dashboard");
-      }
+      await loginAsync(email, password);
     } catch (err: any) {
       setError(err.message || "Ocurrió un error inesperado.");
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -91,6 +83,13 @@ export default function Home() {
                 height={30}
                 className="object-contain"
               />
+              {/* <Image
+                src={icon}
+                alt="Logo"
+                width={30}
+                height={30}
+                className="object-contain"
+              /> */}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-7">
@@ -184,6 +183,9 @@ export default function Home() {
                 </span>
               </label>
             </div>
+            {/* <p className="text-[12px] text-[#999] text-center mt-6">
+              Construya con liquidez. Facture con Quality
+            </p> */}
 
             <div className="flex flex-col items-center justify-center gap-2">
               <p className="text-[12px] text-[#999] text-center">

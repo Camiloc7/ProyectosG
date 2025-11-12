@@ -30,7 +30,7 @@ export const useRolesStore = create<RolesState>((set) => ({
   roles: [],
 
   fetchRoles: async () => {
-    const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
     set({ loading: true });
 
     try {
@@ -48,7 +48,7 @@ export const useRolesStore = create<RolesState>((set) => ({
       }
 
       const rolesFiltrados = data.data.filter(
-        (rol: any) => rol.nombre !== "SUPER_ADMIN"
+        (rol: any) => rol.nombre !== "SUPER_ADMIN" && rol.nombre !== "ADMIN"
       );
 
       set({ roles: rolesFiltrados, loading: false });

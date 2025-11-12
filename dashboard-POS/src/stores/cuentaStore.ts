@@ -19,7 +19,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
 
   traerCuentas: async () => {
     set({ loading: true });
-    const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
 
     try {
       const res = await fetch(`${RUTA}/cuentas-bancarias`, {
@@ -31,6 +31,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
       });
 
       const responseData = await res.json();
+      // console.log("RAW CUENTAS: ");
       if (!res.ok) {
         throw new Error(responseData.message);
       }
@@ -50,7 +51,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
 
   crearCuenta: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
     const { id, codigo_puc, ...cuentaSinBasura } = data;
     console.warn("RAW PARA CREAR: ", cuentaSinBasura);
     try {
@@ -82,7 +83,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
 
   actualizarCuenta: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
     const { id, codigo_puc, medio_pago_asociado_id, ...cuentaSinBasura } = data;
     console.warn("RAW PARA ACTUALIZAR: ", cuentaSinBasura);
     try {
@@ -113,7 +114,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
   },
   eliminarCuenta: async (id: string) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
 
     try {
       const res = await fetch(`${RUTA}/cuentas-bancarias/${id}`, {
@@ -125,6 +126,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
       });
 
       const data = await res.json();
+      console.log(data);
 
       if (!res.ok) {
         throw new Error(data.message);

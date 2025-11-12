@@ -67,10 +67,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
   };
 
   return (
-    <label
-      style={labelStyle}
-      onClick={(e) => e.stopPropagation()} // <--- detiene la burbuja
-    >
+    <label style={labelStyle}>
       <input
         type="checkbox"
         disabled={disabled ? true : false}

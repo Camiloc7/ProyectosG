@@ -253,8 +253,6 @@ export interface IFormPedidos {
 
 export type IPedidos = {
   id: string;
-  created_at: Date;
-  codigo_pedido: string;
   mesa_id: string;
   mesa_numero: string;
   usuario_domiciliario_id?: string;
@@ -263,11 +261,15 @@ export type IPedidos = {
   cliente_nombre?: string;
   cliente_telefono?: string;
   cliente_direccion?: string;
-  total_estimado: string;
+  total_estimado: number;
   descuentos_aplicados: string;
   notas?: string;
   pedidoItems: IItemsPedidos[];
-  numero_secuencial_diario: string;
+  created_at: Date;
+  idOrdenExterna?: string;
+  codigo_pedido?: string;
+  numero_secuencial_diario?: number;
+  factura_id?: string;
 };
 
 export type IItemsPedidos = {

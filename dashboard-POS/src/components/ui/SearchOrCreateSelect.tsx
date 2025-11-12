@@ -230,7 +230,9 @@ const SearchOrCreateSelect: React.FC<SearchOrCreateSelectProps> = ({
           <div className="absolute z-10 w-full bg-white border rounded-md shadow-md p-2 text-gray-500 text-sm">
             <p className="mb-2">No se encontraron resultados</p>
             <button
-              onClick={() => {}}
+              onClick={() => {
+                console.log(`"${searchTerm}"`);
+              }}
               className="flex items-center gap-1 text-blue-600 hover:text-blue-800 font-medium text-sm"
             >
               <span className="text-xl leading-none">＋</span> Crear "

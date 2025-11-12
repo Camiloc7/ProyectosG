@@ -28,18 +28,15 @@ export default function TarjetasPorPagar() {
   const pedidoId = searchParams.get("pedidoId");
   const [tarjetas, setTarjetas] = useState<Tarjeta[]>([]);
   const [mensajeFinal, setMensajeFinal] = useState(false);
-
   useEffect(() => {
-    async function loadData() {
+    function loadData() {
       if (!pedidoId) return;
-
       const respaldoUnico = JSON.parse(
         localStorage.getItem(`respaldo_unico_${pedidoId}`) || "null"
       );
       const respaldoDividido = JSON.parse(
         localStorage.getItem(`respaldo_dividido_${pedidoId}`) || "null"
       );
-
       if (respaldoUnico) {
         const tarjeta: Tarjeta = {
           name: respaldoUnico.nombre_completo || "",
@@ -50,12 +47,10 @@ export default function TarjetasPorPagar() {
           propina: parseFloat(respaldoUnico.propina) || 0,
         };
         setTarjetas([tarjeta]);
-
-        // ✅ Si ya está pagada, limpiar respaldo
         if (tarjeta.paid) {
-          // await window.electron.storeDelete(`respaldo_unico_${pedidoId}`)
           localStorage.removeItem(`respaldo_unico_${pedidoId}`);
           setMensajeFinal(true);
+
           setTimeout(() => router.push("/cajero"), 2000);
         }
       } else if (respaldoDividido && Array.isArray(respaldoDividido.pagos)) {
@@ -66,27 +61,20 @@ export default function TarjetasPorPagar() {
             total: p.monto_a_pagar || 0,
             items: [],
             paid: p.pagada ?? false,
-            propina: parseFloat(p.propina) || 0, // ✅ agregar propina
+            propina: parseFloat(p.propina) || 0,
           })
         );
-
         setTarjetas(nuevasTarjetas);
-
-        // ✅ Verificar si todas están pagadas
         const todasPagadas = nuevasTarjetas.every((t) => t.paid);
         if (todasPagadas) {
           localStorage.removeItem(`respaldo_dividido_${pedidoId}`);
-
-          // await window.electron.storeDelete(`respaldo_dividido_${pedidoId}`)
           setMensajeFinal(true);
-
-          setTimeout(() => router.push("/cajero"), 2000);
+          setTimeout(() => router.push("/pedidos"), 2000);
         }
       } else {
         setTarjetas([]);
       }
     }
-
     loadData();
   }, [pedidoId, router]);
 
@@ -147,7 +135,7 @@ export default function TarjetasPorPagar() {
               size={24}
               stroke={ORANGE}
               style={{ cursor: "pointer" }}
-              onClick={() => router.push("/cajero")}
+              onClick={() => router.push("/pedidos")}
             />
             <h1
               style={{

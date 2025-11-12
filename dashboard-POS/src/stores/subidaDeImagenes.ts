@@ -15,15 +15,18 @@ export const useSubidaDeImagenes = create<SubidaDeImagenesState>(
 
     subirImagen: async (imagen) => {
       set({ loading: true });
-      const token = useAuthStore.getState().token;
+    const token = useAuthStore.getState().token; 
+      console.log(imagen);
 
-      const originalName = imagen.name;
+      const originalName = imagen.name; 
       const originalType = imagen.type;
       const compressedBlob = await compressImage(imagen, 2);
 
-      const fileToUpload = new File([compressedBlob], originalName, {
-        type: originalType,
-      });
+      const fileToUpload = new File(
+        [compressedBlob],
+        originalName, 
+        { type: originalType }
+      );
 
       const formData = new FormData();
       formData.append("file", fileToUpload);
@@ -38,12 +41,16 @@ export const useSubidaDeImagenes = create<SubidaDeImagenesState>(
         });
 
         const responseData = await res.json();
-
+        console.log(
+          "RAW LO QUE DEVUELVE EL BACK PARA SUBIR IMAGENES",
+          responseData
+        );
         if (!res.ok) {
           throw new Error(responseData.message);
         }
-
+        
         return responseData.data.publicUrl;
+
       } catch (error: any) {
         const mensajeDelDev = "No se pudo subir la imagen";
         console.error(mensajeDelDev, error);
@@ -53,3 +60,6 @@ export const useSubidaDeImagenes = create<SubidaDeImagenesState>(
     },
   })
 );
+
+
+

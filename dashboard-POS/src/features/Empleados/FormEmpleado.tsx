@@ -23,13 +23,8 @@ export type EmpleadoFormData = {
   activo: boolean;
   created_at?: string;
   updated_at?: string;
-  rol?: Rol;
 };
 
-type Rol = {
-  id: string;
-  nombre: string;
-};
 interface ModalFormProps {
   isOpen: boolean;
   empleado?: EmpleadoFormData;
@@ -119,21 +114,25 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
     e.preventDefault();
     e.stopPropagation(); // 👈 evita que cierre el modal
 
+    // Expresión regular para validar contraseña
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
+    // Validación básica
     const newErrors: Errors = {
       rol_id: formData.rol_id === "",
       nombre: formData.nombre.trim() === "",
       apellido: formData.apellido.trim() === "",
       username: formData.username.trim() === "",
-      password: false,
+      password: false, // 👈 se inicializa sin error
     };
 
+    // Si estamos creando un empleado, la contraseña es obligatoria y debe validarse
     if (!empleado) {
       newErrors.password =
         !formData.password || !passwordRegex.test(formData.password.trim());
     }
 
+    // Si estamos editando, solo validamos si la contraseña fue escrita
     if (empleado && formData.password?.trim()) {
       newErrors.password = !passwordRegex.test(formData.password.trim());
     }
@@ -159,16 +158,10 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
     }
 
     // Construimos payload limpio
-    let dataConRolId: any = {
+    const dataConRolId = {
       ...formData,
       rolName: rolSeleccionado.nombre,
     };
-
-    // 🚨 Si es admin, no mandamos el rol
-    if (rolSeleccionado.nombre.toLowerCase() === "admin") {
-      delete dataConRolId.rol_id;
-      delete dataConRolId.rolName;
-    }
 
     // 🚨 Solo agregamos password_nueva si realmente la editaron
     const conRolYNuevaPassword = {
@@ -178,6 +171,7 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
         : {}),
     };
 
+    //===========
     let respuesta = false;
     if (empleado) {
       respuesta = await actualizarEmpleado(conRolYNuevaPassword);
@@ -269,7 +263,6 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
             width="100%"
             value={formData.rol_id}
             onChange={(val) => onUpdate({ rol_id: val })}
-            readOnly={empleado ? true : false}
           />
 
           {!empleado ? (
@@ -300,13 +293,11 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
           )}
 
           <div className="flex items-center space-x-2">
-            {empleado?.rol?.nombre !== "ADMIN" && (
-              <Checkbox
-                label="Activo"
-                checked={formData.activo}
-                onChange={(checked) => onUpdate({ activo: checked })}
-              />
-            )}
+            <Checkbox
+              label="Activo"
+              checked={formData.activo}
+              onChange={(checked) => onUpdate({ activo: checked })}
+            />
           </div>
 
           {empleado && (

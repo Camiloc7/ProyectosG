@@ -163,30 +163,28 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
   };
 
   return (
-    <div className={`${label ? "mt-4" : ""}`}>
-      {label && (
-        <label
+    <div className="mt-4">
+      <label
+        style={{
+          display: "block",
+          fontSize: 16,
+          fontWeight: 500,
+          fontFamily: "Lato, sans-serif",
+          color: "#555",
+          marginBottom: 8,
+        }}
+      >
+        {label}
+        <span
           style={{
-            display: "block",
-            fontSize: 16,
-            fontWeight: 500,
-            fontFamily: "Lato, sans-serif",
-            color: "#555",
-            marginBottom: 8,
+            color: "#f56565",
+            marginLeft: 4,
+            visibility: error ? "visible" : "hidden",
           }}
         >
-          {label}
-          <span
-            style={{
-              color: "#f56565",
-              marginLeft: 4,
-              visibility: error ? "visible" : "hidden",
-            }}
-          >
-            *
-          </span>
-        </label>
-      )}
+          *
+        </span>
+      </label>
 
       <div ref={ref} className="relative">
         <div className="relative">

@@ -25,8 +25,6 @@ import Spinner from "@/components/feedback/Spinner";
 import { FONDO, ORANGE } from "@/styles/colors";
 import ModalConfigurable from "@/components/modals/ModalConfigurable";
 import { IPedidos, Mesa } from "@/types/models";
-import { useAuthStore } from "@/stores/authStore";
-import TransferirMesaModal from "@/components/modals/TransferirMesaModal";
 interface PedidoItem {
   id: string;
   uniqueId: string;
@@ -35,7 +33,6 @@ interface PedidoItem {
   cantidad: number;
   nota?: string;
   categoria?: string;
-  original?: boolean;
   tipo?: "simple" | "configurable";
   opcionesSeleccionadas?: {
     nombreOpcion: string;
@@ -105,29 +102,19 @@ export default function EditarPedido({
 }) {
   const { pedidoId } = use(params);
   const router = useRouter();
-
-  const { user } = useAuthStore();
   const { traerCategorias, categorias, traerProductos, productos, loading } =
     useProductosStore();
-  const [nombreMesa, setNombreMesa] = useState<string>("");
-  const [pedidoEntregado, setPedidoEntregado] = useState(false);
-
   const { traerProductoConfigurable } = useProductosStore();
   const {
     traerPedidoPorId,
     actualizarPedido,
-    agregarItem,
     loading: loadingPedidos,
-    transferirMesa,
-    imprimirComanda,
-    loadingComanda,
   } = usePedidosStore();
   const { traerMesasLibres, mesasLibres, fetchMesaById } = useMesasStore();
   const [pedidoItems, setPedidoItems] = useState<PedidoItem[]>([]);
   const [total, setTotal] = useState(0);
   const [readyCount, setReadyCount] = useState(0);
   const [activeCat, setActiveCat] = useState("");
-  const [showTransferModal, setShowTransferModal] = useState(false);
   const [infoPedido, setInfoPedido] = useState<IFormPedidos>({
     origen: "",
     telefono: "",
@@ -150,33 +137,20 @@ export default function EditarPedido({
   const [productoConfigurable, setProductoConfigurable] =
     useState<IProductoConfigurableCompleto | null>(null);
   const [loadingInitialData, setLoadingInitialData] = useState(true);
+  const [searchMesaTerm, setSearchMesaTerm] = useState("");
   const [mesaDelPedido, setMesaDelPedido] = useState<Mesa | null>(null);
-  const originalItems = pedidoItems.filter((item) => item.original);
-  const nuevosItems = pedidoItems.filter((item) => !item.original);
-
-  const totalOriginal = originalItems.reduce(
-    (acc, item) => acc + item.precio * item.cantidad,
-    0
-  );
-
-  const totalNuevos = nuevosItems.reduce(
-    (acc, item) => acc + item.precio * item.cantidad,
-    0
-  );
-
-  const totalPedido = totalOriginal + totalNuevos;
-
+  const handleSearchMesaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchMesaTerm(e.target.value);
+  };
   useEffect(() => {
     traerCategorias();
     traerProductos();
   }, [traerCategorias, traerProductos]);
-
   useEffect(() => {
     if (categorias.length > 0 && !activeCat) {
       setActiveCat(categorias[0].nombre);
     }
   }, [categorias, activeCat]);
-
   useEffect(() => {
     const totalCount = pedidoItems.reduce(
       (acc, cur) => acc + cur.cantidad * cur.precio,
@@ -185,20 +159,19 @@ export default function EditarPedido({
     setTotal(totalCount);
     setReadyCount(pedidoItems.length);
   }, [pedidoItems]);
-
   useEffect(() => {
     const fetchPedidoData = async () => {
       if (pedidoId && productos.length > 0) {
         setLoadingInitialData(true);
         try {
-          const pedido = await traerPedidoPorId(pedidoId);
+          const pedido: IPedidos | null = await traerPedidoPorId?.(pedidoId);
           if (!pedido) {
             toast.error(
               "No se pudo cargar el pedido. Por favor, intente de nuevo."
             );
+            router.push("/cajero/pedidos");
             return;
           }
-          setPedidoEntregado(pedido.estado === "ENTREGADO");
           if (pedido.mesa_id) {
             const mesaOcupada = await fetchMesaById(pedido.mesa_id);
             if (mesaOcupada) {
@@ -217,20 +190,16 @@ export default function EditarPedido({
             idOrdenExterna: pedido.idOrdenExterna || "",
             mesa: pedido.mesa_id || "",
           });
-          if (pedido?.mesa?.numero) {
-            setNombreMesa(pedido.mesa.numero);
-          }
           const items = pedido.pedidoItems.map((item: any) => {
             const tipo: "simple" | "configurable" =
               item.producto_configurable_id ? "configurable" : "simple";
             const nombreProducto =
               item.producto?.nombre || "Producto Desconocido";
-            const itemPrice =
-              Number(item.precio_unitario_al_momento_venta) || 0;
+            let itemPrice = 0;
+            itemPrice = Number(item.precio_unitario_al_momento_venta) || 0;
             const opcionesSeleccionadas = item.configuracion_json
               ? JSON.parse(item.configuracion_json)
               : [];
-
             return {
               id: item.producto_id,
               uniqueId: crypto.randomUUID(),
@@ -240,17 +209,15 @@ export default function EditarPedido({
               nota: item.notas_item || "",
               tipo: tipo,
               opcionesSeleccionadas: opcionesSeleccionadas,
-              original: true, // ⚡ esta es la clave
             };
           });
-
           setPedidoItems(items);
         } catch (error) {
           console.error("Error al cargar el pedido:", error);
           toast.error(
             "Hubo un error al cargar el pedido. Intente de nuevo más tarde."
           );
-          // router.push("/cajero/pedidos");
+          router.push("/cajero/pedidos");
         } finally {
           setLoadingInitialData(false);
         }
@@ -272,33 +239,26 @@ export default function EditarPedido({
     setInfoPedido((prev) => ({ ...prev, [name]: value }));
   };
   const handleCantidad = (item: PedidoItem, delta: number) => {
-    setPedidoItems(
-      (prev) =>
-        prev
-          .map((p) => {
-            if (p.uniqueId !== item.uniqueId) return p;
-
-            // si es original, no se puede reducir por debajo de la cantidad original
-            if (p.original) {
-              return {
-                ...p,
-                cantidad: Math.max(p.cantidad, p.cantidad + delta),
-              };
-            }
-
-            // items añadidos sí pueden aumentar o disminuir normalmente
-            return { ...p, cantidad: Math.max(0, p.cantidad + delta) };
-          })
-          .filter((p) => p.cantidad > 0) // elimina solo los items añadidos que quedaron en 0
-    );
+    setPedidoItems((prev) => {
+      const existing = prev.find((p) => p.uniqueId === item.uniqueId);
+      if (existing) {
+        const updated = prev
+          .map((p) =>
+            p.uniqueId === item.uniqueId
+              ? { ...p, cantidad: Math.max(0, p.cantidad + delta) }
+              : p
+          )
+          .filter((p) => p.cantidad > 0);
+        return updated;
+      } else if (delta > 0) {
+        return [...prev, { ...item, cantidad: 1, nota: "" }];
+      }
+      return prev;
+    });
   };
-
   const handleRemoveItem = (uniqueId: string) => {
-    setPedidoItems((prev) =>
-      prev.filter((item) => !item.original && item.uniqueId !== uniqueId)
-    );
+    setPedidoItems((prev) => prev.filter((item) => item.uniqueId !== uniqueId));
   };
-
   const handleNotaChange = (uniqueId: string, nota: string) => {
     setPedidoItems((prev) =>
       prev.map((p) => (p.uniqueId === uniqueId ? { ...p, nota } : p))
@@ -313,7 +273,7 @@ export default function EditarPedido({
   const handleAddToPedido = (newPedidoItem: PedidoItem) => {
     setPedidoItems((prev) => {
       const existing = prev.find(
-        (p) => p.id === newPedidoItem.id && p.tipo === "simple" && !p.original
+        (p) => p.id === newPedidoItem.id && p.tipo === "simple"
       );
       if (existing) {
         return prev.map((p) =>
@@ -322,35 +282,10 @@ export default function EditarPedido({
             : p
         );
       }
-      return [
-        ...prev,
-        { ...newPedidoItem, uniqueId: crypto.randomUUID(), original: false },
-      ];
+      return [...prev, { ...newPedidoItem, uniqueId: crypto.randomUUID() }];
     });
   };
-
-  const enviarItemsNuevos = async () => {
-    for (const item of nuevosItems) {
-      const itemData = {
-        tipo_producto: "SIMPLE",
-        producto_id: item.id,
-        cantidad: item.cantidad,
-        notas_item: item.nota || "",
-        estado_cocina: "PENDIENTE",
-      };
-      try {
-        await agregarItem(pedidoId!, itemData);
-      } catch (error) {
-        console.error("Error agregando item:", error);
-        toast.error(`Error agregando ${item.nombre}`);
-      }
-    }
-  };
-  const handleGuardarCambios = async () => {
-    if (pedidoEntregado) {
-      enviarItemsNuevos();
-      return;
-    }
+  const handleGuardarCambios = () => {
     const newErrors = {
       origen: false,
       telefono: false,
@@ -406,31 +341,12 @@ export default function EditarPedido({
       total,
       id: pedidoId,
     };
-    await actualizarPedido(pedido);
-    await imprimirComanda(pedido.id);
-    volver();
+    actualizarPedido(pedido);
+    router.push("/cajero");
   };
-
-  const volver = () => {
-    if (user?.rol === "MESERO") {
-      router.push("/mesero");
-    } else {
-      router.push("/cajero");
-    }
+  const handleCancel = () => {
+    router.back();
   };
-
-  const handleTransfer = async (newMesaId: string) => {
-    if (!pedidoId) {
-      toast.error("No se pudo transferir el pedido. ID no encontrado.");
-      return;
-    }
-    const success = await transferirMesa(pedidoId, newMesaId);
-    if (success) {
-      setShowTransferModal(false);
-      volver();
-    }
-  };
-
   const filteredItems = useMemo(() => {
     if (searchTerm) {
       return productos.filter((item) =>
@@ -441,7 +357,6 @@ export default function EditarPedido({
       (it) => "categoria" in it && it.categoria === activeCat
     );
   }, [productos, activeCat, searchTerm]);
-
   const mesasADesplegar = useMemo(() => {
     const mesas = [...mesasLibres];
     if (mesaDelPedido) {
@@ -460,20 +375,16 @@ export default function EditarPedido({
   }, [mesasLibres, mesaDelPedido]);
   const findCantidad = (id: string) =>
     pedidoItems.find((p) => p.id === id)?.cantidad || 0;
-  const findNota = (uniqueId: string) =>
-    pedidoItems.find((p) => p.uniqueId === uniqueId)?.nota || "";
-
+  const findNota = (id: string) =>
+    pedidoItems.find((p) => p.id === id)?.nota || "";
   const origenParaMostrar = tiposDeOrigen.find(
     (o) => o.id === infoPedido.origen
   );
-
   if (loading || loadingPedidos || loadingInitialData) {
     return <Spinner />;
   }
   return (
     <>
-      {loadingComanda && <Spinner />}
-
       <div
         className="min-h-screen p-6 font-lato flex flex-col lg:flex-row gap-8"
         style={{ backgroundColor: FONDO }}
@@ -481,13 +392,7 @@ export default function EditarPedido({
         <div className="flex-shrink-0 flex flex-col items-center lg:w-1/4">
           <h1 className="text-2xl font-semibold text-gray-900 m-0 text-center lg:text-left">
             Actualizando Pedido
-            {infoPedido.origen === "MESA" && mesaDelPedido && (
-              <div className="mt-2 text-lg font-bold text-orange-500">
-                {nombreMesa}
-              </div>
-            )}
           </h1>
-
           {origenParaMostrar && (
             <div className="flex flex-col gap-4 w-full max-w-xs mt-6">
               <button
@@ -511,134 +416,61 @@ export default function EditarPedido({
               </button>
             </div>
           )}
-          {infoPedido.origen === "MESA" && (
-            <div className="mt-6">
-              <BotonRestaurante
-                label="Transferir a otra Mesa"
-                onClick={() => setShowTransferModal(true)}
-              />
-            </div>
-          )}
           <div className="mt-8 p-4 bg-white rounded-xl shadow-lg w-full max-w-xs overflow-y-auto">
             <h2 className="text-xl font-bold text-gray-800 mb-4">
               Resumen del Pedido
             </h2>
-
-            {originalItems.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  -Originales
-                </h3>
-                <div className="space-y-4">
-                  {originalItems.map((item) => (
-                    <div
-                      key={item.uniqueId}
-                      className="border-b border-gray-200 pb-4 last:border-b-0"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-600 leading-tight">
-                            {item.nombre}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            ${(item.precio * item.cantidad).toFixed(2)}
+            {pedidoItems.length > 0 ? (
+              <div className="space-y-4">
+                {pedidoItems.map((item) => (
+                  <div
+                    key={item.uniqueId}
+                    className="border-b border-gray-200 pb-4 last:border-b-0"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-sm font-semibold text-gray-900 leading-tight">
+                          {item.nombre}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          ${(item.precio * item.cantidad).toFixed(2)}
+                        </p>
+                        {item.nota && (
+                          <p className="text-xs text-gray-500 italic mt-1">
+                            Nota: {item.nota}
                           </p>
-                          {item.nota && (
-                            <p className="text-xs text-gray-500 italic mt-1">
-                              Nota: {item.nota}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          {!pedidoEntregado && (
-                            <>
-                              <button
-                                className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
-                                onClick={() => handleCantidad(item, -1)}
-                              >
-                                <Minus size={16} />
-                              </button>
-                              <span className="text-sm font-semibold text-gray-700">
-                                {item.cantidad}
-                              </span>
-                              <button
-                                className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
-                                onClick={() => handleCantidad(item, 1)}
-                              >
-                                <Plus size={16} />
-                              </button>
-                              <button
-                                className="ml-2 p-1 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
-                                disabled
-                                title="No se puede eliminar"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            </>
-                          )}
-                        </div>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
+                          onClick={() => handleCantidad(item, -1)}
+                        >
+                          <Minus size={16} />
+                        </button>
+                        <span className="text-sm font-semibold">
+                          {item.cantidad}
+                        </span>
+                        <button
+                          className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
+                          onClick={() => handleCantidad(item, 1)}
+                        >
+                          <Plus size={16} />
+                        </button>
+                        <button
+                          className="ml-2 p-1 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
+                          onClick={() => handleRemoveItem(item.uniqueId)}
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
-            )}
-
-            {nuevosItems.length > 0 && (
-              <div className="mb-4">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">
-                  - Nuevos
-                </h3>
-                <div className="space-y-4">
-                  {nuevosItems.map((item) => (
-                    <div
-                      key={item.uniqueId}
-                      className="border-b border-gray-200 pb-4 last:border-b-0"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <h3 className="text-sm font-semibold text-gray-600 leading-tight">
-                            {item.nombre}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            ${(item.precio * item.cantidad).toFixed(2)}
-                          </p>
-                          {item.nota && (
-                            <p className="text-xs text-gray-500 italic mt-1">
-                              Nota: {item.nota}
-                            </p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
-                            onClick={() => handleCantidad(item, -1)}
-                          >
-                            <Minus size={16} />
-                          </button>
-                          <span className="text-sm font-semibold text-gray-700">
-                            {item.cantidad}
-                          </span>
-                          <button
-                            className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
-                            onClick={() => handleCantidad(item, 1)}
-                          >
-                            <Plus size={16} />
-                          </button>
-                          {/* <button
-                            className="ml-2 p-1 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
-                            onClick={() => handleRemoveItem(item.uniqueId)}
-                          >
-                            <Trash2 size={16} />
-                          </button> */}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <p className="mt-2 text-right text-gray-600 font-semibold">
-                  Subtotal Nuevos: ${totalNuevos.toFixed(2)}
-                </p>
+            ) : (
+              <div className="text-center text-gray-500 p-4">
+                El pedido está vacío. Agrega productos de la lista.
               </div>
             )}
           </div>
@@ -702,28 +534,27 @@ export default function EditarPedido({
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                      {infoPedido.origen !== "MESA" &&
-                        mesasADesplegar.map((mesa) => (
-                          <button
-                            key={mesa.id}
-                            className={`
+                      {mesasADesplegar.map((mesa) => (
+                        <button
+                          key={mesa.id}
+                          className={`
                             flex flex-col items-center p-4 rounded-lg shadow-sm transition-colors duration-200
                             bg-orange-500 text-white
                           `}
-                            disabled={true}
-                          >
-                            <img
-                              src="/mesa.svg"
-                              alt="Mesa"
-                              width={60}
-                              height={60}
-                              className="invert"
-                            />
-                            <span className="mt-1 font-semibold">
-                              {mesa.nombre}
-                            </span>
-                          </button>
-                        ))}
+                          disabled={true}
+                        >
+                          <img
+                            src="/mesa.svg"
+                            alt="Mesa"
+                            width={60}
+                            height={60}
+                            className="invert"
+                          />
+                          <span className="mt-1 font-semibold">
+                            {mesa.nombre}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   )}
                 </>
@@ -810,7 +641,7 @@ export default function EditarPedido({
                           >
                             <Minus size={16} />
                           </button>
-                          <div className="w-10 text-center font-semibold text-lg text-gray-700">
+                          <div className="w-10 text-center font-semibold text-lg">
                             {cantidadEnCarrito}
                           </div>
                           <button
@@ -824,22 +655,16 @@ export default function EditarPedido({
                           </button>
                         </div>
                       )}
-                      {pedidoItems
-                        .filter((p) => p.id === item.id)
-                        .map((pedidoItem) => (
-                          <textarea
-                            key={pedidoItem.uniqueId}
-                            className="w-full border border-gray-300 text-gray-500 rounded-lg placeholder:text-gray-500 p-2 text-sm resize-y mt-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                            placeholder="Nota (sin azúcar, etc.)"
-                            value={pedidoItem.nota}
-                            onChange={(e) =>
-                              handleNotaChange(
-                                pedidoItem.uniqueId,
-                                e.target.value
-                              )
-                            }
-                          />
-                        ))}
+                      {(cantidadEnCarrito > 0 || isConfigurable) && (
+                        <textarea
+                          className="w-full border border-gray-300 rounded-lg p-2 text-sm resize-y mt-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                          placeholder="Nota (sin azúcar, etc.)"
+                          value={findNota(item.id)}
+                          onChange={(e) =>
+                            handleNotaChange(item.id, e.target.value)
+                          }
+                        />
+                      )}
                     </div>
                   );
                 })}
@@ -849,8 +674,6 @@ export default function EditarPedido({
         </div>
       </div>
       <footer className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg flex justify-between items-center z-10">
-        <BotonRestaurante label="Cancelar" onClick={() => router.back()} />
-
         <div className="text-xl font-semibold text-gray-900">
           TOTAL: ${total.toFixed(2)}
         </div>
@@ -859,13 +682,6 @@ export default function EditarPedido({
           onClick={handleGuardarCambios}
         />
       </footer>
-
-      <TransferirMesaModal
-        show={showTransferModal}
-        onClose={() => setShowTransferModal(false)}
-        mesasLibres={mesasLibres}
-        onTransfer={handleTransfer}
-      />
       {showConfigurableModal && (
         <ModalConfigurable
           producto={productoConfigurable}

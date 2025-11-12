@@ -9,7 +9,6 @@ import { generarPayloadPago } from "@/utils/generarPagoPayload";
 import { ArrowLeft, PlusCircle, MinusCircle } from "lucide-react";
 import { FacturaEntity, useFacturasStore } from "@/stores/facturasStore";
 import Checkbox from "@/components/ui/CheckBox";
-import Spinner from "@/components/feedback/Spinner";
 
 const BILL_DENOMINATIONS = [
   { value: 100000, img: "/dinero/100_mil.png" },
@@ -33,12 +32,10 @@ const ALL_DENOMINATIONS = [...BILL_DENOMINATIONS, ...COIN_DENOMINATIONS];
 export default function Cambio() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const propina = searchParams.get("propina");
-  const parsedPropina = Number(propina);
+
   const locationState = useMemo(() => {
     const pedidoId = searchParams.get("pedidoId") ?? "";
     const total = searchParams.get("total");
-
     const idx = searchParams.get("idx");
     return {
       pedidoId: pedidoId,
@@ -47,7 +44,7 @@ export default function Cambio() {
     };
   }, [searchParams]);
 
-  const { pagarPedido, getFacturaPdf, loading } = useFacturasStore();
+  const { pagarPedido, getFacturaPdf } = useFacturasStore();
   const { idx, total, pedidoId } = locationState;
 
   const [counts, setCounts] = useState<Record<number, number>>({});
@@ -149,15 +146,16 @@ export default function Cambio() {
         dv: division.dv === "" ? "0" : division.dv,
         nota: division.nota === "" ? "SIN NOTA" : division.nota,
       };
+      console.log("Division final:", divisionFinal);
       const result = await generarPayloadPago({
         pedidoId,
         idx,
         division: divisionFinal,
-        total: total - parsedPropina,
+        total,
         esEfectivo: true,
         denominacionesEfectivo: declarar ? counts : undefined,
       });
-
+      console.log("Payload generado:", result);
       if (!result) {
         toast.error("No se encontró la información de pago.");
         setIsSubmitting(false);
@@ -170,9 +168,7 @@ export default function Cambio() {
         setIsSubmitting(false);
         return;
       }
-
-      const pdfBlob = await getFacturaPdf(factura.id, false);
-
+      const pdfBlob = await getFacturaPdf(factura.id);
       if (pdfBlob instanceof Blob && pdfBlob.type === "application/pdf") {
         const url = URL.createObjectURL(pdfBlob);
         setPdfUrl(url);
@@ -183,42 +179,6 @@ export default function Cambio() {
           "Factura procesada, pero no se pudo obtener el PDF válido."
         );
         handleClosePdfModal();
-      }
-
-      const respaldoUnicoStr = localStorage.getItem(
-        `respaldo_unico_${pedidoId}`
-      );
-      const respaldoDivididoStr = localStorage.getItem(
-        `respaldo_dividido_${pedidoId}`
-      );
-      // const respaldoUnico = await window.electron.storeGet(`respaldo_unico_${pedidoId}`)
-      // const respaldoDividido = await window.electron.storeGet(`respaldo_dividido_${pedidoId}`)
-
-      if (respaldoUnicoStr) {
-        const respaldoUnico = JSON.parse(respaldoUnicoStr);
-
-        respaldoUnico.pagada = true;
-
-        localStorage.setItem(
-          `respaldo_unico_${pedidoId}`,
-          JSON.stringify(respaldoUnico)
-        );
-        // await window.electron.storeSet(`respaldo_unico_${pedidoId}`, respaldoUnico)
-      } else if (respaldoDivididoStr) {
-        const respaldoDividido = JSON.parse(respaldoDivididoStr);
-
-        if (
-          Array.isArray(respaldoDividido.pagos) &&
-          respaldoDividido.pagos[idx]
-        ) {
-          respaldoDividido.pagos[idx].pagada = true;
-          localStorage.setItem(
-            `respaldo_dividido_${pedidoId}`,
-            JSON.stringify(respaldoDividido)
-          );
-
-          // await window.electron.storeSet(`respaldo_dividido_${pedidoId}`, respaldoDividido)
-        }
       }
     } catch (error) {
       console.error(error);
@@ -231,7 +191,6 @@ export default function Cambio() {
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-8 font-sans">
       {/* HEADER */}
-      {loading && <Spinner />}
       <div className="flex items-center gap-2 sm:gap-3 mb-6 sm:mb-8">
         <ArrowLeft
           size={24}
