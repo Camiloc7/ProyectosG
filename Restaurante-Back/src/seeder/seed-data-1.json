@@ -1,0 +1,1486 @@
+[
+    {
+      "name": "Datos de Producción para Pizzería Maranatha",
+      "establecimientos": [
+        {
+          "id": "e1-uuid-maranatha-produccion",
+          "nombre": "PIZZERIA MARANATHA SH SAS",
+          "nit": "901243928",
+          "email": "pizzeria.maranathafunza@gmail.com",
+          "direccion": "Avenida Siempre Viva #742, Bogotá",
+          "telefono": "3109876543",
+          "codigo_postal" : 111051,
+          "activo": true,
+          "impuesto_porcentaje": 19.00,
+          "api_key":"foptzUxfzBL5iEfNZnkGj5mv8VYZb6"
+        },
+        {
+          "id": "e2-uuid-establecimiento-pruebas",
+          "nombre": "Restaurante de Pruebas",
+          "direccion": "Pruebas en establecimiento, Bogotá",
+          "telefono": "312609216",
+          "codigo_postal" : 111051,
+          "activo": true,
+          "impuesto_porcentaje": 19.00
+        }
+      ],
+      "roles": [
+        { "nombre": "SUPER_ADMIN" },
+        { "nombre": "ADMIN" },
+        { "nombre": "SUPERVISOR" },
+        { "nombre": "CAJERO" },
+        { "nombre": "COCINERO" },
+        { "nombre": "MESERO" },
+        { "nombre": "DOMICILIARIO" }
+      ],
+      "usuarios": [
+        {
+          "id": "u1-uuid-admin-maranatha",
+          "username": "admin.maranatha",
+          "password": "contraseña123",
+          "nombre": "Sofia",
+          "apellido": "Gómez",
+          "activo": true,
+          "roleName": "ADMIN",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "u2-uuid-cajero-maranatha",
+          "username": "cajero.maranatha",
+          "password": "contraseña123",
+          "nombre": "Andrés",
+          "apellido": "Castro",
+          "activo": true,
+          "roleName": "CAJERO",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "u3-uuid-mesero-maranatha",
+          "username": "mesero.maranatha",
+          "password": "contraseña123",
+          "nombre": "Valentina",
+          "apellido": "Rojas",
+          "activo": true,
+          "roleName": "MESERO",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "u4-uuid-cocinero-maranatha",
+          "username": "cocinero.maranatha",
+          "password": "contraseña123",
+          "nombre": "Ricardo",
+          "apellido": "Méndez",
+          "activo": true,
+          "roleName": "COCINERO",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "u5-uuid-domiciliario-maranatha",
+          "username": "domiciliario.maranatha",
+          "password": "contraseña123",
+          "nombre": "Juan",
+          "apellido": "Pérez",
+          "activo": true,
+          "roleName": "DOMICILIARIO",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+                {
+          "id": "u6-uuid-admin-pruebas",
+          "username": "lucas",
+          "password": "123",
+          "nombre": "Lucas",
+          "apellido": "Meneses",
+          "activo": true,
+          "roleName": "ADMIN",
+          "establecimientoId": "e2-uuid-establecimiento-pruebas"
+        }
+      ],
+      "mediosPago": [
+        {
+          "id": "mp1-uuid-efectivo-maranatha",
+          "nombre": "Efectivo",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "mp2-uuid-tarjeta-credito-maranatha",
+          "nombre": "Tarjeta Crédito",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "mp3-uuid-tarjeta-debito-maranatha",
+          "nombre": "Tarjeta Débito",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "mp4-uuid-transferencia-maranatha",
+          "nombre": "Transferencia",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        }
+      ],
+      "categorias": [
+        {
+          "id": "c1-uuid-pizzas-regulares",
+          "nombre": "Pizzas Regulares",
+          "descripcion": "Variedad de pizzas dulces y saladas en diferentes tamaños.",
+          "imagen_url": "https://i.pinimg.com/736x/ae/3c/76/ae3c7653bfa5af9a6ac71ad1eb93a75a.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c2-uuid-pizzas-especiales",
+          "nombre": "Pizzas Especiales",
+          "descripcion": "Nuestras creaciones únicas de pizza como Pizza Burger o Pizza Perro.",
+          "imagen_url": "https://i.pinimg.com/736x/ae/3c/76/ae3c7653bfa5af9a6ac71ad1eb93a75a.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c3-uuid-hamburguesas",
+          "nombre": "Hamburguesas",
+          "descripcion": "Jugosas hamburguesas de res con opciones de combo.",
+          "imagen_url": "https://i.pinimg.com/736x/57/1f/ff/571fff618531d22fa694c1e419b309f6.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c4-uuid-perros-calientes",
+          "nombre": "Perros Calientes",
+          "descripcion": "Clásicos y especiales perros calientes.",
+          "imagen_url": "https://i.pinimg.com/736x/21/f5/a9/21f5a9352ab701d58773a8e629a4d8f0.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c5-uuid-mazorcadas",
+          "nombre": "Mazorcadas",
+          "descripcion": "Maíz tierno con carnes y quesos gratinados.",
+          "imagen_url": "https://i.pinimg.com/736x/6b/d8/76/6bd876d30790c9686ea347cf0f36a538.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c6-uuid-panzerotti-calzone",
+          "nombre": "Panzerotti o Calzone",
+          "descripcion": "Empanadas de pizza rellenas con tus sabores favoritos.",
+          "imagen_url": "https://i.pinimg.com/736x/6e/6e/86/6e6e8643b5fa0c381d7e51daa37a8da5.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c7-uuid-salchipapas",
+          "nombre": "Salchipapas",
+          "descripcion": "Papas fritas con salchicha y otros deliciosos toppings.",
+          "imagen_url": "https://i.pinimg.com/736x/57/0e/7e/570e7e27735ff26fb2a31c011a7d3044.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c8-uuid-lasagnas",
+          "nombre": "Lasagnas",
+          "descripcion": "Pastas gratinadas con diferentes salsas y proteínas.",
+          "imagen_url": "https://i.pinimg.com/736x/31/1b/a9/311ba9c8248a621b29604aa1352acf66.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c9-uuid-espaguetis",
+          "nombre": "Espaguetis",
+          "descripcion": "Platos de espagueti con variadas y exquisitas salsas.",
+          "imagen_url": "http://googleusercontent.com/image_collection/image_retrieval/14113617005352241292",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c10-uuid-patacones-rellenos",
+          "nombre": "Patacones Rellenos",
+          "descripcion": "Crocantes patacones rellenos con una explosión de sabor.",
+          "imagen_url": "http://googleusercontent.com/image_collection/image_retrieval/12906253863999063482",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c11-uuid-platos-a-la-carta",
+          "nombre": "Platos a la Carta",
+          "descripcion": "Selección de carnes, pollo y pescados con acompañamientos.",
+          "imagen_url": "http://googleusercontent.com/image_collection/image_retrieval/10857982881807912694",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c12-uuid-menu-infantil",
+          "nombre": "Menú Infantil",
+          "descripcion": "Opciones deliciosas y divertidas para los más pequeños.",
+          "imagen_url": "https://i.pinimg.com/736x/d5/02/59/d50259affa66934c71be43141ebd622c.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c13-uuid-entradas",
+          "nombre": "Entradas",
+          "descripcion": "Perfectas para abrir el apetito.",
+          "imagen_url": "http://googleusercontent.com/image_collection/image_retrieval/13289457778845281256",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "c14-uuid-bebidas",
+          "nombre": "Bebidas",
+          "descripcion": "Refrescantes jugos, gaseosas y cervezas.",
+          "imagen_url": "https://i.pinimg.com/1200x/f1/d8/51/f1d8510a9602d36c2f191fa7129902d0.jpg",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        }
+      ],
+      "mesas": [
+        {
+          "id": "m1-uuid-mesa-maranatha-1",
+          "numero": "Mesa 1",
+          "capacidad": 4,
+          "estado": "LIBRE",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "m2-uuid-mesa-maranatha-2",
+          "numero": "Mesa 2",
+          "capacidad": 6,
+          "estado": "LIBRE",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "m3-uuid-mesa-maranatha-3",
+          "numero": "Mesa 3",
+          "capacidad": 2,
+          "estado": "LIBRE",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "m4-uuid-mesa-maranatha-4",
+          "numero": "Mesa 4",
+          "capacidad": 8,
+          "estado": "LIBRE",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        }
+      ],
+      "proveedores": [
+        {
+          "id": "pr1-uuid-carnes-maranatha",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "nit": "900543210-1",
+          "nombre": "Distribuidora de Carnes La Fina",
+          "contacto": "Roberto Cárdenas",
+          "telefono": "3101112233",
+          "email": "contacto@carneslafina.com"
+        },
+        {
+          "id": "pr2-uuid-lacteos-maranatha",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "nit": "800678901-2",
+          "nombre": "Lácteos del Valle",
+          "contacto": "Camila Leal",
+          "telefono": "3204455667",
+          "email": "ventas@lacteosdelvalle.com"
+        },
+        {
+          "id": "pr3-uuid-verduras-maranatha",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "nit": "700987654-3",
+          "nombre": "Huerta Fresca SAS",
+          "contacto": "Luis Felipe Torres",
+          "telefono": "3008899001",
+          "email": "pedidos@huertafresca.com"
+        },
+        {
+          "id": "pr4-uuid-masas-maranatha",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "nit": "900123000-4",
+          "nombre": "Masas y Harinas de Calidad",
+          "contacto": "Marta Giraldo",
+          "telefono": "3112233445",
+          "email": "info@masasdecalidad.com"
+        },
+        {
+          "id": "pr5-uuid-bebidas-maranatha",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "nit": "800333222-5",
+          "nombre": "Distribuidora de Bebidas Refrescantes",
+          "contacto": "Fernando Ríos",
+          "telefono": "3125566778",
+          "email": "distribuidora@bebidas.com"
+        }
+      ],
+      "ingredientes": [
+        {
+          "id": "i1-uuid-masa-pizza",
+          "nombre": "Masa para Pizza",
+          "unidad_medida": "unidades",
+          "stock_actual": 50.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 3000.00,
+          "fecha_ultima_compra": "2025-07-27T10:00:00Z",
+          "cantidad_ultima_compra": 30.00,
+          "observaciones": "Masa lista para pizzas",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i2-uuid-hamburguesa-sencilla",
+          "nombre": "hamburguesa-sencilla",
+          "unidad_medida": "unidades",
+          "stock_actual": 50.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 3000.00,
+          "fecha_ultima_compra": "2025-07-27T10:00:00Z",
+          "cantidad_ultima_compra": 30.00,
+          "observaciones": "Masa lista para pizzas",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i3-uuid-queso-cheddar",
+          "nombre": "Queso Cheddar",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 25000.00,
+          "fecha_ultima_compra": "2025-07-27T09:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "observaciones": "Queso cheddar para hamburguesas y pizzas especiales.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i6-uuid-queso-mozzarella",
+          "nombre": "Queso Mozzarella",
+          "unidad_medida": "kg",
+          "stock_actual": 40.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 20000.00,
+          "fecha_ultima_compra": "2025-07-26T09:00:00Z",
+          "cantidad_ultima_compra": 15.00,
+          "observaciones": "Queso mozzarella para pizzas y gratinados.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i7-uuid-salsa-tomate-pizza",
+          "nombre": "Salsa de Tomate para Pizza",
+          "unidad_medida": "kg",
+          "stock_actual": 25.00,
+          "stock_minimo": 5.00,
+          "costo_unitario": 8000.00,
+          "fecha_ultima_compra": "2025-07-26T09:00:00Z",
+          "cantidad_ultima_compra": 10.00,
+          "observaciones": "Salsa base para pizzas.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i8-uuid-arequipe",
+          "nombre": "Arequipe",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 15000.00,
+          "fecha_ultima_compra": "2025-07-25T11:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "observaciones": "Dulce de leche para pizzas dulces.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i9-uuid-chocolate",
+          "nombre": "Chocolate",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 20000.00,
+          "fecha_ultima_compra": "2025-07-25T11:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "observaciones": "Chocolate fundido para pizzas dulces.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i10-uuid-nutella",
+          "nombre": "Nutella",
+          "unidad_medida": "kg",
+          "stock_actual": 3.00,
+          "stock_minimo": 0.50,
+          "costo_unitario": 40000.00,
+          "fecha_ultima_compra": "2025-07-25T11:00:00Z",
+          "cantidad_ultima_compra": 1.00,
+          "observaciones": "Crema de avellanas para pizzas dulces.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i11-uuid-mm",
+          "nombre": "M&M's",
+          "unidad_medida": "gramos",
+          "stock_actual": 2000.00,
+          "stock_minimo": 500.00,
+          "costo_unitario": 50.00,
+          "fecha_ultima_compra": "2025-07-25T11:00:00Z",
+          "cantidad_ultima_compra": 1000.00,
+          "observaciones": "Confites de chocolate para decorar.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i12-uuid-pollo-cocido-desmechado",
+          "nombre": "Pollo Cocido Desmechado",
+          "unidad_medida": "kg",
+          "stock_actual": 15.00,
+          "stock_minimo": 3.00,
+          "costo_unitario": 18000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 5.00,
+          "observaciones": "Pechuga de pollo cocida y desmechada.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i13-uuid-champinones-frescos",
+          "nombre": "Champiñones Frescos",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 12000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "observaciones": "Champiñones en láminas.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i14-uuid-piña-fresca",
+          "nombre": "Piña Fresca",
+          "unidad_medida": "kg",
+          "stock_actual": 8.00,
+          "stock_minimo": 1.50,
+          "costo_unitario": 6000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i15-uuid-tocineta",
+          "nombre": "Tocineta Ahumada",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 22000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "observaciones": "Tocineta picada en cubos.",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i16-uuid-jamon-cocido",
+          "nombre": "Jamón Cocido",
+          "unidad_medida": "kg",
+          "stock_actual": 12.00,
+          "stock_minimo": 2.50,
+          "costo_unitario": 16000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 4.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i17-uuid-chorizo",
+          "nombre": "Chorizo",
+          "unidad_medida": "unidades",
+          "stock_actual": 100.00,
+          "stock_minimo": 20.00,
+          "costo_unitario": 2000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 40.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.50 
+        },
+        {
+          "id": "i18-uuid-carne-molida",
+          "nombre": "Carne Molida",
+          "unidad_medida": "kg",
+          "stock_actual": 20.00,
+          "stock_minimo": 5.00,
+          "costo_unitario": 25000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 8.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i19-uuid-pan-hamburguesa",
+          "nombre": "Pan de Hamburguesa",
+          "unidad_medida": "unidades",
+          "stock_actual": 80.00,
+          "stock_minimo": 15.00,
+          "costo_unitario": 1500.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 30.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i20-uuid-lechuga",
+          "nombre": "Lechuga",
+          "unidad_medida": "unidades",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 2500.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 4.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i21-uuid-tomate",
+          "nombre": "Tomate",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 4000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i22-uuid-cebolla",
+          "nombre": "Cebolla",
+          "unidad_medida": "kg",
+          "stock_actual": 8.00,
+          "stock_minimo": 1.50,
+          "costo_unitario": 3000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i23-uuid-papa-francesa",
+          "nombre": "Papa Francesa",
+          "unidad_medida": "kg",
+          "stock_actual": 30.00,
+          "stock_minimo": 5.00,
+          "costo_unitario": 7000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 10.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i24-uuid-salchicha-americana",
+          "nombre": "Salchicha Americana",
+          "unidad_medida": "unidades",
+          "stock_actual": 150.00,
+          "stock_minimo": 30.00,
+          "costo_unitario": 1200.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 50.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i25-uuid-maiz-tierno",
+          "nombre": "Maíz Tierno",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 5000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i26-uuid-atun-enlatado",
+          "nombre": "Atún enlatado",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 25000.00,
+          "fecha_ultima_compra": "2025-07-26T10:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i27-uuid-camarones",
+          "nombre": "Camarones",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 40000.00,
+          "fecha_ultima_compra": "2025-07-26T10:00:00Z",
+          "cantidad_ultima_compra": 1.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i28-uuid-pescado-blanco",
+          "nombre": "Pescado Blanco (trozos)",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 30000.00,
+          "fecha_ultima_compra": "2025-07-26T10:00:00Z",
+          "cantidad_ultima_compra": 1.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i29-uuid-pan-napolitano",
+          "nombre": "Pan Napolitano",
+          "unidad_medida": "unidades",
+          "stock_actual": 40.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 2000.00,
+          "fecha_ultima_compra": "2025-07-27T09:00:00Z",
+          "cantidad_ultima_compra": 20.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i30-uuid-patacon-base",
+          "nombre": "Patacón Base",
+          "unidad_medida": "unidades",
+          "stock_actual": 50.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 1500.00,
+          "fecha_ultima_compra": "2025-07-27T09:00:00Z",
+          "cantidad_ultima_compra": 20.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i31-uuid-hogao",
+          "nombre": "Hogao",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 8000.00,
+          "fecha_ultima_compra": "2025-07-27T09:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i32-uuid-carne-desmechada",
+          "nombre": "Carne Desmechada",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 20000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i33-uuid-salami",
+          "nombre": "Salami",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 18000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i34-uuid-pepperoni",
+          "nombre": "Pepperoni",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 20000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i35-uuid-chicharron",
+          "nombre": "Chicharrón",
+          "unidad_medida": "kg",
+          "stock_actual": 8.00,
+          "stock_minimo": 1.50,
+          "costo_unitario": 25000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i36-uuid-plátano-maduro",
+          "nombre": "Plátano Maduro",
+          "unidad_medida": "unidades",
+          "stock_actual": 30.00,
+          "stock_minimo": 5.00,
+          "costo_unitario": 1000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 10.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i37-uuid-aceitunas-negras",
+          "nombre": "Aceitunas Negras",
+          "unidad_medida": "kg",
+          "stock_actual": 3.00,
+          "stock_minimo": 0.50,
+          "costo_unitario": 18000.00,
+          "fecha_ultima_compra": "2025-07-26T09:00:00Z",
+          "cantidad_ultima_compra": 1.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i38-uuid-pimenton",
+          "nombre": "Pimentón",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 6000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i39-uuid-cebolla-roja",
+          "nombre": "Cebolla Roja",
+          "unidad_medida": "kg",
+          "stock_actual": 5.00,
+          "stock_minimo": 1.00,
+          "costo_unitario": 3500.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 2.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i40-uuid-bolonesa-salsa",
+          "nombre": "Salsa Boloñesa",
+          "unidad_medida": "kg",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 15000.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i41-uuid-especias",
+          "nombre": "Especias Varias",
+          "unidad_medida": "gramos",
+          "stock_actual": 1000.00,
+          "stock_minimo": 200.00,
+          "costo_unitario": 100.00,
+          "fecha_ultima_compra": "2025-07-25T14:00:00Z",
+          "cantidad_ultima_compra": 300.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i42-uuid-huevo-codorniz",
+          "nombre": "Huevo de Codorniz",
+          "unidad_medida": "unidades",
+          "stock_actual": 200.00,
+          "stock_minimo": 50.00,
+          "costo_unitario": 200.00,
+          "fecha_ultima_compra": "2025-07-27T08:00:00Z",
+          "cantidad_ultima_compra": 100.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.0 
+        },
+        {
+          "id": "i43-uuid-gaseosa-250ml",
+          "nombre": "Gaseosa 250ml",
+          "unidad_medida": "unidades",
+          "stock_actual": 100.00,
+          "stock_minimo": 20.00,
+          "costo_unitario": 1500.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 50.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.250 
+        },
+        {
+          "id": "i44-uuid-gaseosa-400ml",
+          "nombre": "Gaseosa 400ml",
+          "unidad_medida": "unidades",
+          "stock_actual": 80.00,
+          "stock_minimo": 15.00,
+          "costo_unitario": 2200.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 30.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.400 
+        },
+        {
+          "id": "i45-uuid-gaseosa-500ml",
+          "nombre": "Gaseosa 500ml",
+          "unidad_medida": "unidades",
+          "stock_actual": 60.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 2800.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 20.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.500 
+        },
+        {
+          "id": "i46-uuid-gaseosa-1500ml",
+          "nombre": "Gaseosa 1.5L",
+          "unidad_medida": "unidades",
+          "stock_actual": 30.00,
+          "stock_minimo": 5.00,
+          "costo_unitario": 4500.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 10.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 1.500 
+        },
+        {
+          "id": "i47-uuid-gaseosa-3000ml",
+          "nombre": "Gaseosa 3.0L",
+          "unidad_medida": "unidades",
+          "stock_actual": 20.00,
+          "stock_minimo": 3.00,
+          "costo_unitario": 6000.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 8.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 3.000 
+        },
+        {
+          "id": "i48-uuid-jugo-leche",
+          "nombre": "Jugo en Leche (Base)",
+          "unidad_medida": "litros",
+          "stock_actual": 10.00,
+          "stock_minimo": 2.00,
+          "costo_unitario": 5000.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 3.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i49-uuid-jugo-agua-base",
+          "nombre": "Jugo en Agua / Limonada (Base)",
+          "unidad_medida": "litros",
+          "stock_actual": 15.00,
+          "stock_minimo": 3.00,
+          "costo_unitario": 3500.00,
+          "fecha_ultima_compra": "2025-07-27T12:00:00Z",
+          "cantidad_ultima_compra": 5.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "i50-uuid-cerveza-club-colombia",
+          "nombre": "Cerveza Club Colombia",
+          "unidad_medida": "unidades",
+          "stock_actual": 50.00,
+          "stock_minimo": 10.00,
+          "costo_unitario": 3000.00,
+          "fecha_ultima_compra": "2025-07-27T13:00:00Z",
+          "cantidad_ultima_compra": 20.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.250 
+        },
+        {
+          "id": "i51-uuid-cerveza-heineken",
+          "nombre": "Cerveza Heineken",
+          "unidad_medida": "unidades",
+          "stock_actual": 40.00,
+          "stock_minimo": 8.00,
+          "costo_unitario": 3500.00,
+          "fecha_ultima_compra": "2025-07-27T13:00:00Z",
+          "cantidad_ultima_compra": 15.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.250 
+        },
+        {
+          "id": "i52-uuid-cerveza-corona",
+          "nombre": "Cerveza Corona",
+          "unidad_medida": "unidades",
+          "stock_actual": 30.00,
+          "stock_minimo": 6.00,
+          "costo_unitario": 5000.00,
+          "fecha_ultima_compra": "2025-07-27T13:00:00Z",
+          "cantidad_ultima_compra": 10.00,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "volumen_por_unidad": 0.250 
+        }
+      ],
+      "productos": [
+        {
+          "id": "p1-uuid-pizza-personal-hawaiana",
+          "nombre": "Pizza Hawaiana Personal",
+          "descripcion": "2 sabores, 2 porciones. Piña, Jamón, Queso.",
+          "precio": 8500.00,
+          "imagen_url": "https://placehold.co/150x150/FFDDC1/000000?text=Pizza+HawP",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c1-uuid-pizzas-regulares",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i7-uuid-salsa-tomate-pizza", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i14-uuid-piña-fresca", "cantidad_necesaria": 0.030 },
+            { "ingredienteId": "i16-uuid-jamon-cocido", "cantidad_necesaria": 0.030 }
+          ]
+        },
+        {
+          "id": "p2-uuid-pizza-small-hawaiana",
+          "nombre": "Pizza Hawaiana Small",
+          "descripcion": "2 sabores, 6 porciones. Piña, Jamón, Queso.",
+          "precio": 16000.00,
+          "imagen_url": "https://placehold.co/150x150/FFDDC1/000000?text=Pizza+HawS",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c1-uuid-pizzas-regulares",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i7-uuid-salsa-tomate-pizza", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.200 },
+            { "ingredienteId": "i14-uuid-piña-fresca", "cantidad_necesaria": 0.060 },
+            { "ingredienteId": "i16-uuid-jamon-cocido", "cantidad_necesaria": 0.060 }
+          ]
+        },
+        {
+          "id": "p3-uuid-pizza-personal-arequipe",
+          "nombre": "Pizza Arequipe Personal",
+          "descripcion": "2 sabores, 2 porciones. Pizza dulce de Arequipe.",
+          "precio": 8500.00,
+          "imagen_url": "https://placehold.co/150x150/F0E68C/000000?text=Pizza+ArP",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c1-uuid-pizzas-regulares",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i8-uuid-arequipe", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.050 } 
+          ]
+        },
+        {
+          "id": "p4-uuid-pizza-medium-pollo-champinon",
+          "nombre": "Pizza Pollo Champiñón Medium",
+          "descripcion": "3 sabores, 8 porciones. Pollo, Champiñón, Queso.",
+          "precio": 45000.00,
+          "imagen_url": "https://placehold.co/150x150/A2CCB6/000000?text=Pizza+PCHM",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c1-uuid-pizzas-regulares",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i7-uuid-salsa-tomate-pizza", "cantidad_necesaria": 0.150 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.300 },
+            { "ingredienteId": "i12-uuid-pollo-cocido-desmechado", "cantidad_necesaria": 0.150 },
+            { "ingredienteId": "i13-uuid-champinones-frescos", "cantidad_necesaria": 0.100 }
+          ]
+        },
+        {
+          "id": "p5-uuid-pizza-burguer-personal",
+          "nombre": "Pizza Burguer Personal",
+          "descripcion": "Pizza de dos pisos con carne molida, lechuga, tomate, cebolla, queso mozzarella y cheddar.",
+          "precio": 30000.00,
+          "imagen_url": "https://placehold.co/150x150/8B4513/FFFFFF?text=PizzaBurgerP",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c2-uuid-pizzas-especiales",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 2.00 },
+            { "ingredienteId": "i18-uuid-carne-molida", "cantidad_necesaria": 0.200 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i3-uuid-queso-cheddar", "cantidad_necesaria": 0.050 }, 
+            { "ingredienteId": "i20-uuid-lechuga", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i21-uuid-tomate", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i22-uuid-cebolla", "cantidad_necesaria": 0.030 }
+          ]
+        },
+        {
+          "id": "p6-uuid-pizza-perro-small",
+          "nombre": "Pizza Perro Small",
+          "descripcion": "Salchicha americana, cebolla en cuadritos, papa triturada, queso mozzarella, huevos de codorniz, salsa de la casa.",
+          "precio": 60000.00,
+          "imagen_url": "https://placehold.co/150x150/FF6347/FFFFFF?text=PizzaPerroS",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c2-uuid-pizzas-especiales",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.150 },
+            { "ingredienteId": "i24-uuid-salchicha-americana", "cantidad_necesaria": 4.00 },
+            { "ingredienteId": "i22-uuid-cebolla", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i42-uuid-huevo-codorniz", "cantidad_necesaria": 6.00 }
+          ]
+        },
+        {
+          "id": "p7-uuid-pan-napolitano-x2",
+          "nombre": "Pan Napolitano (x2)",
+          "descripcion": "Dos panes napolitanos horneados con ajo y perejil.",
+          "precio": 5000.00,
+          "imagen_url": "https://placehold.co/150x150/D2B48C/000000?text=PanNap2",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c13-uuid-entradas",
+          "receta": [
+            { "ingredienteId": "i29-uuid-pan-napolitano", "cantidad_necesaria": 2.00 }
+          ]
+        },
+        {
+          "id": "p8-uuid-patacon-hogao-x4",
+          "nombre": "Patacón con Hogao (x4)",
+          "descripcion": "Cuatro crocantes patacones con hogao casero.",
+          "precio": 7000.00,
+          "imagen_url": "https://placehold.co/150x150/8B4513/FFFFFF?text=PataconHogao4",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c13-uuid-entradas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i30-uuid-patacon-base", "cantidad_necesaria": 4.00 },
+            { "ingredienteId": "i31-uuid-hogao", "cantidad_necesaria": 0.100 }
+          ]
+        },
+        {
+          "id": "p9-uuid-hamburguesa-sencilla",
+          "nombre": "Hamburguesa Sencilla",
+          "descripcion": "Carne de res, lechuga, tomate y cebolla.",
+          "precio": 15000.00,
+          "imagen_url": "https://placehold.co/150x150/FFDDC1/000000?text=HamburguesaSencilla",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c3-uuid-hamburguesas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i19-uuid-pan-hamburguesa", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i18-uuid-carne-molida", "cantidad_necesaria": 0.150 },
+            { "ingredienteId": "i20-uuid-lechuga", "cantidad_necesaria": 0.020 },
+            { "ingredienteId": "i21-uuid-tomate", "cantidad_necesaria": 0.030 },
+            { "ingredienteId": "i22-uuid-cebolla", "cantidad_necesaria": 0.015 }
+          ]
+        },
+        {
+          "id": "p10-uuid-combo-hamburguesa-sencilla",
+          "nombre": "Combo Hamburguesa Sencilla",
+          "descripcion": "Hamburguesa sencilla con papas a la francesa y gaseosa 250ml.",
+          "precio": 22000.00,
+          "imagen_url": "https://placehold.co/150x150/FFDDC1/000000?text=ComboHamburguesa",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c3-uuid-hamburguesas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i2-uuid-hamburguesa-sencilla", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i23-uuid-papa-francesa", "cantidad_necesaria": 0.150 },
+            { "ingredienteId": "i43-uuid-gaseosa-250ml", "cantidad_necesaria": 1.00 }
+          ]
+        },
+        {
+          "id": "p11-uuid-perro-caliente-sencillo",
+          "nombre": "Perro Caliente Sencillo",
+          "descripcion": "Salchicha americana, pan, salsas y papa triturada.",
+          "precio": 10000.00,
+          "imagen_url": "https://placehold.co/150x150/FF6347/FFFFFF?text=PerroSencillo",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c4-uuid-perros-calientes",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i24-uuid-salchicha-americana", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i19-uuid-pan-hamburguesa", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i23-uuid-papa-francesa", "cantidad_necesaria": 0.030 }
+          ]
+        },
+        {
+          "id": "p12-uuid-mazorcada-grande",
+          "nombre": "Mazorcada Grande",
+          "descripcion": "Maíz tierno con pollo desmechado, carne desmechada, tocineta, queso mozzarella y huevo de codorniz.",
+          "precio": 25000.00,
+          "imagen_url": "https://placehold.co/150x150/FFD700/000000?text=MazorcadaG",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c5-uuid-mazorcadas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i25-uuid-maiz-tierno", "cantidad_necesaria": 0.250 },
+            { "ingredienteId": "i12-uuid-pollo-cocido-desmechado", "cantidad_necesaria": 0.080 },
+            { "ingredienteId": "i32-uuid-carne-desmechada", "cantidad_necesaria": 0.080 },
+            { "ingredienteId": "i15-uuid-tocineta", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i42-uuid-huevo-codorniz", "cantidad_necesaria": 3.00 }
+          ]
+        },
+        {
+          "id": "p13-uuid-panzerotti-hawaiano",
+          "nombre": "Panzerotti Hawaiano",
+          "descripcion": "Empanada de pizza rellena de jamón, piña y queso.",
+          "precio": 12000.00,
+          "imagen_url": "https://placehold.co/150x150/FFDDC1/000000?text=PanzerottiHaw",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c6-uuid-panzerotti-calzone",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i1-uuid-masa-pizza", "cantidad_necesaria": 0.50 },
+            { "ingredienteId": "i7-uuid-salsa-tomate-pizza", "cantidad_necesaria": 0.030 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.070 },
+            { "ingredienteId": "i14-uuid-piña-fresca", "cantidad_necesaria": 0.020 },
+            { "ingredienteId": "i16-uuid-jamon-cocido", "cantidad_necesaria": 0.020 }
+          ]
+        },
+        {
+          "id": "p14-uuid-salchipapa-sencilla",
+          "nombre": "Salchipapa Sencilla",
+          "descripcion": "Papas a la francesa con salchicha americana.",
+          "precio": 8000.00,
+          "imagen_url": "https://placehold.co/150x150/FFD700/FF6347?text=SalchipapaS",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c7-uuid-salchipapas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i23-uuid-papa-francesa", "cantidad_necesaria": 0.200 },
+            { "ingredienteId": "i24-uuid-salchicha-americana", "cantidad_necesaria": 2.00 }
+          ]
+        },
+        {
+          "id": "p15-uuid-lasagna-bolonesa",
+          "nombre": "Lasagna Boloñesa",
+          "descripcion": "Salsa boloñesa, queso, parmesano, pan al ajillo.",
+          "precio": 20000.00,
+          "imagen_url": "https://placehold.co/150x150/CD853F/FFFFFF?text=LasagnaB",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c8-uuid-lasagnas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i40-uuid-bolonesa-salsa", "cantidad_necesaria": 0.250 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.100 }
+          ]
+        },
+  
+        {
+          "id": "p16-uuid-espagueti-bolonesa",
+          "nombre": "Espagueti Boloñesa",
+          "descripcion": "Pasta, salsa boloñesa, queso parmesano, pan al ajillo.",
+          "precio": 24000.00,
+          "imagen_url": "https://placehold.co/150x150/BC8F8F/FFFFFF?text=EspagB",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c9-uuid-espaguetis",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i40-uuid-bolonesa-salsa", "cantidad_necesaria": 0.200 }
+          ]
+        },
+  
+        {
+          "id": "p17-uuid-patacon-relleno-mixto",
+          "nombre": "Patacón Relleno",
+          "descripcion": "Base de patacón, pollo desmechado, carne desmechada, champiñón, chorizo, tocineta, hogao, queso.",
+          "precio": 29000.00,
+          "imagen_url": "https://placehold.co/150x150/9ACD32/000000?text=PataconR",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c10-uuid-patacones-rellenos",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i30-uuid-patacon-base", "cantidad_necesaria": 1.00 },
+            { "ingredienteId": "i12-uuid-pollo-cocido-desmechado", "cantidad_necesaria": 0.080 },
+            { "ingredienteId": "i32-uuid-carne-desmechada", "cantidad_necesaria": 0.080 },
+            { "ingredienteId": "i13-uuid-champinones-frescos", "cantidad_necesaria": 0.030 },
+            { "ingredienteId": "i17-uuid-chorizo", "cantidad_necesaria": 0.50 },
+            { "ingredienteId": "i15-uuid-tocineta", "cantidad_necesaria": 0.030 },
+            { "ingredienteId": "i31-uuid-hogao", "cantidad_necesaria": 0.050 },
+            { "ingredienteId": "i6-uuid-queso-mozzarella", "cantidad_necesaria": 0.050 }
+          ]
+        },
+  
+        {
+          "id": "p18-uuid-filete-res-parrilla",
+          "nombre": "Filete de Res a la Parrilla (300g)",
+          "descripcion": "Filete de res de 300g, acompañado de papa, arepa de queso, ensalada tropical, chimichurri.",
+          "precio": 32000.00,
+          "imagen_url": "https://placehold.co/150x150/B22222/FFFFFF?text=ResParrilla",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c11-uuid-platos-a-la-carta",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i18-uuid-carne-molida", "cantidad_necesaria": 0.300 }
+          ]
+        },
+        {
+          "id": "p19-uuid-menu-infantil",
+          "nombre": "Menú Infantil",
+          "descripcion": "Pizza O Perro Caliente O Hamburguesa O Salchipapa + Papas Francesas + Jugo en Caja + Huevo Sorpresa.",
+          "precio": 27000.00,
+          "imagen_url": "https://placehold.co/150x150/87CEEB/000000?text=Menu+Inf",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c12-uuid-menu-infantil",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [
+            { "ingredienteId": "i23-uuid-papa-francesa", "cantidad_necesaria": 0.100 },
+            { "ingredienteId": "i43-uuid-gaseosa-250ml", "cantidad_necesaria": 1.00 } 
+          ]
+        },
+        {
+          "id": "p20-uuid-gaseosa-personal-250ml",
+          "nombre": "Gaseosa Personal (250ml)",
+          "descripcion": "Gaseosa de 250ml.",
+          "precio": 3000.00,
+          "imagen_url": "https://placehold.co/150x150/ADD8E6/000000?text=Gas+250",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c14-uuid-bebidas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [{ "ingredienteId": "i43-uuid-gaseosa-250ml", "cantidad_necesaria": 1.00 }]
+        },
+        {
+          "id": "p21-uuid-gaseosa-personal-400ml",
+          "nombre": "Gaseosa Personal (400ml)",
+          "descripcion": "Gaseosa de 400ml.",
+          "precio": 4500.00,
+          "imagen_url": "https://placehold.co/150x150/ADD8E6/000000?text=Gas+400",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c14-uuid-bebidas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [{ "ingredienteId": "i44-uuid-gaseosa-400ml", "cantidad_necesaria": 1.00 }]
+        },
+        {
+          "id": "p22-uuid-jugo-en-leche",
+          "nombre": "Jugo en Leche",
+          "descripcion": "Jugo natural preparado en leche.",
+          "precio": 9000.00,
+          "imagen_url": "https://placehold.co/150x150/FF69B4/000000?text=Jugo+Leche",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c14-uuid-bebidas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [{ "ingredienteId": "i48-uuid-jugo-leche", "cantidad_necesaria": 0.300 }] 
+        },
+        {
+          "id": "p23-uuid-cerveza-club-colombia",
+          "nombre": "Cerveza Club Colombia",
+          "descripcion": "Cerveza Club Colombia.",
+          "precio": 6000.00,
+          "imagen_url": "https://placehold.co/150x150/FFC300/000000?text=CC",
+          "activo": true,
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "categoriaId": "c14-uuid-bebidas",
+          "iva": true,
+          "ic": false,
+          "inc": false,
+          "receta": [{ "ingredienteId": "i50-uuid-cerveza-club-colombia", "cantidad_necesaria": 1.00 }]
+        }
+      ],
+      "comprasIngredientes": [
+        {
+          "id": "ci1-uuid-compra-masa-pizza-per",
+          "ingredienteId": "i1-uuid-masa-pizza-personal",
+          "proveedorId": "pr4-uuid-masas-maranatha",
+          "cantidad_comprada": 30.00,
+          "costo_unitario_compra": 2800.00,
+          "costo_total_compra": 84000.00,
+          "fecha_compra": "2025-07-27T10:00:00Z",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "ci2-uuid-compra-queso-mozzarella",
+          "ingredienteId": "i6-uuid-queso-mozzarella",
+          "proveedorId": "pr2-uuid-lacteos-maranatha",
+          "cantidad_comprada": 15.00,
+          "costo_unitario_compra": 19000.00,
+          "costo_total_compra": 285000.00,
+          "fecha_compra": "2025-07-26T09:00:00Z",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "ci3-uuid-compra-pollo-desmechado",
+          "ingredienteId": "i12-uuid-pollo-cocido-desmechado",
+          "proveedorId": "pr1-uuid-carnes-maranatha",
+          "cantidad_comprada": 5.00,
+          "costo_unitario_compra": 17500.00,
+          "costo_total_compra": 87500.00,
+          "fecha_compra": "2025-07-27T08:00:00Z",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        },
+        {
+          "id": "ci4-uuid-compra-gaseosa-250ml",
+          "ingredienteId": "i43-uuid-gaseosa-250ml",
+          "proveedorId": "pr5-uuid-bebidas-maranatha",
+          "cantidad_comprada": 50.00,
+          "costo_unitario_compra": 1400.00,
+          "costo_total_compra": 70000.00,
+          "fecha_compra": "2025-07-27T12:00:00Z",
+          "establecimientoId": "e1-uuid-maranatha-produccion"
+        }
+      ],
+      "pedidos": [
+        {
+          "id": "ped1-uuid-maranatha-mesa1",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "mesa_id": "m1-uuid-mesa-maranatha-1",
+          "usuarioCreadorId": "u3-uuid-mesero-maranatha",
+          "estado": "CERRADO",
+          "tipo_pedido": "MESA",
+          "cliente_nombre": null,
+          "cliente_telefono": null,
+          "cliente_direccion": null,
+          "total_estimado": 23500.00,
+          "descuentos_aplicados": 0.00,
+          "notas": "Pedido de prueba del día",
+          "fecha_hora_pedido": "2025-07-28T18:00:00Z",
+          "fecha_hora_cierre": "2025-07-28T18:45:00Z",
+          "items": [
+            {
+              "productoId": "p1-uuid-pizza-personal-hawaiana",
+              "cantidad": 1,
+              "precio_unitario_al_momento_venta": 8500.00,
+              "notas_item": null,
+              "estado_cocina": "LISTO"
+            },
+            {
+              "productoId": "p9-uuid-hamburguesa-sencilla",
+              "cantidad": 1,
+              "precio_unitario_al_momento_venta": 15000.00,
+              "notas_item": null,
+              "estado_cocina": "LISTO"
+            }
+          ]
+        },
+        {
+          "id": "ped2-uuid-maranatha-mesa2-abierto",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "mesa_id": "m2-uuid-mesa-maranatha-2",
+          "usuarioCreadorId": "u3-uuid-mesero-maranatha",
+          "estado": "ABIERTO",
+          "tipo_pedido": "MESA",
+          "cliente_nombre": null,
+          "cliente_telefono": null,
+          "cliente_direccion": null,
+          "total_estimado": 60000.00,
+          "descuentos_aplicados": 0.00,
+          "notas": "Pedido en curso de mesa 2",
+          "fecha_hora_pedido": "2025-07-28T19:30:00Z",
+          "fecha_hora_cierre": null,
+          "items": [
+            {
+              "productoId": "p6-uuid-pizza-perro-small",
+              "cantidad": 1,
+              "precio_unitario_al_momento_venta": 60000.00,
+              "notas_item": null,
+              "estado_cocina": "EN_PREPARACION"
+            }
+          ]
+        },
+        {
+          "id": "ped3-uuid-maranatha-domicilio",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "mesa_id": null,
+          "usuarioCreadorId": "u2-uuid-cajero-maranatha",
+          "estado": "CERRADO",
+          "tipo_pedido": "DOMICILIO",
+          "cliente_nombre": "Carlos López",
+          "cliente_telefono": "3001234567",
+          "cliente_direccion": "Carrera 4 # 25-10, Apto 501",
+          "total_estimado": 23000.00,
+          "descuentos_aplicados": 0.00,
+          "notas": "Domicilio por app",
+          "fecha_hora_pedido": "2025-07-28T17:00:00Z",
+          "fecha_hora_cierre": "2025-07-28T17:45:00Z",
+          "items": [
+            {
+              "productoId": "p10-uuid-combo-hamburguesa-sencilla",
+              "cantidad": 1,
+              "precio_unitario_al_momento_venta": 23000.00,
+              "notas_item": "Sin cebolla",
+              "estado_cocina": "LISTO"
+            }
+          ]
+        }
+      ],
+      "facturas": [
+        {
+          "id": "f1-uuid-maranatha-factura-1",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "usuarioCajeroId": "u2-uuid-cajero-maranatha",
+          "subtotal": 23500.00,
+          "impuestos": 4465.00,
+          "descuentos": 0.00,
+          "propina": 2350.00,
+          "total_factura": 30315.00,
+          "tipo_factura": "TOTAL",
+          "notas": "Factura de pedido de mesa 1",
+          "fecha_hora_factura": "2025-07-28T18:50:00Z",
+          "pedidosAsociados": [
+            {
+              "pedidoId": "ped1-uuid-maranatha-mesa1",
+              "monto_aplicado": 23500.00
+            }
+          ],
+          "pagos": [
+            {
+              "monto_pagado": 30315.00,
+              "metodo_pago": "Tarjeta Crédito",
+              "tipo_documento": "Cédula de ciudadanía",
+              "numero_documento": "1023456789",
+              "nombre_completo": "Ana María Rojas",
+              "correo_electronico": "ana.rojas@example.com"
+            }
+          ]
+        },
+        {
+          "id": "f2-uuid-maranatha-factura-domicilio",
+          "establecimientoId": "e1-uuid-maranatha-produccion",
+          "usuarioCajeroId": "u2-uuid-cajero-maranatha",
+          "subtotal": 23000.00,
+          "impuestos": 4370.00,
+          "descuentos": 0.00,
+          "propina": 0.00,
+          "total_factura": 27370.00,
+          "tipo_factura": "TOTAL",
+          "notas": "Factura de pedido a domicilio",
+          "fecha_hora_factura": "2025-07-28T17:50:00Z",
+          "pedidosAsociados": [
+            {
+              "pedidoId": "ped3-uuid-maranatha-domicilio",
+              "monto_aplicado": 23000.00
+            }
+          ],
+          "pagos": [
+            {
+              "monto_pagado": 27370.00,
+              "metodo_pago": "Efectivo",
+              "tipo_documento": null,
+              "numero_documento": null,
+              "nombre_completo": "Carlos López",
+              "correo_electronico": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+
+

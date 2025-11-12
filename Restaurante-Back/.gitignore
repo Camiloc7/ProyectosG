@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.DS_Store
+.env
+local.env
+.env.local
+.env.aws-sim
+.env.electron-sim
+
+
+# Archivos subidos 
+/uploads_cache
+/pos-backend.exe
+sistema_pos_electron_local.sqlite
+sistema_pos_local.sqlite
