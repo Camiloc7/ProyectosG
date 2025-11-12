@@ -14,10 +14,15 @@ import { Eye, EyeClosed, EyeOff } from "lucide-react";
 import icon from "../assets/icon.png";
 import Image from "next/image";
 import Checkbox from "@/components/ui/CheckBox";
+import { motion } from "framer-motion";
 
+//TODO MENSAJE DE MANTENIMIENTO
+const MOSTRAR_MENSAJE_DE_SISTEMA_EN_MANTENIMIENTO = false;
+const CONFIRMAR_MENSAJE_MANTENIMIENTO = false;
+//Debes poner ambos en true si es que quieres mostrar el mensaje de en mantenimiento
 export default function Home() {
   const router = useRouter();
-  const { isAuthenticated, loginAsync } = useAuthStore();
+  const { loginAsync } = useAuthStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,24 +31,91 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(true);
 
-  useEffect(() => {
-    if (isAuthenticated && !loading) {
-      router.push("/dashboard");
-    }
-  }, [isAuthenticated, loading]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      await loginAsync(email, password);
+      const response = await loginAsync(email, password);
+      if (response === "error") return;
+      switch (response) {
+        case "MESERO":
+          router.push("/mesero");
+          break;
+        case "COCINERO":
+          router.push("/cocinero");
+          break;
+        case "CAJERO":
+          router.push("/cajero");
+          break;
+        default:
+          router.push("/dashboard");
+      }
     } catch (err: any) {
       setError(err.message || "Ocurrió un error inesperado.");
-      setLoading(false); 
+      setLoading(false);
     }
   };
+
+  // Si ambas variables están activadas, mostrar mensaje de mantenimiento
+  if (
+    MOSTRAR_MENSAJE_DE_SISTEMA_EN_MANTENIMIENTO &&
+    CONFIRMAR_MENSAJE_MANTENIMIENTO
+  ) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-screen text-center p-6"
+        style={{ backgroundColor: FONDO }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="bg-white/10 backdrop-blur-md p-10 rounded-2xl shadow-lg max-w-md"
+        >
+          <Image
+            src={icon}
+            alt="Logo"
+            width={60}
+            height={60}
+            className="mx-auto mb-4"
+          />
+          <h1 className="text-3xl font-semibold text-orange-500 mb-3">
+            🚧 Estamos en mantenimiento 🚧
+          </h1>
+          <p className="text-gray-700 text-base mb-6 ">
+            Estamos realizando mejoras en el sistema para brindarte una mejor
+            experiencia.
+            <br />
+            Gracias por tu comprensión 💛
+            <br />
+            Esto podría tardar varios minutos...
+          </p>
+
+          {/* Animación de carga */}
+          <div className="flex items-center justify-center gap-2">
+            {[0, 1, 2, 3].map((i) => (
+              <motion.div
+                key={i}
+                className="w-3 h-3 rounded-full bg-orange-500"
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [1, 0.6, 1],
+                }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.2,
+                  delay: i * 0.2,
+                  ease: "easeInOut",
+                }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -83,13 +155,6 @@ export default function Home() {
                 height={30}
                 className="object-contain"
               />
-              {/* <Image
-                src={icon}
-                alt="Logo"
-                width={30}
-                height={30}
-                className="object-contain"
-              /> */}
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-7">
@@ -176,16 +241,13 @@ export default function Home() {
               >
                 Acepto los{" "}
                 <span
-                  onClick={() => router.push("/terminos")}
+                  onClick={() => router.push("/terminosWeb")}
                   className="text-orange-500 underline cursor-pointer"
                 >
                   Términos y Condiciones
                 </span>
               </label>
             </div>
-            {/* <p className="text-[12px] text-[#999] text-center mt-6">
-              Construya con liquidez. Facture con Quality
-            </p> */}
 
             <div className="flex flex-col items-center justify-center gap-2">
               <p className="text-[12px] text-[#999] text-center">

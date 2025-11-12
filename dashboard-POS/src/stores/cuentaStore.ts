@@ -3,9 +3,11 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { IFormCuentas } from "@/features/cuentas/FormCuentas";
 import { useAuthStore } from "./authStore";
+import { ISelectCategorias } from "./categoriasStore";
 
 type CuentasState = {
   loading: boolean;
+  cuentasConEfectivo: ISelectCategorias[];
   cuentas: IFormCuentas[];
   traerCuentas: () => Promise<void>;
   eliminarCuenta: (id: string) => Promise<void>;
@@ -16,10 +18,11 @@ type CuentasState = {
 export const useCuentasStore = create<CuentasState>((set, get) => ({
   loading: false,
   cuentas: [],
+  cuentasConEfectivo: [],
 
   traerCuentas: async () => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/cuentas-bancarias`, {
@@ -31,12 +34,24 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
       });
 
       const responseData = await res.json();
-      // console.log("RAW CUENTAS: ");
-      if (!res.ok) {
-        throw new Error(responseData.message);
-      }
+      // if (!res.ok) {
+      //   throw new Error(responseData.message);
+      // }
+
+      const cuentasTransformadas = responseData.data.map((cuenta: any) => ({
+        id: cuenta.id,
+        nombre: cuenta.nombre_banco,
+      }));
+
+      // 🔹 Agregar Efectivo al inicio de la lista
+      const cuentasConEfectivo = [
+        { id: "EFECTIVO", nombre: "Efectivo" },
+        ...cuentasTransformadas,
+      ];
+
       set({
         cuentas: responseData.data,
+        cuentasConEfectivo,
         loading: false,
       });
     } catch (error: any) {
@@ -51,7 +66,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
 
   crearCuenta: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const { id, codigo_puc, ...cuentaSinBasura } = data;
     console.warn("RAW PARA CREAR: ", cuentaSinBasura);
     try {
@@ -83,7 +98,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
 
   actualizarCuenta: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const { id, codigo_puc, medio_pago_asociado_id, ...cuentaSinBasura } = data;
     console.warn("RAW PARA ACTUALIZAR: ", cuentaSinBasura);
     try {
@@ -114,7 +129,7 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
   },
   eliminarCuenta: async (id: string) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/cuentas-bancarias/${id}`, {
@@ -126,7 +141,6 @@ export const useCuentasStore = create<CuentasState>((set, get) => ({
       });
 
       const data = await res.json();
-      console.log(data);
 
       if (!res.ok) {
         throw new Error(data.message);

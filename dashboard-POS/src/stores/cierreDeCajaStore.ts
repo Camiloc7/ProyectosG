@@ -2,15 +2,48 @@ import { create } from "zustand";
 import toast from "react-hot-toast";
 import { RUTA } from "@/helpers/rutas";
 import { useAuthStore } from "./authStore";
+import { handleApiResponse } from "@/helpers/handleApiResponse";
 
 export type DenominacionData = {
   [key: string]: number;
 };
 
+export interface IEstablecimiento {
+  id: string;
+  nombre: string;
+  nit: string;
+  email: string;
+  direccion: string;
+  codigo_postal: string;
+  telefono: string;
+  impuesto_porcentaje: string;
+  api_key: string;
+  licencia_key: string;
+  fecha_expiracion: string;
+  fecha_activacion: string;
+  licencia_activa: string;
+  dispositivo_id: string;
+  activo: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface IEmpleado {
+  id: string;
+  establecimiento_id: string;
+  rol_id: string;
+  nombre: string;
+  apellido: string;
+  username: string;
+  activo: string;
+  created_at: string;
+  updated_at: string;
+}
 export interface CajaData {
   id: string;
   establecimiento_id: string;
   usuario_cajero_id: string;
+  establecimiento: IEstablecimiento;
   fecha_hora_apertura: string;
   fecha_hora_cierre: string | null;
   saldo_inicial_caja: string;
@@ -22,8 +55,10 @@ export interface CajaData {
   total_neto_ventas: string;
   total_pagos_efectivo: string;
   total_pagos_tarjeta: string;
+  usuarioCajero: IEmpleado;
   total_pagos_otros: string;
   total_recaudado: string;
+  gastos_operacionales: string;
   diferencia_caja: string;
   cerrado: boolean;
   observaciones: string | null;
@@ -44,11 +79,19 @@ type CajaState = {
   loading: boolean;
   cajaActiva: CajaData | null;
   cierresDeCaja: CajaData[];
-  aperturaDeCaja: (data: IDataParaAperturaDeCaja) => Promise<void>;
-  cierreDeCaja: (data: IDataParaCierreDeCaja) => Promise<void>;
+  aperturaDeCaja: (data: IDataParaAperturaDeCaja) => Promise<boolean>;
+  cierreDeCaja: (data: IDataParaCierreDeCaja) => Promise<boolean>;
   traerCajaActiva: () => Promise<void>;
-  traerCierresDeCaja: (establecimientoId?: string, usuarioCajeroId?: string, fechaInicio?: string, fechaFin?: string) => Promise<void>;
+  traerCierresDeCaja: (
+    establecimientoId?: string,
+    usuarioCajeroId?: string,
+    fechaInicio?: string,
+    fechaFin?: string
+  ) => Promise<void>;
   traerCierrePorId: (id: string) => Promise<CajaData | null>;
+  generarTicketZ: (idCaja: string) => Promise<boolean>;
+  generarTicketX: () => Promise<boolean>;
+  handleCajaStatusUpdate: (cajaActiva: boolean) => Promise<void>;
 };
 
 const getTokenFromStore = () => {
@@ -62,6 +105,7 @@ export const useCajaStore = create<CajaState>((set) => ({
 
   aperturaDeCaja: async (data) => {
     set({ loading: true });
+    console.warn(data);
     try {
       const token = getTokenFromStore();
       const res = await fetch(`${RUTA}/cierres-caja/apertura`, {
@@ -77,16 +121,20 @@ export const useCajaStore = create<CajaState>((set) => ({
       if (!res.ok) {
         throw new Error(responseData.message || "Error al abrir la caja.");
       }
-      set({ cajaActiva: responseData.data, loading: false });
+      set({ loading: false });
       toast.success(responseData.message);
+      return true;
     } catch (error: any) {
       toast.error(error.message);
+      return false;
+    } finally {
       set({ loading: false });
     }
   },
 
   cierreDeCaja: async (data) => {
     set({ loading: true });
+    console.warn(data);
     try {
       const token = getTokenFromStore();
       const res = await fetch(`${RUTA}/cierres-caja/cierre`, {
@@ -102,11 +150,13 @@ export const useCajaStore = create<CajaState>((set) => ({
       if (!res.ok) {
         throw new Error(responseData.message || "Error al cerrar la caja.");
       }
-      set({ cajaActiva: null, loading: false });
+      set({ loading: false });
       toast.success(responseData.message);
+      return true;
     } catch (error: any) {
       toast.error(error.message);
       set({ loading: false });
+      return false;
     }
   },
 
@@ -128,7 +178,9 @@ export const useCajaStore = create<CajaState>((set) => ({
 
       const responseData = await res.json();
       if (!res.ok) {
-        throw new Error(responseData.message || "Error al verificar caja activa.");
+        throw new Error(
+          responseData.message || "Error al verificar caja activa."
+        );
       }
 
       set({ cajaActiva: responseData.data, loading: false });
@@ -137,14 +189,52 @@ export const useCajaStore = create<CajaState>((set) => ({
       set({ loading: false });
     }
   },
+  handleCajaStatusUpdate: async (cajaEstaActiva: boolean) => {
+    if (!cajaEstaActiva) {
+      set({ cajaActiva: null });
+      return;
+    }
+    try {
+      set({ loading: true });
+      const token = getTokenFromStore();
+      const res = await fetch(`${RUTA}/cierres-caja/activo`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.status === 204) {
+        set({ cajaActiva: null, loading: false });
+        return;
+      }
 
-  traerCierresDeCaja: async (establecimientoId, usuarioCajeroId, fechaInicio, fechaFin) => {
+      const responseData = await res.json();
+      if (!res.ok) {
+        throw new Error(
+          responseData.message || "Error al actualizar caja activa por WS."
+        );
+      }
+
+      set({ cajaActiva: responseData.data, loading: false });
+    } catch (error: any) {
+      toast.error(error.message || "Error al obtener estado de caja por WS.");
+      set({ loading: false });
+    }
+  },
+  traerCierresDeCaja: async (
+    establecimientoId,
+    usuarioCajeroId,
+    fechaInicio,
+    fechaFin
+  ) => {
     set({ loading: true });
     try {
       const token = getTokenFromStore();
       const url = new URL(`${RUTA}/cierres-caja`);
-      if (establecimientoId) url.searchParams.append("establecimientoId", establecimientoId);
-      if (usuarioCajeroId) url.searchParams.append("usuarioCajeroId", usuarioCajeroId);
+      if (establecimientoId)
+        url.searchParams.append("establecimientoId", establecimientoId);
+      if (usuarioCajeroId)
+        url.searchParams.append("usuarioCajeroId", usuarioCajeroId);
       if (fechaInicio) url.searchParams.append("fechaInicio", fechaInicio);
       if (fechaFin) url.searchParams.append("fechaFin", fechaFin);
 
@@ -157,7 +247,9 @@ export const useCajaStore = create<CajaState>((set) => ({
 
       const responseData = await res.json();
       if (!res.ok) {
-        throw new Error(responseData.message || "Error al obtener cierres de caja.");
+        throw new Error(
+          responseData.message || "Error al obtener cierres de caja."
+        );
       }
       set({ cierresDeCaja: responseData.data, loading: false });
     } catch (error: any) {
@@ -184,7 +276,9 @@ export const useCajaStore = create<CajaState>((set) => ({
           set({ loading: false });
           return null;
         }
-        throw new Error(responseData.message || "Error al obtener detalles del cierre.");
+        throw new Error(
+          responseData.message || "Error al obtener detalles del cierre."
+        );
       }
       set({ loading: false });
       return responseData.data;
@@ -194,5 +288,77 @@ export const useCajaStore = create<CajaState>((set) => ({
       return null;
     }
   },
-}));
+  generarTicketZ: async (idCaja: string) => {
+    set({ loading: true });
+    console.warn("idCaja", idCaja);
+    try {
+      const token = getTokenFromStore();
+      const res = await fetch(
+        `${RUTA}/reportes/pdf/ticket-z?cierreCajaId=${idCaja}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
+      if (!res.ok) throw new Error("Error al generar el PDF");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `ticket-z-${idCaja}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Error al generar ticket Z");
+      return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  generarTicketX: async () => {
+    set({ loading: true });
+    try {
+      const token = getTokenFromStore();
+      const res = await fetch(`${RUTA}/reportes/pdf/ticket-x`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const contentType = res.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        const data = await res.json();
+        toast.error(data.message || "Error al generar ticket X");
+        return false;
+      }
+
+      if (!res.ok) throw new Error("Error al generar el PDF");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Reporte de caja.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.message || "Error al generar ticket X");
+      return false;
+    } finally {
+      set({ loading: false });
+    }
+  },
+}));

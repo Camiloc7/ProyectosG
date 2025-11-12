@@ -19,7 +19,7 @@ export const InputFieldDos = ({
 }) => (
   <div className="mb-4">
     {label && (
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-gray-900 mb-2">
         {label}
       </label>
     )}
@@ -45,7 +45,8 @@ export const InputFieldDos = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full border rounded-lg px-3 py-2 text-sm ${
+            className={`w-full border rounded-lg px-3 py-2 text-sm placeholder-gray-600 text-gray-600 ${
+
           error ? "border-red-500" : "border-gray-300"
         } focus:outline-none focus:ring-2 focus:ring-orange-500`}
       />

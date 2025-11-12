@@ -40,7 +40,7 @@ export const useDineroExtraStore = create<DineroExtraState>((set) => ({
       const responseData = await handleApiResponse({
         backResponse: res,
         mensajeDeFallo: "No se pudo mandar el registro de ingreso extra",
-        debugg: true,
+        debugg: false,
       });
       toast.success(responseData.message || "Operacion Exitosa");
       return true;
@@ -69,7 +69,7 @@ export const useDineroExtraStore = create<DineroExtraState>((set) => ({
       const responseData = await handleApiResponse({
         backResponse: res,
         mensajeDeFallo: "No se pudo mandar el registro de ingreso extra",
-        debugg: true,
+        debugg: false,
       });
       toast.success(responseData.message || "Operacion Exitosa");
       return true;

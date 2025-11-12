@@ -25,6 +25,8 @@ import Spinner from "@/components/feedback/Spinner";
 import { FONDO, ORANGE } from "@/styles/colors";
 import ModalConfigurable from "@/components/modals/ModalConfigurable";
 import { IPedidos, Mesa } from "@/types/models";
+import { useAuthStore } from "@/stores/authStore";
+import TransferirMesaModal from "@/components/modals/TransferirMesaModal";
 interface PedidoItem {
   id: string;
   uniqueId: string;
@@ -102,19 +104,30 @@ export default function EditarPedido({
 }) {
   const { pedidoId } = use(params);
   const router = useRouter();
+  const { user } = useAuthStore();
   const { traerCategorias, categorias, traerProductos, productos, loading } =
     useProductosStore();
+  const [nombreMesa, setNombreMesa] = useState<string>("");
+
+  const [estadoPedido, setEstadoPedido] = useState<string>("");
+  const [pedidoItemsOriginales, setPedidoItemsOriginales] = useState<
+    PedidoItem[]
+  >([]);
+
   const { traerProductoConfigurable } = useProductosStore();
   const {
     traerPedidoPorId,
     actualizarPedido,
     loading: loadingPedidos,
+    transferirMesa,
+    agregarItemsAPedidoEntregado,
   } = usePedidosStore();
   const { traerMesasLibres, mesasLibres, fetchMesaById } = useMesasStore();
   const [pedidoItems, setPedidoItems] = useState<PedidoItem[]>([]);
   const [total, setTotal] = useState(0);
   const [readyCount, setReadyCount] = useState(0);
   const [activeCat, setActiveCat] = useState("");
+  const [showTransferModal, setShowTransferModal] = useState(false);
   const [infoPedido, setInfoPedido] = useState<IFormPedidos>({
     origen: "",
     telefono: "",
@@ -137,20 +150,19 @@ export default function EditarPedido({
   const [productoConfigurable, setProductoConfigurable] =
     useState<IProductoConfigurableCompleto | null>(null);
   const [loadingInitialData, setLoadingInitialData] = useState(true);
-  const [searchMesaTerm, setSearchMesaTerm] = useState("");
   const [mesaDelPedido, setMesaDelPedido] = useState<Mesa | null>(null);
-  const handleSearchMesaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchMesaTerm(e.target.value);
-  };
+
   useEffect(() => {
     traerCategorias();
     traerProductos();
   }, [traerCategorias, traerProductos]);
+
   useEffect(() => {
     if (categorias.length > 0 && !activeCat) {
       setActiveCat(categorias[0].nombre);
     }
   }, [categorias, activeCat]);
+
   useEffect(() => {
     const totalCount = pedidoItems.reduce(
       (acc, cur) => acc + cur.cantidad * cur.precio,
@@ -159,28 +171,33 @@ export default function EditarPedido({
     setTotal(totalCount);
     setReadyCount(pedidoItems.length);
   }, [pedidoItems]);
+
   useEffect(() => {
     const fetchPedidoData = async () => {
       if (pedidoId && productos.length > 0) {
         setLoadingInitialData(true);
         try {
-          const pedido: IPedidos | null = await traerPedidoPorId?.(pedidoId);
+          const pedido = await traerPedidoPorId(pedidoId);
           if (!pedido) {
             toast.error(
               "No se pudo cargar el pedido. Por favor, intente de nuevo."
             );
-            router.push("/cajero/pedidos");
             return;
           }
+
+          setEstadoPedido(pedido.estado); // 👈 Guardamos el estado del pedido
+
           if (pedido.mesa_id) {
             const mesaOcupada = await fetchMesaById(pedido.mesa_id);
             if (mesaOcupada) {
               setMesaDelPedido(mesaOcupada);
             }
           }
+
           if (pedido.tipo_pedido === "MESA") {
             await traerMesasLibres();
           }
+
           setInfoPedido({
             origen: pedido.tipo_pedido,
             telefono: pedido.cliente_telefono || "",
@@ -190,16 +207,22 @@ export default function EditarPedido({
             idOrdenExterna: pedido.idOrdenExterna || "",
             mesa: pedido.mesa_id || "",
           });
+
+          if (pedido?.mesa?.numero) {
+            setNombreMesa(pedido.mesa.numero);
+          }
+
           const items = pedido.pedidoItems.map((item: any) => {
             const tipo: "simple" | "configurable" =
               item.producto_configurable_id ? "configurable" : "simple";
             const nombreProducto =
               item.producto?.nombre || "Producto Desconocido";
-            let itemPrice = 0;
-            itemPrice = Number(item.precio_unitario_al_momento_venta) || 0;
+            const itemPrice =
+              Number(item.precio_unitario_al_momento_venta) || 0;
             const opcionesSeleccionadas = item.configuracion_json
               ? JSON.parse(item.configuracion_json)
               : [];
+
             return {
               id: item.producto_id,
               uniqueId: crypto.randomUUID(),
@@ -207,17 +230,18 @@ export default function EditarPedido({
               precio: itemPrice,
               cantidad: item.cantidad,
               nota: item.notas_item || "",
-              tipo: tipo,
-              opcionesSeleccionadas: opcionesSeleccionadas,
+              tipo,
+              opcionesSeleccionadas,
             };
           });
+
           setPedidoItems(items);
+          setPedidoItemsOriginales(items); // 👈 Guardamos copia para detectar nuevos
         } catch (error) {
           console.error("Error al cargar el pedido:", error);
           toast.error(
             "Hubo un error al cargar el pedido. Intente de nuevo más tarde."
           );
-          router.push("/cajero/pedidos");
         } finally {
           setLoadingInitialData(false);
         }
@@ -232,6 +256,25 @@ export default function EditarPedido({
     traerMesasLibres,
     router,
   ]);
+
+  const obtenerItemsNuevos = () => {
+    return pedidoItems.filter((itemNuevo) => {
+      const itemOriginal = pedidoItemsOriginales.find(
+        (orig) => orig.id === itemNuevo.id
+      );
+
+      // Si no existía antes
+      if (!itemOriginal) return true;
+
+      // Si aumentó la cantidad
+      if (itemNuevo.cantidad > itemOriginal.cantidad) {
+        return true;
+      }
+
+      return false;
+    });
+  };
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -239,13 +282,25 @@ export default function EditarPedido({
     setInfoPedido((prev) => ({ ...prev, [name]: value }));
   };
   const handleCantidad = (item: PedidoItem, delta: number) => {
+    // Si el pedido está entregado y se intenta restar
+    if (estadoPedido === "ENTREGADO" && delta < 0) {
+      toast.error("No puedes reducir cantidades en un pedido entregado");
+      return;
+    }
+
     setPedidoItems((prev) => {
       const existing = prev.find((p) => p.uniqueId === item.uniqueId);
+
       if (existing) {
+        const nuevaCantidad = existing.cantidad + delta;
+        if (estadoPedido === "ENTREGADO" && nuevaCantidad < existing.cantidad) {
+          // Bloquear reducciones incluso por lógica interna
+          return prev;
+        }
         const updated = prev
           .map((p) =>
             p.uniqueId === item.uniqueId
-              ? { ...p, cantidad: Math.max(0, p.cantidad + delta) }
+              ? { ...p, cantidad: Math.max(1, nuevaCantidad) }
               : p
           )
           .filter((p) => p.cantidad > 0);
@@ -256,9 +311,15 @@ export default function EditarPedido({
       return prev;
     });
   };
+
   const handleRemoveItem = (uniqueId: string) => {
+    if (estadoPedido === "ENTREGADO") {
+      toast.error("No puedes eliminar productos de un pedido entregado");
+      return;
+    }
     setPedidoItems((prev) => prev.filter((item) => item.uniqueId !== uniqueId));
   };
+
   const handleNotaChange = (uniqueId: string, nota: string) => {
     setPedidoItems((prev) =>
       prev.map((p) => (p.uniqueId === uniqueId ? { ...p, nota } : p))
@@ -285,7 +346,7 @@ export default function EditarPedido({
       return [...prev, { ...newPedidoItem, uniqueId: crypto.randomUUID() }];
     });
   };
-  const handleGuardarCambios = () => {
+  const handleGuardarCambios = async () => {
     const newErrors = {
       origen: false,
       telefono: false,
@@ -295,6 +356,7 @@ export default function EditarPedido({
       mesa: false,
     };
     let valid = true;
+
     if (infoPedido.origen === "DOMICILIO") {
       if (
         !infoPedido.telefono ||
@@ -315,19 +377,70 @@ export default function EditarPedido({
         valid = false;
       }
     }
-    if (infoPedido.origen === "MESA") {
-      if (!infoPedido.mesa) {
-        newErrors.mesa = true;
-        toast.error("Número de mesa es requerido");
-        valid = false;
-      }
+
+    if (infoPedido.origen === "MESA" && !infoPedido.mesa) {
+      newErrors.mesa = true;
+      toast.error("Número de mesa es requerido");
+      valid = false;
     }
+
     setErrors(newErrors);
     if (!valid) return;
+
     if (pedidoItems.length === 0) {
       toast.error("Agrega al menos un producto al pedido");
       return;
     }
+
+    // ⚠️ Si el pedido está entregado, enviamos solo los nuevos ítems al backend
+    if (estadoPedido === "ENTREGADO") {
+      const nuevos = obtenerItemsNuevos();
+
+      if (nuevos.length === 0) {
+        toast("No hay productos nuevos para agregar");
+        return;
+      }
+
+      try {
+        for (const item of nuevos) {
+          const itemOriginal = pedidoItemsOriginales.find(
+            (orig) => orig.id === item.id
+          );
+
+          const cantidadAAgregar = item.cantidad;
+
+          if (cantidadAAgregar <= 0) continue;
+
+          const payload = {
+            tipo_producto: "SIMPLE",
+            producto_id: item.id,
+            producto_configurable_id:
+              item.tipo === "configurable" ? item.id : null,
+            configuracion_json:
+              item.tipo === "configurable"
+                ? JSON.stringify(item.opcionesSeleccionadas || [])
+                : null,
+            cantidad: cantidadAAgregar,
+            notas_item: item.nota || "",
+            estado_cocina: "PENDIENTE",
+          };
+
+          // 👇 Llama a tu función del store (agrega esta función si no existe)
+          await usePedidosStore
+            .getState()
+            .agregarItemsAPedidoEntregado(pedidoId, payload);
+        }
+
+        volver();
+      } catch (err) {
+        console.error(err);
+        toast.error("Error al agregar nuevos productos");
+      }
+
+      return; // 👈 detenemos aquí
+    }
+
+    // 🧩 Si no está entregado, flujo normal
     const payloadProductos = pedidoItems.map((item) => ({
       id: item.id,
       cantidad: item.cantidad,
@@ -335,18 +448,38 @@ export default function EditarPedido({
       opciones:
         item.tipo === "configurable" ? item.opcionesSeleccionadas : undefined,
     }));
+
     const pedido = {
       ...infoPedido,
       productos: payloadProductos,
       total,
       id: pedidoId,
     };
+
     actualizarPedido(pedido);
-    router.push("/cajero");
+    volver();
   };
-  const handleCancel = () => {
-    router.back();
+
+  const volver = () => {
+    if (user?.rol === "MESERO") {
+      router.push("/mesero");
+    } else {
+      router.push("/cajero");
+    }
   };
+
+  const handleTransfer = async (newMesaId: string) => {
+    if (!pedidoId) {
+      toast.error("No se pudo transferir el pedido. ID no encontrado.");
+      return;
+    }
+    const success = await transferirMesa(pedidoId, newMesaId);
+    if (success) {
+      setShowTransferModal(false);
+      volver();
+    }
+  };
+
   const filteredItems = useMemo(() => {
     if (searchTerm) {
       return productos.filter((item) =>
@@ -357,6 +490,7 @@ export default function EditarPedido({
       (it) => "categoria" in it && it.categoria === activeCat
     );
   }, [productos, activeCat, searchTerm]);
+
   const mesasADesplegar = useMemo(() => {
     const mesas = [...mesasLibres];
     if (mesaDelPedido) {
@@ -375,11 +509,13 @@ export default function EditarPedido({
   }, [mesasLibres, mesaDelPedido]);
   const findCantidad = (id: string) =>
     pedidoItems.find((p) => p.id === id)?.cantidad || 0;
-  const findNota = (id: string) =>
-    pedidoItems.find((p) => p.id === id)?.nota || "";
+  const findNota = (uniqueId: string) =>
+    pedidoItems.find((p) => p.uniqueId === uniqueId)?.nota || "";
+
   const origenParaMostrar = tiposDeOrigen.find(
     (o) => o.id === infoPedido.origen
   );
+
   if (loading || loadingPedidos || loadingInitialData) {
     return <Spinner />;
   }
@@ -392,7 +528,13 @@ export default function EditarPedido({
         <div className="flex-shrink-0 flex flex-col items-center lg:w-1/4">
           <h1 className="text-2xl font-semibold text-gray-900 m-0 text-center lg:text-left">
             Actualizando Pedido
+            {infoPedido.origen === "MESA" && mesaDelPedido && (
+              <div className="mt-2 text-lg font-bold text-orange-500">
+                {nombreMesa}
+              </div>
+            )}
           </h1>
+
           {origenParaMostrar && (
             <div className="flex flex-col gap-4 w-full max-w-xs mt-6">
               <button
@@ -414,6 +556,14 @@ export default function EditarPedido({
                   {origenParaMostrar.nombre}
                 </h2>
               </button>
+            </div>
+          )}
+          {infoPedido.origen === "MESA" && (
+            <div className="mt-6">
+              <BotonRestaurante
+                label="Transferir a otra Mesa"
+                onClick={() => setShowTransferModal(true)}
+              />
             </div>
           )}
           <div className="mt-8 p-4 bg-white rounded-xl shadow-lg w-full max-w-xs overflow-y-auto">
@@ -445,10 +595,11 @@ export default function EditarPedido({
                         <button
                           className="p-1 rounded-full text-gray-500 hover:text-orange-500 transition-colors"
                           onClick={() => handleCantidad(item, -1)}
+                          disabled={estadoPedido === "ENTREGADO"}
                         >
                           <Minus size={16} />
                         </button>
-                        <span className="text-sm font-semibold">
+                        <span className="text-sm font-semibold text-gray-700">
                           {item.cantidad}
                         </span>
                         <button
@@ -460,6 +611,7 @@ export default function EditarPedido({
                         <button
                           className="ml-2 p-1 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
                           onClick={() => handleRemoveItem(item.uniqueId)}
+                          disabled={estadoPedido === "ENTREGADO"} // 👈 Desactiva el botón
                         >
                           <Trash2 size={16} />
                         </button>
@@ -534,27 +686,28 @@ export default function EditarPedido({
                     </div>
                   ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                      {mesasADesplegar.map((mesa) => (
-                        <button
-                          key={mesa.id}
-                          className={`
+                      {infoPedido.origen !== "MESA" &&
+                        mesasADesplegar.map((mesa) => (
+                          <button
+                            key={mesa.id}
+                            className={`
                             flex flex-col items-center p-4 rounded-lg shadow-sm transition-colors duration-200
                             bg-orange-500 text-white
                           `}
-                          disabled={true}
-                        >
-                          <img
-                            src="/mesa.svg"
-                            alt="Mesa"
-                            width={60}
-                            height={60}
-                            className="invert"
-                          />
-                          <span className="mt-1 font-semibold">
-                            {mesa.nombre}
-                          </span>
-                        </button>
-                      ))}
+                            disabled={true}
+                          >
+                            <img
+                              src="/mesa.svg"
+                              alt="Mesa"
+                              width={60}
+                              height={60}
+                              className="invert"
+                            />
+                            <span className="mt-1 font-semibold">
+                              {mesa.nombre}
+                            </span>
+                          </button>
+                        ))}
                     </div>
                   )}
                 </>
@@ -641,7 +794,7 @@ export default function EditarPedido({
                           >
                             <Minus size={16} />
                           </button>
-                          <div className="w-10 text-center font-semibold text-lg">
+                          <div className="w-10 text-center font-semibold text-lg text-gray-700">
                             {cantidadEnCarrito}
                           </div>
                           <button
@@ -655,16 +808,22 @@ export default function EditarPedido({
                           </button>
                         </div>
                       )}
-                      {(cantidadEnCarrito > 0 || isConfigurable) && (
-                        <textarea
-                          className="w-full border border-gray-300 rounded-lg p-2 text-sm resize-y mt-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                          placeholder="Nota (sin azúcar, etc.)"
-                          value={findNota(item.id)}
-                          onChange={(e) =>
-                            handleNotaChange(item.id, e.target.value)
-                          }
-                        />
-                      )}
+                      {pedidoItems
+                        .filter((p) => p.id === item.id)
+                        .map((pedidoItem) => (
+                          <textarea
+                            key={pedidoItem.uniqueId}
+                            className="w-full border border-gray-300 text-gray-500 rounded-lg placeholder:text-gray-500 p-2 text-sm resize-y mt-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            placeholder="Nota (sin azúcar, etc.)"
+                            value={pedidoItem.nota}
+                            onChange={(e) =>
+                              handleNotaChange(
+                                pedidoItem.uniqueId,
+                                e.target.value
+                              )
+                            }
+                          />
+                        ))}
                     </div>
                   );
                 })}
@@ -673,7 +832,9 @@ export default function EditarPedido({
           )}
         </div>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg flex justify-between items-center z-10">
+      <footer className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg flex justify-between items-center z-10 ml-16">
+        <BotonRestaurante label="Cancelar" onClick={() => router.back()} />
+
         <div className="text-xl font-semibold text-gray-900">
           TOTAL: ${total.toFixed(2)}
         </div>
@@ -682,6 +843,13 @@ export default function EditarPedido({
           onClick={handleGuardarCambios}
         />
       </footer>
+
+      <TransferirMesaModal
+        show={showTransferModal}
+        onClose={() => setShowTransferModal(false)}
+        mesasLibres={mesasLibres}
+        onTransfer={handleTransfer}
+      />
       {showConfigurableModal && (
         <ModalConfigurable
           producto={productoConfigurable}

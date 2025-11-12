@@ -52,13 +52,13 @@ export default function Lista<T extends { id: string }>({
             {columnas.map((col, i) => (
               <th
                 key={i}
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 {col.header}
               </th>
             ))}
             {(onEdit || onDelete) && (
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acciones
               </th>
             )}
@@ -78,14 +78,14 @@ export default function Lista<T extends { id: string }>({
                 return (
                   <td
                     key={i}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-700"
+                    className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-700"
                   >
                     {value as React.ReactNode}
                   </td>
                 );
               })}
               {(onEdit || onDelete) && (
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
                   {onEdit && (
                     <button
                       onClick={() => onEdit(item)}

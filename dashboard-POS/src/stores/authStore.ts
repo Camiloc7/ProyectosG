@@ -11,6 +11,7 @@ export interface JwtPayload {
   establecimiento_id: string;
   iat: number;
   exp: number;
+  nombre_establecimiento: string;
 }
 export type User = JwtPayload;
 
@@ -21,7 +22,7 @@ type AuthState = {
   isAuthenticated: boolean;
   login: (user: User, token: string) => void;
   logout: () => void;
-  loginAsync: (username: string, password: string) => Promise<void>;
+  loginAsync: (username: string, password: string) => Promise<string>;
 };
 
 export const useAuthStore = create(
@@ -72,9 +73,11 @@ export const useAuthStore = create(
             token,
             isAuthenticated: true,
           });
+          return decodedUser.rol;
         } catch (error) {
           console.error("Login fallido:", error);
           set({ isAuthenticated: false });
+          return "error";
         } finally {
           set({ loading: false });
         }

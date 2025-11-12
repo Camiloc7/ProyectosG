@@ -16,8 +16,6 @@ import Spinner from "@/components/feedback/Spinner";
 
 export default function AdminCategoriaManagementPage() {
   const confirm = useConfirm();
-
-  const router = useRouter();
   const { subirImagen } = useSubidaDeImagenes();
   const { user } = useAuthStore();
   const establecimientoId = user?.establecimiento_id;
@@ -66,8 +64,12 @@ export default function AdminCategoriaManagementPage() {
   const resetForm = () => {
     setNombre("");
     setDescripcion("");
+    setImagen(null);
+    setUrlImagen("");
     setIsEditing(false);
+    setCategoriaSeleccionada(null);
   };
+
   const handleOpenModal = (categoria?: ICategoria) => {
     if (categoria) {
       setIsEditing(true);
@@ -75,11 +77,10 @@ export default function AdminCategoriaManagementPage() {
       setUrlImagen(categoria.imagen_url || "");
       setNombre(categoria.nombre);
       setDescripcion(categoria.descripcion || "");
-    } else {
-      resetForm();
     }
     setModalVisible(true);
   };
+
   const categoriasFiltradas = useMemo(() => {
     if (!categorias) return [];
     return categorias.filter((categ) => {
@@ -259,7 +260,9 @@ export default function AdminCategoriaManagementPage() {
           className="fixed inset-0 backdrop-blur-md bg-white/30 dark:bg-black/20 flex items-center justify-center z-[201] transition-all"
           onClick={() => {
             setModalVisible(false);
-            resetForm();
+            if (isEditing) {
+              resetForm(); // limpiar solo si estaba editandos
+            }
           }}
         >
           <div
@@ -283,6 +286,7 @@ export default function AdminCategoriaManagementPage() {
               />
 
               <InputImagen
+                imagenUrl={imagen_url}
                 setArchivo={(value) => {
                   setImagen(value);
                 }}
@@ -295,9 +299,10 @@ export default function AdminCategoriaManagementPage() {
                 variacion="claro"
                 onClick={() => {
                   setModalVisible(false);
-                  resetForm();
+                  resetForm(); // aquí sí siempre limpia
                 }}
               />
+
               <BotonRestaurante
                 type="submit"
                 onClick={handleSaveCategoria}

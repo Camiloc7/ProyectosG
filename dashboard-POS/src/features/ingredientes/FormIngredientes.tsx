@@ -9,11 +9,13 @@ import { useDatosExtraStore } from "@/stores/datosExtraStore";
 import SelectConSearch from "@/components/ui/SelectConSearch";
 import { useIngredientesStore } from "@/stores/ingredientesStore";
 import Spinner from "@/components/feedback/Spinner";
+import { GiConsoleController } from "react-icons/gi";
 
 export type IIngredientesFormData = {
   id?: string;
   nombre: string;
   unidad_medida: string;
+  volumen_por_unidad?: number;
   stock_actual: number;
   stock_minimo: number;
   costo_unitario: number;
@@ -33,8 +35,21 @@ interface Errors {
   stock_actual: boolean;
   stock_minimo: boolean;
   costo_unitario: boolean;
+  volumen_por_unidad: boolean;
   observaciones: boolean;
 }
+
+const formatNumber = (value: any): number => {
+  if (value === null || value === undefined || value === "") return 0; // opcional, placeholder
+
+  const num = Number(value);
+  if (isNaN(num)) return value; // si no es número, devuelvo tal cual
+
+  if (Number.isInteger(num)) {
+    return num;
+  }
+  return Number(num.toFixed(2));
+};
 
 const FormIngredientes: React.FC<ModalFormProps> = ({
   isOpen,
@@ -45,12 +60,12 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
   const { fetchUnidadesDeMedida, unidadesDeMedida } = useDatosExtraStore();
   const { actualizarIngrediente, crearIngrediente, loading } =
     useIngredientesStore();
-  // Estado inicial, usa datos existentes o defaults
   const [formData, setFormData] = useState<IIngredientesFormData>({
     id: "",
     nombre: "",
     unidad_medida: "",
     stock_actual: 0,
+    volumen_por_unidad: 0,
     stock_minimo: 0,
     costo_unitario: 0,
     observaciones: "",
@@ -61,6 +76,7 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
     stock_actual: false,
     stock_minimo: false,
     costo_unitario: false,
+    volumen_por_unidad: false,
     observaciones: false,
   });
 
@@ -74,10 +90,11 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
         id: ingrediente?.id,
         nombre: ingrediente?.nombre,
         unidad_medida: ingrediente?.unidad_medida,
-        stock_actual: ingrediente?.stock_actual,
-        stock_minimo: ingrediente?.stock_minimo,
-        costo_unitario: ingrediente?.costo_unitario,
+        stock_actual: formatNumber(ingrediente?.stock_actual),
+        stock_minimo: formatNumber(ingrediente?.stock_minimo),
+        costo_unitario: formatNumber(ingrediente?.costo_unitario),
         observaciones: ingrediente?.observaciones,
+        volumen_por_unidad: formatNumber(ingrediente?.volumen_por_unidad),
       });
     } else {
       setFormData({
@@ -87,17 +104,12 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
         stock_actual: 0,
         stock_minimo: 0,
         costo_unitario: 0,
+        volumen_por_unidad: 0,
         observaciones: "",
       });
+      resetErrors();
     }
-    setErrors({
-      nombre: false,
-      unidad_medida: false,
-      stock_actual: false,
-      stock_minimo: false,
-      costo_unitario: false,
-      observaciones: false,
-    });
+    // 👇 importante: no toques formData si ingrediente === undefined
   }, [ingrediente]);
 
   useEffect(() => {
@@ -119,10 +131,16 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
     const newErrors: Errors = {
       unidad_medida: formData.unidad_medida === "",
       nombre: formData.nombre.trim() === "",
-      stock_actual: Number(formData.stock_actual) <= 0,
+      stock_actual:
+        isNaN(Number(formData.stock_actual)) ||
+        Number(formData.stock_actual) < 0,
       stock_minimo: Number(formData.stock_minimo) <= 0,
       costo_unitario: Number(formData.costo_unitario) <= 0,
-      observaciones: formData.observaciones.trim() === "",
+      observaciones: false,
+      volumen_por_unidad:
+        formData.unidad_medida === "unidad"
+          ? Number(formData.volumen_por_unidad) <= 0
+          : false,
     };
     setErrors(newErrors);
 
@@ -130,19 +148,28 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
       toast.error("Por favor completa todos los campos requeridos.");
       return;
     }
+    const dataToSend: any = {
+      id: formData.id,
+      nombre: formData.nombre.trim(),
+      unidad_medida: formData.unidad_medida,
+      stock_actual: Number(formData.stock_actual),
+      stock_minimo: Number(formData.stock_minimo),
+      costo_unitario: Number(formData.costo_unitario),
+      observaciones: formData.observaciones.trim(),
+    };
+    if (formData.unidad_medida === "unidades") {
+      dataToSend.volumen_por_unidad = Number(formData.volumen_por_unidad);
+    }
 
-    let respuesta = false;
+    let respuesta = null;
     if (ingrediente) {
-      respuesta = await actualizarIngrediente(formData);
+      respuesta = await actualizarIngrediente(dataToSend);
     } else {
-      respuesta = await crearIngrediente(formData);
+      respuesta = await crearIngrediente(dataToSend);
     }
 
-    if (respuesta) {
-      handleCancel();
-    } else {
-      return;
-    }
+    if (respuesta === false) return;
+    handleCancel();
   };
 
   const handleCancel = () => {
@@ -153,8 +180,27 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
       stock_actual: 0,
       stock_minimo: 0,
       costo_unitario: 0,
+      volumen_por_unidad: 0,
       observaciones: "",
     });
+    resetErrors();
+    onClose();
+  };
+
+  const resetErrors = () => {
+    setErrors({
+      nombre: false,
+      unidad_medida: false,
+      stock_actual: false,
+      stock_minimo: false,
+      costo_unitario: false,
+      volumen_por_unidad: false,
+      observaciones: false,
+    });
+  };
+
+  const handleSoftClose = () => {
+    resetErrors();
     onClose();
   };
 
@@ -163,14 +209,14 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
   return (
     <div
       className="fixed inset-0 backdrop-blur-md bg-white/30 dark:bg-black/20 flex items-center justify-center z-[201] transition-all"
-      onClick={handleCancel}
+      onClick={handleSoftClose}
     >
       <div
         className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between mb-6">
-          <button onClick={handleCancel}>
+          <button onClick={handleSoftClose}>
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <h2 className="text-xl font-semibold text-gray-700">
@@ -195,8 +241,19 @@ const FormIngredientes: React.FC<ModalFormProps> = ({
               setFormData((prev) => ({ ...prev, unidad_medida: value }))
             }
             error={errors.unidad_medida}
-            errorMessage="Debes seleccionar un departamento"
+            errorMessage="Debes seleccionar una unidad de medida"
           />
+
+          {formData.unidad_medida === "unidades" && (
+            <InputField
+              label="Volumen por unidad"
+              name="volumen_por_unidad"
+              value={formData.volumen_por_unidad || "0"}
+              type="Number"
+              onChange={handleChange}
+              error={errors.volumen_por_unidad}
+            />
+          )}
 
           <InputField
             label="Stock Actual"

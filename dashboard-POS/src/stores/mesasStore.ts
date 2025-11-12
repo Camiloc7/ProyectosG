@@ -17,6 +17,10 @@ export interface IMesa {
   estado: EstadoMesa;
   ubicacion_descripcion?: string;
 }
+export type IActualizarMesa = Partial<IMesa> & {
+  id: string;
+};
+
 type MesasState = {
   loading: boolean;
   mesas: Mesa[];
@@ -25,7 +29,7 @@ type MesasState = {
   fetchMesas: () => Promise<void>;
   fetchMesaById: (id: string) => Promise<Mesa | undefined>;
   createMesa: (mesaData: IMesa) => Promise<Mesa | undefined>;
-  updateMesa: (mesaData: IMesa) => Promise<Mesa | undefined>;
+  updateMesa: (mesaData: IActualizarMesa) => Promise<Mesa | undefined>;
   deleteMesa: (id: string) => Promise<boolean>;
   traerMesasLibres: () => Promise<void>;
 };
@@ -151,7 +155,6 @@ export const useMesasStore = create<MesasState>((set, get) => ({
         body: JSON.stringify(mesaSinId),
       });
       const data = await res.json();
-      console.log(data);
       if (!res.ok) {
         throw new Error(data.message);
       }

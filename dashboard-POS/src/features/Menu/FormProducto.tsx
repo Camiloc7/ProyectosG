@@ -12,6 +12,7 @@ import InputImagen from "@/components/ui/InputImagen";
 import { useSubidaDeImagenes } from "@/stores/subidaDeImagenes";
 import { Producto, useProductosStore } from "@/stores/productosStore";
 import Spinner from "@/components/feedback/Spinner";
+import SelectConSearch from "@/components/ui/SelectConSearch";
 
 export type IReceta = {
   ingrediente_id: string;
@@ -130,7 +131,8 @@ const FormProducto: React.FC<ModalFormProps> = ({
 }) => {
   const { subirImagen } = useSubidaDeImagenes();
   const { crearProducto, actualizarProducto, loading } = useProductosStore();
-
+  const { crearIngrediente, loading: loadingIngrediente } =
+    useIngredientesStore();
   const { fetchCategorias, selectCategorias } = useCategoriasStore();
   const { traerIngredientes, ingredientes } = useIngredientesStore();
 
@@ -195,10 +197,6 @@ const FormProducto: React.FC<ModalFormProps> = ({
     fetchCategorias();
     traerIngredientes();
   }, []);
-
-  useEffect(() => {
-    // console.log("Producto FRONT FORM; ", producto);
-  }, [producto]);
 
   useEffect(() => {
     if (producto) {
@@ -347,10 +345,20 @@ const FormProducto: React.FC<ModalFormProps> = ({
     }
 
     setErrors(newErrors);
-    // console.log(newErrors);
     if (Object.values(newErrors).some(Boolean)) {
       toast.error("Por favor completa todos los campos requeridos.");
       return;
+    }
+
+    if (tipoProducto === "SIMPLE") {
+      const ids = formDataSimple.receta.map((r) => r.ingrediente_id);
+      const tieneDuplicados = ids.some(
+        (id, idx) => ids.indexOf(id) !== idx && id !== ""
+      );
+      if (tieneDuplicados) {
+        toast.error("No puedes agregar ingredientes duplicados en la receta.");
+        return;
+      }
     }
 
     let imagen_url_subida: string | undefined;
@@ -611,6 +619,20 @@ const FormProducto: React.FC<ModalFormProps> = ({
     setTipoProducto("SIMPLE");
   };
 
+  const resetErrors = () =>
+    setErrors({
+      categoria_id: false,
+      nombre: false,
+      descripcion: false,
+      precio: false,
+      receta: false,
+      opciones: false,
+    });
+
+  const softReset = () => {
+    resetErrors();
+    onClose();
+  };
   if (!isOpen) return null;
 
   const currentFormData =
@@ -619,14 +641,14 @@ const FormProducto: React.FC<ModalFormProps> = ({
   return (
     <div
       className="fixed inset-0 backdrop-blur-md bg-white/30 dark:bg-black/20 flex items-center justify-center z-[201] transition-all"
-      onClick={handleCancel}
+      onClick={softReset}
     >
       <div
         className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-xl max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between mb-6">
-          <button onClick={handleCancel}>
+          <button onClick={softReset}>
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <h2 className="text-xl font-semibold text-gray-700">
@@ -636,7 +658,8 @@ const FormProducto: React.FC<ModalFormProps> = ({
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center gap-4">
+          {/*!!!! ESTO ES PARA LOS PRODUCTOS COMPLETOS (FUERA DE USO ACTUALMENTE) !!!!*/}
+          {/* <div className="flex items-center gap-4">
             <label className="text-gray-700 font-semibold">
               Tipo de Producto:
             </label>
@@ -668,7 +691,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
                 Configurable
               </label>
             </div>
-          </div>
+          </div> */}
 
           <SimpleSelect
             label="Categoría"
@@ -706,7 +729,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
           {tipoProducto === "SIMPLE" ? (
             <>
               <InputField
-                label="Precio DE EL SIMPLE"
+                label="Precio"
                 name="precio"
                 type="number"
                 value={formDataSimple.precio ?? ""}
@@ -715,21 +738,44 @@ const FormProducto: React.FC<ModalFormProps> = ({
               />
               <div className="bg-gray-50 p-6 rounded-2xl shadow-inner space-y-4">
                 <h3 className="text-xl font-semibold text-gray-700">Receta</h3>
+                <h3 className="text-l font-light text-gray-600">
+                  Ingredientes:
+                </h3>
                 {formDataSimple.receta?.map((item, idx) => (
                   <div
                     key={idx}
                     className="flex items-center gap-3 bg-white p-3 rounded-xl shadow-sm"
                   >
-                    <SimpleSelect
-                      label="Ingrediente"
-                      options={ingredientes}
-                      value={item.ingrediente_id ?? ""}
-                      onChange={(val) =>
-                        updateReceta(idx, { ingrediente_id: val })
-                      }
-                      placeholder="Selecciona ingrediente"
-                    />
-                    <div className="flex items-center gap-1 mt-4">
+                    {loadingIngrediente ? (
+                      "Cargando..."
+                    ) : (
+                      <SelectConSearch
+                        // label="Ingrediente"
+                        options={ingredientes}
+                        value={item.ingrediente_id ?? ""}
+                        onChange={(val) =>
+                          updateReceta(idx, { ingrediente_id: val })
+                        }
+                        onCreate={async (nuevo) => {
+                          // Creamos el ingrediente en el backend con datos por defecto
+                          const creado = await crearIngrediente({
+                            nombre: nuevo,
+                            unidad_medida: "kilogramos",
+                            stock_actual: 10,
+                            stock_minimo: 1,
+                            costo_unitario: 1,
+                            observaciones:
+                              "ESTE INGREDIENTE SE CREÓ AUTOMÁTICAMENTE",
+                          });
+
+                          if (creado === null) return;
+
+                          updateReceta(idx, { ingrediente_id: creado.id });
+                        }}
+                        placeholder="Selecciona ingrediente"
+                      />
+                    )}
+                    <div className="flex items-center gap-1 ">
                       <button type="button" onClick={() => decCantidad(idx)}>
                         <MinusCircle className="text-[#ed4e05] text-xm" />
                       </button>
@@ -751,7 +797,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
                     <button
                       type="button"
                       onClick={() => removeIngrediente(idx)}
-                      className="text-[#ed4e05] mt-4"
+                      className="text-[#ed4e05] "
                     >
                       <X />
                     </button>
@@ -762,7 +808,7 @@ const FormProducto: React.FC<ModalFormProps> = ({
                   onClick={addIngrediente}
                   className="flex items-center gap-2 text-[#ed4e05] "
                 >
-                  <PlusCircle /> Añadir ingredientes
+                  <PlusCircle /> Añadir ingrediente
                 </button>
               </div>
             </>

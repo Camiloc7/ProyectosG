@@ -23,8 +23,13 @@ export type EmpleadoFormData = {
   activo: boolean;
   created_at?: string;
   updated_at?: string;
+  rol?: Rol;
 };
 
+type Rol = {
+  id: string;
+  nombre: string;
+};
 interface ModalFormProps {
   isOpen: boolean;
   empleado?: EmpleadoFormData;
@@ -114,25 +119,21 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
     e.preventDefault();
     e.stopPropagation(); // 👈 evita que cierre el modal
 
-    // Expresión regular para validar contraseña
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-    // Validación básica
     const newErrors: Errors = {
       rol_id: formData.rol_id === "",
       nombre: formData.nombre.trim() === "",
       apellido: formData.apellido.trim() === "",
       username: formData.username.trim() === "",
-      password: false, // 👈 se inicializa sin error
+      password: false,
     };
 
-    // Si estamos creando un empleado, la contraseña es obligatoria y debe validarse
     if (!empleado) {
       newErrors.password =
         !formData.password || !passwordRegex.test(formData.password.trim());
     }
 
-    // Si estamos editando, solo validamos si la contraseña fue escrita
     if (empleado && formData.password?.trim()) {
       newErrors.password = !passwordRegex.test(formData.password.trim());
     }
@@ -158,10 +159,16 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
     }
 
     // Construimos payload limpio
-    const dataConRolId = {
+    let dataConRolId: any = {
       ...formData,
       rolName: rolSeleccionado.nombre,
     };
+
+    // 🚨 Si es admin, no mandamos el rol
+    if (rolSeleccionado.nombre.toLowerCase() === "admin") {
+      delete dataConRolId.rol_id;
+      delete dataConRolId.rolName;
+    }
 
     // 🚨 Solo agregamos password_nueva si realmente la editaron
     const conRolYNuevaPassword = {
@@ -171,7 +178,6 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
         : {}),
     };
 
-    //===========
     let respuesta = false;
     if (empleado) {
       respuesta = await actualizarEmpleado(conRolYNuevaPassword);
@@ -185,6 +191,17 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
   };
 
   const handleCancel = () => {
+    resetFormData();
+    resetErrors();
+    onClose();
+  };
+
+  const softClose = () => {
+    resetErrors();
+    onClose();
+  };
+
+  const resetFormData = () => {
     setFormData({
       id: "",
       establecimiento_id: "",
@@ -197,7 +214,9 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
       created_at: "",
       updated_at: "",
     });
+  };
 
+  const resetErrors = () => {
     setErrors({
       rol_id: false,
       nombre: false,
@@ -205,8 +224,6 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
       password: false,
       username: false,
     });
-
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -215,7 +232,7 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
     <div
       className="fixed inset-0 backdrop-blur-md bg-white/30 dark:bg-black/20 flex items-center justify-center z-[201] transition-all"
       onClick={(e) => {
-        if (e.target === e.currentTarget) handleCancel(); // 👈 solo cerrar si clic en el fondo, no por cualquier burbuja
+        if (e.target === e.currentTarget) softClose();
       }}
     >
       <div
@@ -223,7 +240,7 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between mb-6">
-          <button onClick={handleCancel}>
+          <button onClick={softClose}>
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <h2 className="text-xl font-semibold text-gray-700">
@@ -263,6 +280,7 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
             width="100%"
             value={formData.rol_id}
             onChange={(val) => onUpdate({ rol_id: val })}
+            readOnly={empleado ? true : false}
           />
 
           {!empleado ? (
@@ -293,11 +311,13 @@ const FormEmpleadoRestaurante: React.FC<ModalFormProps> = ({
           )}
 
           <div className="flex items-center space-x-2">
-            <Checkbox
-              label="Activo"
-              checked={formData.activo}
-              onChange={(checked) => onUpdate({ activo: checked })}
-            />
+            {empleado?.rol?.nombre !== "ADMIN" && (
+              <Checkbox
+                label="Activo"
+                checked={formData.activo}
+                onChange={(checked) => onUpdate({ activo: checked })}
+              />
+            )}
           </div>
 
           {empleado && (

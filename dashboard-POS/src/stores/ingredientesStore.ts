@@ -15,13 +15,18 @@ export type IIngredientes = {
   created_at: Date;
   volumen_por_unidad?: number;
 };
+export type IActualizarIngrediente = Partial<IIngredientesFormData> & {
+  id: string;
+};
 
 type IngredientesState = {
   loading: boolean;
   ingredientes: IIngredientes[];
   traerIngredientes: () => Promise<void>;
-  crearIngrediente: (data: IIngredientesFormData) => Promise<boolean>;
-  actualizarIngrediente: (data: IIngredientesFormData) => Promise<boolean>;
+  crearIngrediente: (
+    data: IIngredientesFormData
+  ) => Promise<IIngredientes | null>;
+  actualizarIngrediente: (data: IActualizarIngrediente) => Promise<boolean>;
   eliminarIngrediente: (id: string) => Promise<void>;
   subirExcel: (file: File) => Promise<{ success: boolean; errors?: string[] }>;
 };
@@ -59,7 +64,7 @@ export const useIngredientesStore = create<IngredientesState>((set, get) => ({
 
   traerIngredientes: async () => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/ingredientes`, {
@@ -84,16 +89,16 @@ export const useIngredientesStore = create<IngredientesState>((set, get) => ({
     } catch (error: any) {
       const mensajeDelDev = "No se pudo traer los ingredientes";
       console.error(mensajeDelDev, error);
-      toast.error(error.message || mensajeDelDev);
+      // toast.error(error.message || mensajeDelDev);
       set({ loading: false });
     }
   },
 
   crearIngrediente: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const { id, ...ingredienteSinId } = data;
-    console.warn("Lo que le mando", ingredienteSinId);
+    console.warn("Lo que le mando RAW A CREAR: ", ingredienteSinId);
     try {
       const res = await fetch(`${RUTA}/ingredientes`, {
         method: "POST",
@@ -113,19 +118,19 @@ export const useIngredientesStore = create<IngredientesState>((set, get) => ({
 
       set({ loading: false });
       toast.success("Ingrediente creado exitosamente");
-      return true;
+      return responseData.data;
     } catch (error: any) {
       const mensajeDelDev = "No se pudo crear el ingrediente";
       console.error(mensajeDelDev, error);
       toast.error(error.message || mensajeDelDev);
       set({ loading: false });
-      return false;
+      return null;
     }
   },
 
   actualizarIngrediente: async (data) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const { id, ...ingredienteSinId } = data;
     console.warn("Lo que le mando", ingredienteSinId);
     try {
@@ -159,7 +164,7 @@ export const useIngredientesStore = create<IngredientesState>((set, get) => ({
 
   eliminarIngrediente: async (id) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/ingredientes/${id}`, {
@@ -197,7 +202,7 @@ export const useIngredientesStore = create<IngredientesState>((set, get) => ({
   },
   subirExcel: async (file: File) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const formData = new FormData();
     formData.append("file", file);
 

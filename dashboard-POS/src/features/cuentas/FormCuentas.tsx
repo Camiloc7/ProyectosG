@@ -124,7 +124,6 @@ const FormCuentas: React.FC<ModalFormProps> = ({
     };
     setErrors(newErrors);
 
-    console.log(errors);
     if (Object.values(newErrors).some(Boolean)) {
       toast.error("Por favor completa todos los campos requeridos.");
       return;
@@ -154,14 +153,14 @@ const FormCuentas: React.FC<ModalFormProps> = ({
   return (
     <div
       className="fixed inset-0 backdrop-blur-md bg-white/30 dark:bg-black/20 flex items-center justify-center z-[201] transition-all"
-      onClick={handleCancel}
+      onClick={onClose}
     >
       <div
         className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         <header className="flex items-center justify-between mb-6">
-          <button onClick={handleCancel}>
+          <button onClick={onClose}>
             <ArrowLeft className="w-6 h-6 text-gray-600" />
           </button>
           <h2 className="text-xl font-semibold text-gray-700">

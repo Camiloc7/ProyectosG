@@ -3,10 +3,10 @@ import { FONDO, FONDO_COMPONENTES, ORANGE } from "../../styles/colors";
 import { useCallback, useEffect, useState } from "react";
 import FormCancelacion from "../../features/listaDePedidos/FormCancelacion";
 import { useConfirm } from "../../components/feedback/confirmModal";
-import { RefreshCcw } from "lucide-react";
+import { CircleDollarSign, Flag, RefreshCcw } from "lucide-react";
 import Spinner from "@/components/feedback/Spinner";
 import { conectarSocket } from "../../helpers/socket";
-import { PlayCircle, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { Tooltip } from "react-tooltip";
 import "react-tooltip/dist/react-tooltip.css";
 import FormCierreCaja, {
@@ -25,23 +25,38 @@ import {
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IItemsPedidos, IPedidos } from "@/types/models";
+import FormExtraMoney from "@/features/listaDePedidos/FormIngresosEgresosExtra";
+const LS_KEY_IMPRESION = "pedidosImpresosStatus";
+
 export default function Pedidos() {
   const router = useRouter();
   const confirm = useConfirm();
   const {
     cajaActiva,
-    cierreDeCaja,
+    generarTicketX,
+    traerCajaActiva,
     aperturaDeCaja,
     loading: loadingCaja,
   } = useCajaStore();
-  const { traerPedidos, pedidos, loading, pedidosPendientes } =
-    usePedidosStore();
-  const imprimirComanda = usePedidosStore((state) => state.imprimirComanda);
+  const {
+    traerPedidos,
+    pedidos,
+    loading,
+    pedidosPendientes,
+    actualizarEstadoPedido,
+  } = usePedidosStore();
+
+  const { imprimirComanda, loading: loadingComanda } = usePedidosStore();
   const [cancelarOpen, setCancelarOpen] = useState<boolean>(false);
   const [openCaja, setOpenCaja] = useState<boolean>(false);
   const [cierreDeCajaAbierto, setCierreDeCajaAbierto] =
     useState<boolean>(false);
   const [idCancelar, setIdCancelar] = useState<string>("");
+  const [gastosEIngresosOpen, setGastosEIngresosOpen] =
+    useState<boolean>(false);
+  const [pedidosImpresos, setPedidosImpresos] = useState<{
+    [key: string]: boolean;
+  }>({});
   const [pedidosGuardados, setPedidosGuardados] = useState<any[]>([]);
   const { user, isAuthenticated, logout } = useAuthStore();
   const formatearPedidos = useCallback(
@@ -53,14 +68,59 @@ export default function Pedidos() {
     },
     []
   );
+  const guardarEstadoImpresion = useCallback(
+    (id: string, estaImpreso: boolean) => {
+      setPedidosImpresos((prev) => {
+        const nuevoEstado = { ...prev, [id]: estaImpreso };
+        try {
+          localStorage.setItem(LS_KEY_IMPRESION, JSON.stringify(nuevoEstado));
+        } catch (error) {
+          console.error("Error al guardar el estado de impresión:", error);
+        }
+        return nuevoEstado;
+      });
+    },
+    []
+  );
+
+  const restablecerImpresion = useCallback(
+    (pedidoId: string) => {
+      guardarEstadoImpresion(pedidoId, false);
+    },
+    [guardarEstadoImpresion]
+  );
+  const handleImprimirComanda = async (pedidoId: string) => {
+    try {
+      await imprimirComanda(pedidoId);
+      guardarEstadoImpresion(pedidoId, true);
+    } catch (error) {
+      console.error("Error al imprimir comanda:", error);
+      toast.error("Error al intentar imprimir la comanda.");
+    }
+  };
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(LS_KEY_IMPRESION);
+      if (stored) {
+        setPedidosImpresos(JSON.parse(stored));
+      }
+    } catch (error) {
+      console.error("Error al cargar el estado de impresión:", error);
+    }
+
+    traerCajaActiva();
+    handleFetch();
+  }, [formatearPedidos]);
+
   useEffect(() => {
     async function init() {
       try {
         if (!user?.establecimiento_id) return;
         const socket = await conectarSocket(user.establecimiento_id);
         socket.on("pedidoCreated", ({ pedidoId }) => {
-          console.log("[WS] Nuevo pedido recibido:", pedidoId);
+          console.warn("[WS] Nuevo pedido recibido:", pedidoId);
           usePedidosStore.getState().traerPedidos();
+          guardarEstadoImpresion(pedidoId, false);
         });
         socket.on("pedidos_actualizados", (nuevosPedidos: IPedidos[]) => {
           const pedidosFormateados = formatearPedidos(nuevosPedidos);
@@ -71,10 +131,10 @@ export default function Pedidos() {
       }
     }
     init();
-  }, [formatearPedidos, user]);
+  }, [user, guardarEstadoImpresion]);
+
   useEffect(() => {
     const checkPedidosEnProceso = async () => {
-      await traerPedidos();
       if (pedidosPendientes.length > 0) {
         const confirmado = await confirm({
           title: "Hay pedidos en proceso de pago",
@@ -92,8 +152,8 @@ export default function Pedidos() {
       }
     };
     checkPedidosEnProceso();
-    traerPedidos();
-  }, [traerPedidos, traerPedidos, pedidosPendientes, router, confirm]);
+  }, [traerPedidos, pedidosPendientes, router, confirm]);
+
   const handleEliminarPedidoPendiente = async (pedidoId: string) => {
     const confirmado = await confirm({
       title: "¿Cancelar proceso de pago?",
@@ -121,23 +181,14 @@ export default function Pedidos() {
       const formattedData: IDataParaAperturaDeCaja = {
         denominaciones_apertura: denominaciones,
       };
-      aperturaDeCaja(formattedData);
+      const response = await aperturaDeCaja(formattedData);
+      if (response === false) {
+        return;
+      }
       setOpenCaja(false);
+      window.location.reload();
     } catch (error) {
       console.error("Error al iniciar la caja:", error);
-    }
-  };
-  const handleCierreDeCaja = async (data: IFormCierreCaja) => {
-    try {
-      if (!user?.establecimiento_id) return;
-      const formattedData: IDataParaCierreDeCaja = {
-        denominaciones_cierre: data.denominaciones_cierre,
-        observaciones: data.observaciones,
-      };
-      cierreDeCaja(formattedData);
-      setCierreDeCajaAbierto(false);
-    } catch (error) {
-      console.error("Error al cerrar la caja:", error);
     }
   };
 
@@ -154,7 +205,6 @@ export default function Pedidos() {
       await usePedidosStore
         .getState()
         .cambiarEstadoPedido(idCancelar, "CANCELADO");
-      toast.success(`El pedido ${idCancelar} ha sido cancelado.`);
       setCancelarOpen(false);
       setIdCancelar("");
     } catch (error) {
@@ -188,94 +238,89 @@ export default function Pedidos() {
       }}
     >
       <div style={{ margin: "0 auto" }}>
-        <header
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 32,
-            padding: "16px 24px",
-            backgroundColor: "#ffffff",
-            borderRadius: 12,
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            color: "#333",
-          }}
-        >
-          <h2
-            style={{
-              fontSize: 22,
-              fontWeight: 600,
-              margin: 0,
-              color: "#333",
-            }}
-          >
+        <header className="relative flex flex-wrap items-center justify-between bg-white p-3 md:p-6 rounded-xl shadow-md mb-6 gap-3">
+          <h2 className="text-lg md:text-2xl font-semibold text-gray-800">
             Lista de Pedidos
           </h2>
-          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <div
+            className={`hidden [@media(min-width:1115px)]:block absolute left-1/2 transform -translate-x-1/2 text-xl font-bold uppercase ${
+              cajaActiva ? "text-green-500" : "text-red-500"
+            }`}
+          >
+            {cajaActiva ? "Caja Abierta" : "Caja Cerrada"}
+          </div>
+          <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 md:gap-4 flex-1">
             {loading ? (
-              <h1>Cargando...</h1>
+              <span className="text-gray-500 font-medium">Cargando...</span>
             ) : (
               <>
                 <span
                   data-tooltip-id="tooltip"
                   data-tooltip-content="Refrescar"
+                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
                 >
                   <RefreshCcw
                     onClick={handleFetch}
-                    style={{ cursor: "pointer", color: "#666" }}
-                    onMouseEnter={(e) =>
-                      (e.currentTarget.style.color = "#28a745")
-                    }
-                    onMouseLeave={(e) => (e.currentTarget.style.color = "#666")}
+                    size={20}
+                    className="md:w-6 md:h-6"
                   />
                 </span>
+                <span
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content={
+                    cajaActiva ? "Cerrar caja" : "Abrir caja"
+                  }
+                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
+                >
+                  <Lock
+                    onClick={handleBotonCajaClick}
+                    size={20}
+                    className={`cursor-pointer md:w-6 md:h-6 ${
+                      cajaActiva ? "text-green-500" : "text-red-500"
+                    }`}
+                  />
+                </span>
+                <span
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content="Gastos e Ingresos Extra"
+                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
+                >
+                  <CircleDollarSign
+                    onClick={() => setGastosEIngresosOpen(true)}
+                    size={20}
+                    className="md:w-6 md:h-6"
+                  />
+                </span>
+                <span
+                  data-tooltip-id="tooltip"
+                  data-tooltip-content="Reporte de caja"
+                  className="text-gray-500 hover:text-green-500 cursor-pointer transition-colors"
+                >
+                  <Flag
+                    onClick={() => generarTicketX()}
+                    size={20}
+                    className="md:w-6 md:h-6"
+                  />
+                </span>
+                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                  <BotonRestaurante
+                    label="Agregar Pedido"
+                    onClick={() => {
+                      if (cajaActiva) {
+                        router.push("/cajero/crear_pedido");
+                      } else {
+                        toast.error(
+                          "Debes abrir la caja antes de pagar un pedido."
+                        );
+                        setOpenCaja(true);
+                      }
+                    }}
+                  />
+                </div>
+
+                <Tooltip id="tooltip" place="bottom" />
               </>
             )}
-            {/* <span data-tooltip-id="tooltip" data-tooltip-content="Inicio de caja">
-                            <PlayCircle
-                                onClick={() => setOpenCaja(true)}
-                                style={{ cursor: 'pointer', color: '#666' }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = '#28a745')}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = '#666')}
-                            />
-                        </span>
-                        <span data-tooltip-id="tooltip" data-tooltip-content="Cierre de caja">
-                            <Lock
-                                onClick={() => setCierreDeCajaAbierto(true)}
-                                style={{ cursor: 'pointer', color: '#666' }}
-                                onMouseEnter={(e) => (e.currentTarget.style.color = '#28a745')}
-                                onMouseLeave={(e) => (e.currentTarget.style.color = '#666')}
-                            />
-                        </span> */}
-
-            <Lock
-              onClick={handleBotonCajaClick}
-              color={cajaActiva ? "green" : "red"}
-            />
-
-            <BotonRestaurante
-              label="Agregar Pedido"
-              onClick={() => router.push("/cajero/crear_pedido")}
-            />
-            {/* <BotonRestaurante
-                            label="Agregar Pedido"
-                            onClick={() => {
-                                const { cajaActiva } = useCajaStore.getState();
-                                if (cajaActiva) {
-                                    router.push('/cajero/crear_pedido');
-                                } else {
-                                    toast.error('Debes abrir la caja antes de agregar un pedido.');
-                                    setOpenCaja(true);
-                                }
-                            }}
-                        />*/}
-
-            <BotonRestaurante
-              label="Cerrar Sesión"
-              variacion="claro"
-              onClick={handleLogout}
-            />
-            <Tooltip id="tooltip" place="bottom" />
           </div>
         </header>
 
@@ -366,7 +411,6 @@ export default function Pedidos() {
               >
                 {titulo}
               </h2>
-
               <div
                 style={{
                   display: "grid",
@@ -374,224 +418,256 @@ export default function Pedidos() {
                   gap: 24,
                 }}
               >
-                {pedidosFiltrados.map((pedido: IPedidos) => (
-                  <div
-                    key={pedido.id}
-                    style={{
-                      backgroundColor: FONDO_COMPONENTES,
-                      border: `2px solid ${
-                        pedido.estado === "FINALIZADO" ? ORANGE : "#D1D5DB"
-                      }`,
-                      boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
-                      borderRadius: 24,
-                      padding: 24,
-                      display: "flex",
-                      flexDirection: "column",
-                      justifyContent: "space-between",
-                      maxHeight: 300, // máximo alto
-                      minHeight: 300,
-                      overflowY: "auto", // permite scroll vertical si el contenido es mayor
-                      maxWidth: 350,
+                {pedidosFiltrados.map((pedido: IPedidos) => {
+                  const estaImpreso = pedidosImpresos[pedido.id] === true;
+                  const mensajeImpresion = estaImpreso
+                    ? "Orden impresa"
+                    : "Orden por imprimir";
+                  const colorMensaje = estaImpreso ? "#10B981" : "#F59E0B";
 
-                      width: "100%",
-                      color: "#000000",
-                      position: "relative",
-                    }}
-                  >
-                    <button
-                      onClick={() => imprimirComanda(pedido.id)}
+                  return (
+                    <div
+                      key={pedido.id}
                       style={{
-                        position: "absolute",
-                        top: 24,
-                        right: 24,
-                        background: "transparent",
-                        border: "none",
-                        cursor: "pointer",
-                        padding: 0,
-                        color: "#6B7280",
-                        transition: "color 0.2s",
+                        backgroundColor: FONDO_COMPONENTES,
+                        border: `2px solid ${
+                          pedido.estado === "FINALIZADO" ? ORANGE : "#D1D5DB"
+                        }`,
+                        boxShadow: "0 10px 40px rgba(0, 0, 0, 0.1)",
+                        borderRadius: 24,
+                        padding: 24,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        maxHeight: 300,
+                        minHeight: 300,
+                        overflowY: "auto",
+                        maxWidth: 350,
+
+                        width: "100%",
+                        color: "#000000",
+                        position: "relative",
                       }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.color = ORANGE)
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.color = "#6B7280")
-                      }
-                      aria-label="Imprimir comanda"
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                      >
-                        <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
-                      </svg>
-                    </button>
-                    <div>
-                      <h3
+                      {loadingComanda && <Spinner />}
+                      <div
                         style={{
-                          fontSize: 20,
-                          fontWeight: 600,
-                          color: "#333",
-                          marginBottom: 12,
+                          display: "flex",
+                          alignItems: "center",
+                          position: "absolute",
+                          top: 24,
+                          right: 24,
+                          gap: 8,
                         }}
                       >
-                        {pedido.tipo_pedido === "MESA"
-                          ? `${pedido.mesa_numero}`
-                          : pedido.tipo_pedido === "PARA_LLEVAR"
-                          ? "Para llevar"
-                          : "Domicilio"}
-                      </h3>
-                      {pedido.notas && (
-                        <p
+                        <span
                           style={{
-                            marginBottom: 12,
-                            fontSize: 14,
-                            color: "#374151",
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: colorMensaje,
+                            whiteSpace: "nowrap",
+                            textTransform: "uppercase",
                           }}
                         >
-                          <strong>Notas:</strong> {pedido.notas}
-                        </p>
-                      )}
-                      {pedido.tipo_pedido === "DOMICILIO" && (
-                        <div
+                          {mensajeImpresion}
+                        </span>
+                        <button
+                          onClick={() => handleImprimirComanda(pedido.id)}
                           style={{
+                            background: "transparent",
+                            border: "none",
+                            cursor: "pointer",
+                            padding: 0,
+                            color: estaImpreso ? "#10B981" : "#6B7280",
+                            transition: "color 0.2s",
+                          }}
+                          onMouseOver={(e) =>
+                            (e.currentTarget.style.color = ORANGE)
+                          }
+                          onMouseOut={(e) =>
+                            (e.currentTarget.style.color = estaImpreso
+                              ? "#10B981"
+                              : "#6B7280")
+                          }
+                          aria-label="Imprimir comanda"
+                          data-tooltip-id="tooltip"
+                          data-tooltip-content={mensajeImpresion}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                          >
+                            <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <div>
+                        <h3
+                          style={{
+                            fontSize: 20,
+                            fontWeight: 600,
+                            color: "#333",
                             marginBottom: 12,
-                            fontSize: 14,
-                            color: "#374151",
                           }}
                         >
-                          <p>
-                            <strong>Nombre:</strong> {pedido.cliente_nombre}
-                          </p>
-                          <p>
-                            <strong>Celular:</strong> {pedido.cliente_telefono}
-                          </p>
-                          <p>
-                            <strong>Dirección:</strong>{" "}
-                            {pedido.cliente_direccion}
-                          </p>
-                          <p>
+                          {pedido.tipo_pedido === "MESA"
+                            ? `${pedido.mesa_numero}`
+                            : pedido.tipo_pedido === "PARA_LLEVAR"
+                            ? "Para llevar"
+                            : "Domicilio"}
+                        </h3>
+                        {pedido.notas && (
+                          <p
+                            style={{
+                              marginBottom: 12,
+                              fontSize: 14,
+                              color: "#374151",
+                            }}
+                          >
                             <strong>Notas:</strong> {pedido.notas}
                           </p>
-                        </div>
-                      )}
-                      <div>
-                        {pedido.pedidoItems.map((item: IItemsPedidos, indx) => {
-                          return (
-                            <div
-                              key={indx}
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                fontSize: 14,
-                                borderBottom: "1px solid #E5E7EB",
-                                paddingBottom: 6,
-                                marginBottom: 6,
-                                flexWrap: "wrap",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  width: "100%",
-                                }}
-                              >
-                                <span>{item.nombre}</span>
-                                <span style={{ fontWeight: 600 }}>
-                                  x{item.cantidad}
-                                </span>
-                              </div>
-                              {item.tipo === "configurable" &&
-                                item.opcionesSeleccionadas && (
+                        )}
+                        {pedido.tipo_pedido === "DOMICILIO" && (
+                          <div
+                            style={{
+                              marginBottom: 12,
+                              fontSize: 14,
+                              color: "#374151",
+                            }}
+                          >
+                            <p>
+                              <strong>Nombre:</strong> {pedido.cliente_nombre}
+                            </p>
+                            <p>
+                              <strong>Celular:</strong>{" "}
+                              {pedido.cliente_telefono}
+                            </p>
+                            <p>
+                              <strong>Dirección:</strong>{" "}
+                              {pedido.cliente_direccion}
+                            </p>
+                            <p>
+                              <strong>Notas:</strong> {pedido.notas}
+                            </p>
+                          </div>
+                        )}
+                        <div>
+                          {pedido.pedidoItems.map(
+                            (item: IItemsPedidos, indx) => {
+                              return (
+                                <div
+                                  key={indx}
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                    fontSize: 14,
+                                    borderBottom: "1px solid #E5E7EB",
+                                    paddingBottom: 6,
+                                    marginBottom: 6,
+                                    flexWrap: "wrap",
+                                  }}
+                                >
                                   <div
                                     style={{
-                                      fontSize: 12,
-                                      color: "#000000",
-                                      marginLeft: 16,
+                                      display: "flex",
+                                      justifyContent: "space-between",
                                       width: "100%",
                                     }}
                                   >
-                                    {item.opcionesSeleccionadas.map(
-                                      (opcion: any, opIndex: number) => (
-                                        <p
-                                          key={opIndex}
-                                          style={{ margin: "2px 0" }}
-                                        >
-                                          - {opcion.nombreOpcion}:{" "}
-                                          {opcion.valor}
-                                        </p>
-                                      )
-                                    )}
+                                    <span>{item.nombre}</span>
+                                    <span style={{ fontWeight: 600 }}>
+                                      x{item.cantidad}
+                                    </span>
                                   </div>
-                                )}
-                              {item.notas && (
-                                <em
-                                  style={{
-                                    fontSize: 12,
-                                    color: "#000000",
-                                    fontStyle: "italic",
-                                    marginTop: 2,
-                                    width: "100%",
-                                  }}
-                                >
-                                  Nota: {item.notas}
-                                </em>
-                              )}
-                            </div>
-                          );
-                        })}
+                                  {item.tipo === "configurable" &&
+                                    item.opcionesSeleccionadas && (
+                                      <div
+                                        style={{
+                                          fontSize: 12,
+                                          color: "#000000",
+                                          marginLeft: 16,
+                                          width: "100%",
+                                        }}
+                                      >
+                                        {item.opcionesSeleccionadas.map(
+                                          (opcion: any, opIndex: number) => (
+                                            <p
+                                              key={opIndex}
+                                              style={{ margin: "2px 0" }}
+                                            >
+                                              - {opcion.nombreOpcion}:{" "}
+                                              {opcion.valor}
+                                            </p>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  {item.notas && (
+                                    <em
+                                      style={{
+                                        fontSize: 12,
+                                        color: "#000000",
+                                        fontStyle: "italic",
+                                        marginTop: 2,
+                                        width: "100%",
+                                      }}
+                                    >
+                                      Nota: {item.notas}
+                                    </em>
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
+                        </div>
+                      </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
+                      >
+                        <BotonRestaurante
+                          label="Cancelar"
+                          onClick={() => {
+                            setCancelarOpen(true);
+                            setIdCancelar(pedido.id);
+                          }}
+                        />
+                        <BotonRestaurante
+                          label="Editar"
+                          onClick={() => {
+                            restablecerImpresion(pedido.id);
+                            router.push("/cajero/editar/" + pedido.id);
+                          }}
+                        />
+
+                        <BotonRestaurante
+                          label="Pagar"
+                          onClick={() => {
+                            if (cajaActiva) {
+                              router.push(
+                                "/cajero/pagar?pedidoId=" + pedido.id
+                              );
+                            } else {
+                              toast.error(
+                                "Debes abrir la caja antes de pagar un pedido."
+                              );
+                              setOpenCaja(true);
+                            }
+                          }}
+                        />
                       </div>
                     </div>
-
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: 12,
-                      }}
-                    >
-                      <BotonRestaurante
-                        label="Cancelar"
-                        onClick={() => {
-                          setCancelarOpen(true);
-                          setIdCancelar(pedido.id);
-                        }}
-                      />
-                      <BotonRestaurante
-                        label="Editar"
-                        onClick={() => {
-                          router.push("/cajero/editar/" + pedido.id);
-                        }}
-                      />
-                      {/* <BotonRestaurante
-                                                label="Pagar"
-                                                onClick={() => {
-                                                    router.push('/cajero/pagar?pedidoId=' + pedido.id)
-                                                }}
-                                            /> */}
-
-                      <BotonRestaurante
-                        label="Pagar"
-                        onClick={() => {
-                          const { cajaActiva } = useCajaStore.getState();
-                          if (cajaActiva) {
-                            router.push("/cajero/pagar?pedidoId=" + pedido.id);
-                          } else {
-                            toast.error(
-                              "Debes abrir la caja antes de pagar un pedido."
-                            );
-                            setOpenCaja(true);
-                          }
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           );
@@ -689,11 +765,15 @@ export default function Pedidos() {
         />
         <FormCierreCaja
           onClose={() => setCierreDeCajaAbierto(false)}
-          onSave={(e) => handleCierreDeCaja(e)}
           isOpen={cierreDeCajaAbierto}
         />
+        <FormExtraMoney
+          onClose={() => setGastosEIngresosOpen(false)}
+          isOpen={gastosEIngresosOpen}
+        />
       </div>
-      {loading || (loadingCaja && <Spinner />)}
+      {loadingComanda && <Spinner />}
+      {loading || loadingCaja || (loadingComanda && <Spinner />)}
     </div>
   );
 }

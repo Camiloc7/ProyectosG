@@ -3,38 +3,11 @@
 import * as Tooltip from "@radix-ui/react-tooltip";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Home,
-  Settings,
-  Users,
-  Search,
-  Bell,
-  User,
-  LogOut,
-  Apple,
-  Table,
-  Pizza,
-  Utensils,
-  Truck,
-  CreditCardIcon,
-  Ticket,
-  ReceiptText,
-  Package,
-  MenuIcon,
-  X,
-  BarChart3,
-} from "lucide-react";
-import { TbCashRegister } from "react-icons/tb";
+import { Settings, Search, Bell, User, LogOut, Pencil } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
-import toast from "react-hot-toast";
-import { RUTA } from "@/helpers/rutas";
-import { GrGraphQl } from "react-icons/gr";
-import { PiGraphicsCardLight } from "react-icons/pi";
-
-type Route =
-  | { label: string; href: string; icon: any; external?: boolean }
-  | { label: string; action: () => void; icon: any; external?: boolean };
+import { useEstablecimientosStore } from "@/stores/establecimientosStore";
+import UpdateEstablecimientoImage from "../modals/UpdateEstablecimientoImage";
 
 export default function TopBar() {
   const router = useRouter();
@@ -42,10 +15,31 @@ export default function TopBar() {
   const path = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isUpdateImageOpen, setIsUpdateImageOpen] = useState(false);
+
+  const [notificaciones, setNotificaciones] = useState<string[]>([
+    "Factura pendiente de revisión",
+  ]);
+
+  const [notificacionesOpen, setNotificacionesOpen] = useState(false); // 🔹 NUEVO
+  const notificacionesRef = useRef<HTMLDivElement>(null); // 🔹 NUEVO
+
   const profileRef = useRef<HTMLDivElement>(null);
   const logout = useAuthStore((state) => state.logout);
-  const token = useAuthStore((state) => state.token);
+  const [isVisible, setIsVisible] = useState(true);
+  const { traerEstablecimientoPorId, establecimientoActual } =
+    useEstablecimientosStore();
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsVisible(window.innerWidth >= 1100);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Cierra el dropdown al hacer click fuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -53,6 +47,13 @@ export default function TopBar() {
         !profileRef.current.contains(e.target as Node)
       ) {
         setMenuOpen(false);
+      }
+
+      if (
+        notificacionesRef.current &&
+        !notificacionesRef.current.contains(e.target as Node)
+      ) {
+        setNotificacionesOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -63,253 +64,216 @@ export default function TopBar() {
     setIsMobileMenuOpen(false);
   }, [path]);
 
-  if (path === "/" || path === "/terminos") return null;
+  useEffect(() => {
+    if (user) traerEstablecimientoPorId(user.establecimiento_id);
+  }, [user]);
 
-  let routes: Route[] = [];
-  if (user?.rol === "CAJERO") {
-    routes = [
-      { label: "Caja", href: "/cajero", icon: TbCashRegister },
-      { label: "Lista Cierre Caja", href: "/cierre-de-caja", icon: Package },
-      { label: "Pedidos", href: "/pedidos", icon: Ticket },
-    ];
-  } else if (user?.rol === "ADMIN" || user?.rol === "SUPERADMIN") {
-    routes = [
-      { label: "Dashboard", href: "/dashboard", icon: Home },
-      { label: "Mesas", href: "/mesas", icon: Table },
-      { label: "Categorias", href: "/categorias", icon: Pizza },
-      { label: "Ingredientes", href: "/ingredientes", icon: Apple },
-      { label: "Empleados", href: "/empleados", icon: Users },
-      { label: "Productos", href: "/productos", icon: Utensils },
-      { label: "Configuración", href: "/configuracion", icon: Settings },
-      { label: "Proveedores", href: "/proveedores", icon: Truck },
-      { label: "Cuentas", href: "/cuentas", icon: CreditCardIcon },
-      { label: "Lista Cierre Caja", href: "/cierre-de-caja", icon: Package },
-      { label: "Caja", href: "/cajero", icon: TbCashRegister },
-      { label: "Pedidos", href: "/pedidos", icon: Ticket },
-      {
-        label: "Facturación electrónica",
-        action: () => {
-          const RUTA_FACTURADOR = "https://facturando.qualitysoftservices.com";
-          if (!token) {
-            toast.error("No hay token de autenticación disponible.");
-            return;
-          }
-
-          const nuevaVentana = window.open(
-            `${RUTA_FACTURADOR}/redireccion`,
-            "_blank"
-          );
-
-          if (!nuevaVentana) {
-            toast.error("No se pudo abrir la ventana del facturador");
-            return;
-          }
-
-          const handleMessage = (event: MessageEvent) => {
-            if (event.origin !== RUTA_FACTURADOR) {
-              console.error(
-                "NO ES LA RUTA DE FACTURADOR CORRECTA: ",
-                event.origin
-              );
-              return;
-            } 
-            try {
-              if (event.data?.ready) {
-                console.log("Facturador listo, enviando token...");
-                nuevaVentana.postMessage(
-                  { gastroToken: token },
-                  RUTA_FACTURADOR
-                );
-                window.removeEventListener("message", handleMessage);
-              }
-            } catch (err) {
-              console.error("Error enviando token al facturador:", err);
-              toast.error("Error enviando token");
-              window.removeEventListener("message", handleMessage);
-              nuevaVentana?.close();
-            }
-          };
-          window.addEventListener("message", handleMessage);
-        },
-        icon: ReceiptText,
-      },
-      { label: "Reportes", href: "/reportes", icon: BarChart3 },
-    ];
-  }
-  const NavLinks = ({ onClick }: { onClick?: () => void }) => (
-    <>
-      {routes.map((route) => (
-        <Tooltip.Root
-          key={"href" in route ? route.href : route.label}
-          delayDuration={0}
-        >
-          <Tooltip.Trigger asChild>
-            {"href" in route ? (
-              <Link
-                href={route.href}
-                className="group relative"
-                onClick={onClick}
-              >
-                <div
-                  className={`p-2 rounded hover:bg-white hover:bg-opacity-10 transform transition-transform duration-200 group-hover:scale-110 ${
-                    path.startsWith(route.href)
-                      ? "bg-white bg-opacity-10 text-orange-500"
-                      : "text-white"
-                  } group-hover:text-orange-500`}
-                >
-                  <route.icon size={20} />
-                </div>
-              </Link>
-            ) : (
-              <button onClick={route.action} className="group relative">
-                <div className="p-2 rounded hover:bg-white hover:bg-opacity-10 transform transition-transform duration-200 group-hover:scale-110 text-white group-hover:text-orange-500">
-                  <route.icon size={20} />
-                </div>
-              </button>
-            )}
-          </Tooltip.Trigger>
-          <Tooltip.Content
-            className="bg-black text-white text-sm px-2 py-1 rounded shadow-lg"
-            sideOffset={5}
-          >
-            {route.label}
-            <Tooltip.Arrow className="fill-black" />
-          </Tooltip.Content>
-        </Tooltip.Root>
-      ))}
-    </>
-  );
+  if (path === "/" || path === "/terminos" || path === "/terminosWeb")
+    return null;
 
   return (
     <header
-      className="w-full flex items-center justify-between px-4 h-16 shadow-md relative" 
+      className="w-full flex items-center justify-between px-4 h-16 shadow-md relative"
       style={{
         background: "linear-gradient(90deg, #000 0%, #ff7f00 100%)",
         color: "#fff",
       }}
     >
-      <button
-        className="md:hidden text-white"
-        onClick={() => setIsMobileMenuOpen(true)}
-      >
-        <MenuIcon size={24} />
-      </button>
-
-      <div className="flex items-center space-x-6">
-        <span className="text-xl font-bold tracking-wide">Gastro POS</span>
-        <nav className="hidden md:flex items-center space-x-4">
-          <NavLinks />
-        </nav>
-      </div>
-
-      <div className="flex items-center space-x-4">
-        <div className="hidden md:flex items-center space-x-2 text-white">
-          <User size={16} />
-          <span className="text-sm font-medium">{user?.username}</span>
+      {/* Izquierda */}
+      <h1 className="ml-16 md:ml-20 flex-1 min-w-0 text-base md:text-2xl leading-6 md:leading-8 font-bold font-montserrat text-white hidden md:flex flex-row items-center">
+        <div className="flex flex-col leading-tight truncate">
+          <span className="truncate">Quality Soft Service</span>
+          <span className="text-[10px] font-normal mt-0.5 truncate">
+            Construya con liquidez. Facture con Quality v. 1.0.0
+          </span>
         </div>
+        <span className="mx-4 text-xl flex-shrink-0">|</span>
+        <span className="text-base font-montserrat font-normal text-white truncate">
+          {user?.nombre_establecimiento} 
+        </span>
+      </h1>
 
-        {[
-          { title: "Buscar", Icon: Search },
-          { title: "Notificaciones", Icon: Bell },
-        ].map(({ title, Icon }, idx) => (
-          <Tooltip.Root key={idx} delayDuration={0}>
-            <Tooltip.Trigger asChild>
-              <button className="p-2 rounded hover:bg-white hover:bg-opacity-10 transform transition-transform duration-200 hover:scale-110 text-white hover:text-orange-500">
-                <Icon size={20} />
-              </button>
-            </Tooltip.Trigger>
-            <Tooltip.Content
-              className="bg-black text-white text-sm px-2 py-1 rounded shadow-lg"
-              sideOffset={5}
-            >
-              {title}
-              <Tooltip.Arrow className="fill-black" />
-            </Tooltip.Content>
-          </Tooltip.Root>
-        ))}
-        <div className="relative" ref={profileRef}>
+      {/* Derecha */}
+      <div className="flex items-center space-x-4 flex-shrink-0">
+        <span className="hidden md:flex text-sm font-medium items-center gap-2 truncate max-w-xs">
+          <span className="truncate">{user?.username}</span>
+          <span>|</span>
+          <span className="truncate">{user?.rol}</span>
+        </span>
+
+        {/* Icono de búsqueda */}
+        <Tooltip.Root delayDuration={0}>
+          <Tooltip.Trigger asChild>
+            <button className="p-2 rounded hover:bg-white hover:bg-opacity-10 transform transition-transform duration-200 hover:scale-110 text-white hover:text-orange-500">
+              <Search size={20} />
+            </button>
+          </Tooltip.Trigger>
+          <Tooltip.Content
+            className="bg-black text-white text-sm px-2 py-1 rounded shadow-lg"
+            sideOffset={5}
+          >
+            Buscar
+            <Tooltip.Arrow className="fill-black" />
+          </Tooltip.Content>
+        </Tooltip.Root>
+
+        {/* 🔔 Notificaciones */}
+        <div className="relative" ref={notificacionesRef}>
           <Tooltip.Root delayDuration={0}>
             <Tooltip.Trigger asChild>
               <button
-                className="p-2 rounded-full hover:bg-white hover:bg-opacity-10 transition-transform transform duration-200 hover:scale-110 text-white hover:text-orange-500"
-                onClick={() => setMenuOpen((prev) => !prev)}
+                onClick={() => setNotificacionesOpen((prev) => !prev)}
+                className="relative p-2 rounded hover:bg-white hover:bg-opacity-10 transform transition-transform duration-200 hover:scale-110 text-white hover:text-orange-500"
               >
-                <User size={20} />
+                <Bell size={20} />
+                {/* 🔴 Badge rojo si hay notificaciones */}
+                {notificaciones.length > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-xs">
+                    {notificaciones.length}{" "}
+                  </span>
+                )}
               </button>
             </Tooltip.Trigger>
             <Tooltip.Content
               className="bg-black text-white text-sm px-2 py-1 rounded shadow-lg"
               sideOffset={5}
             >
-              Perfil
+              Notificaciones
               <Tooltip.Arrow className="fill-black" />
             </Tooltip.Content>
           </Tooltip.Root>
+
+          {/* Panel de notificaciones */}
+          {notificacionesOpen && (
+            <div className="absolute right-0 mt-2 min-w-[600px] bg-white rounded-xl shadow-xl overflow-hidden z-50 animate-fadeIn">
+              <div className="px-4 py-3 border-b border-gray-100 font-semibold text-gray-800 text-lg">
+                Notificaciones
+              </div>
+
+              <div className="flex flex-col md:flex-row">
+                {/* Texto */}
+                <div className="p-6 md:w-1/2 space-y-4">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    🚀 ¡Atiende a tus clientes como nunca antes!
+                  </h2>
+
+                  <p className="text-gray-600 leading-relaxed">
+                    Con nuestro{" "}
+                    <strong>sistema inalámbrico de llamada para mesas</strong>{" "}
+                    🍽️ tus clientes podrán:
+                  </p>
+
+                  <ul className="list-disc list-inside text-gray-600 space-y-1">
+                    <li>✅ Pedir atención</li>
+                    <li>✅ Solicitar la cuenta</li>
+                    <li>✅ Hacer su pedido</li>
+                  </ul>
+
+                  <p className="text-gray-700 font-medium">
+                    ✨ ¡Todo con solo presionar un botón!
+                  </p>
+                </div>
+
+                {/* Imagen */}
+                <div className="md:w-1/2 flex justify-center items-center bg-white">
+                  <img
+                    src="/noti.jpeg"
+                    alt="Sistema de notificación"
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              </div>
+
+              {/* Segunda parte */}
+              <div className="p-6 bg-white text-gray-700 space-y-3">
+                <p>
+                  Mejora la <strong>eficiencia</strong>, evita{" "}
+                  <strong>esperas innecesarias</strong> y ofrece un servicio más
+                  ágil y moderno.
+                </p>
+                <p>
+                  Ideal para <strong>restaurantes, cafés y bares</strong> que
+                  buscan destacar por su atención y tecnología. 📲
+                </p>
+                <div className="pt-2">
+                  <button className="bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition">
+                    🌟 ¡Moderniza tu servicio hoy!
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Perfil */}
+        <div className="relative w-10 h-10" ref={profileRef}>
+          <button
+            onClick={() => setMenuOpen((prev) => !prev)}
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/20 text-white border-2 border-orange-400 hover:scale-105 hover:border-white transition"
+          >
+            {establecimientoActual?.logo_url ? (
+              <img
+                src={establecimientoActual.logo_url}
+                alt="Logo Establecimiento"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <User size={18} />
+            )}
+          </button>
+
+          {/* Botón editar logo */}
+          {user?.rol === "ADMIN" && (
+            <button
+              onClick={() => setIsUpdateImageOpen(true)}
+              className="absolute -top-2 -right-2 bg-orange-500 text-white p-1 rounded-full shadow hover:bg-orange-600 transition"
+            >
+              <Pencil size={14} />
+            </button>
+          )}
+
+          {/* Dropdown usuario */}
           {menuOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-md z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg overflow-hidden z-50 animate-fadeIn">
+              <div className="px-4 py-3 border-b border-gray-100">
+                <p className="text-sm font-semibold text-gray-800">
+                  {user?.username}
+                </p>
+                <p className="text-xs text-gray-500">{user?.rol}</p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user?.nombre_establecimiento}
+                </p>
+              </div>
+              {user?.rol === "ADMIN" && (
+                <Link
+                  href="/configuracion"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition"
+                >
+                  <Settings size={16} />
+                  Configuración
+                </Link>
+              )}
               <button
-                onClick={() => {
-                  logout();
+                onClick={async () => {
                   router.push("/");
+                  logout();
+                  setMenuOpen(false);
                 }}
-                className="flex items-center w-full px-4 py-2 hover:bg-gray-100 text-sm"
+                className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition"
               >
-                <LogOut size={16} className="mr-2" />
+                <LogOut size={16} />
                 Cerrar sesión
               </button>
             </div>
           )}
         </div>
       </div>
-      <div
-        className={`fixed inset-y-0 left-0 bg-black bg-opacity-90 w-64 z-50 transition-transform duration-300 ease-in-out transform ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
-      >
-        <div className="p-4 h-full flex flex-col">
-          <div className="flex justify-between items-center mb-6 text-white">
-            <span className="text-xl font-bold">Menú</span>
-            <button onClick={() => setIsMobileMenuOpen(false)}>
-              <X size={24} />
-            </button>
-          </div>
-          <nav className="flex flex-col space-y-4">
-            {routes.map((route) => (
-              <div key={"href" in route ? route.href : route.label}>
-                {"href" in route ? (
-                  <Link
-                    href={route.href}
-                    className={`flex items-center space-x-3 text-white hover:text-orange-500 transition-colors ${
-                      path.startsWith(route.href) ? "text-orange-500" : ""
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <route.icon size={20} />
-                    <span>{route.label}</span>
-                  </Link>
-                ) : (
-                  <button
-                    onClick={() => {
-                      route.action();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="flex items-center space-x-3 text-white hover:text-orange-500 transition-colors"
-                  >
-                    <route.icon size={20} />
-                    <span>{route.label}</span>
-                  </button>
-                )}
-              </div>
-            ))}
-          </nav>
-        </div>
-      </div>
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
+
+      <UpdateEstablecimientoImage
+        isOpen={isUpdateImageOpen}
+        onClose={() => setIsUpdateImageOpen(false)}
+      />
     </header>
   );
 }

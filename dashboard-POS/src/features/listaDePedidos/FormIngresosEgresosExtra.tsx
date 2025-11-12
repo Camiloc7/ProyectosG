@@ -26,7 +26,6 @@ interface Errors {
 }
 
 const FormExtraMoney: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
-  const { user } = useAuthStore();
   const { cajaActiva } = useCajaStore();
   const { ingresoExtra, gastoExtra } = useDineroExtraStore();
   const [formData, setFormData] = useState<FormExtraMoney>({
@@ -135,6 +134,7 @@ const FormExtraMoney: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
           <button onClick={handleVolverAtras}>
             <ArrowLeft size={24} color="#4B5563" />
           </button>
+          {/* Ahora cualquier rol podra hacer egresos */}
           <h2
             style={{
               fontSize: 20,
@@ -142,9 +142,7 @@ const FormExtraMoney: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               color: "#374151",
             }}
           >
-            {user?.rol !== "ADMIN"
-              ? "Ingresos Extra de caja"
-              : "Ingresos / Egresos Extra de caja"}
+            Ingresos / Egresos Extra de caja
           </h2>
           <div style={{ width: 24 }} />
         </header>
@@ -172,22 +170,18 @@ const FormExtraMoney: React.FC<ModalFormProps> = ({ isOpen, onClose }) => {
               }
               error={errors.razon}
             />
-            {user?.rol === "ADMIN" && (
-              <div className="flex gap-4">
-                <Checkbox
-                  label="Ingresos"
-                  onChange={() =>
-                    setFormData({ ...formData, tipo: "Ingresos" })
-                  }
-                  checked={formData.tipo === "Ingresos"}
-                />
-                <Checkbox
-                  label="Egresos"
-                  onChange={() => setFormData({ ...formData, tipo: "Egresos" })}
-                  checked={formData.tipo === "Egresos"}
-                />
-              </div>
-            )}
+            <div className="flex gap-4">
+              <Checkbox
+                label="Ingresos"
+                onChange={() => setFormData({ ...formData, tipo: "Ingresos" })}
+                checked={formData.tipo === "Ingresos"}
+              />
+              <Checkbox
+                label="Egresos"
+                onChange={() => setFormData({ ...formData, tipo: "Egresos" })}
+                checked={formData.tipo === "Egresos"}
+              />
+            </div>
           </div>
 
           <footer

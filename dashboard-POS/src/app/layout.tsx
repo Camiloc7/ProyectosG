@@ -1,5 +1,5 @@
 // src/app/layout.tsx
-import type { Metadata } from "next";
+"use client";
 import "./globals.css";
 import TopBar from "@/components/layout/TopBar";
 import { Toaster } from "react-hot-toast";
@@ -9,22 +9,43 @@ import AuthInitializer from "@/components/auth/AuthInitializer";
 import ScrollToTopOnRouteChange from "@/helpers/ScrollToTop";
 import RouteLoader from "@/components/feedback/RouteLoader";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { useEffect, useState } from "react";
+
+import { useRouter, usePathname } from "next/navigation";
+import Spinner from "@/components/feedback/Spinner";
+import Sidebar from "@/components/layout/SideBar";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  // const [prevPath, setPrevPath] = useState(pathname);
+
+  // useEffect(() => {
+  //   if (pathname !== prevPath) {
+  //     setLoading(true);
+  //     const timeout = setTimeout(() => {
+  //       setLoading(false);
+  //       setPrevPath(pathname);
+  //     }, 300); // ajusta según la animación que quieras
+  //     return () => clearTimeout(timeout);
+  //   }
+  // }, [pathname, prevPath]);
+
   return (
     <html lang="en">
       <body>
         <Tooltip.Provider delayDuration={0}>
           <ConfirmProvider>
             {/* Header */}
+            {/* {loading && <Spinner />} */}
             <TopBar />
+            <Sidebar />
             <ScrollToTopOnRouteChange />
-
-            {/* 🔥 Spinner de carga */}
+            {/* <PedidosWatcher /> */}
             <RouteLoader />
 
             <div className="flex flex-col min-h-[calc(100vh-4rem)]">
@@ -60,7 +81,18 @@ export default function RootLayout({
                 }}
               />
 
-              <main className="flex-1">
+              <main
+                className={`flex-1  ${
+                  //Las rutas que no queremos que tengan un espacio para la sidebar
+                  pathname === "/" ||
+                  pathname === "/mesero" ||
+                  pathname === "/terminos" ||
+                  pathname === "/terminosWeb" ||
+                  pathname === "/cocinero"
+                    ? ""
+                    : "ml-16"
+                }`}
+              >
                 <AuthInitializer>{children}</AuthInitializer>
               </main>
             </div>

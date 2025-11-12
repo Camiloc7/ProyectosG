@@ -11,7 +11,9 @@ interface InputFieldProps {
   error?: boolean;
   readOnly?: boolean;
   type?: HTMLInputElement["type"];
-  disabled?: boolean; 
+  disabled?: boolean;
+  max?: string;
+  min?: string;
 }
 
 const InputField: React.FC<InputFieldProps> = ({
@@ -24,7 +26,9 @@ const InputField: React.FC<InputFieldProps> = ({
   error = false,
   readOnly = false,
   type = "text",
-  disabled = false, 
+  disabled = false,
+  max,
+  min,
 }) => {
   // Bloquear scroll en input tipo number
   useEffect(() => {
@@ -40,6 +44,9 @@ const InputField: React.FC<InputFieldProps> = ({
       document.removeEventListener("wheel", handleWheel);
     };
   }, []);
+
+  // ✅ Unificamos el estilo de "readOnly" y "disabled"
+  const isInactive = readOnly || disabled;
 
   return (
     <div style={{ width: "100%", marginBottom: 15 }}>
@@ -69,26 +76,28 @@ const InputField: React.FC<InputFieldProps> = ({
         type={type}
         name={name}
         onFocus={onFocus}
-        placeholder={readOnly ? "" : placeholder}
+        placeholder={isInactive ? "" : placeholder}
         value={value}
-        onChange={readOnly ? undefined : onChange}
+        onChange={isInactive ? undefined : onChange}
         readOnly={readOnly}
-        disabled={disabled} 
+        disabled={disabled}
+        max={max}
+        min={min}
         style={{
           width: "100%",
           height: 42,
           padding: "0 16px",
           border: `1px solid ${
-            readOnly ? "#A0AEC0" : error ? "#f56565" : ORANGE
+            isInactive ? "#A0AEC0" : error ? "#f56565" : ORANGE
           }`,
           borderRadius: 25,
           fontSize: 14,
           fontFamily: "Lato, sans-serif",
-          color: readOnly ? "#A0AEC0" : "#2A2A2A",
-          backgroundColor: readOnly ? "#EDF2F7" : COLOR_INPUT_BG,
+          color: isInactive ? "#A0AEC0" : "#2A2A2A",
+          backgroundColor: isInactive ? "#EDF2F7" : COLOR_INPUT_BG,
           boxSizing: "border-box",
           boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
-          cursor: readOnly ? "not-allowed" : "text",
+          cursor: isInactive ? "not-allowed" : "text",
           outline: "none",
         }}
       />

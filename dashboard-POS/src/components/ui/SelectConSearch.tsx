@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import {
   COLOR_ERROR,
   COLOR_INPUT_BG,
@@ -18,8 +18,10 @@ interface SelectConSearchProps {
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void; // ✅ Agregado
   error?: boolean;
   errorMessage?: string;
+  onCreate?: (value: string) => void;
 }
 
 const SelectConSearch: React.FC<SelectConSearchProps> = ({
@@ -27,9 +29,11 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
   options,
   placeholder = "Buscar...",
   value,
+  onBlur,
   onChange,
   error = false,
   errorMessage = "Campo requerido",
+  onCreate,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchBarIsOpen, setSearchBarIsOpen] = useState(false);
@@ -49,9 +53,9 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
       option,
       match: renderOptionLabel(option)
         .toLowerCase()
-        .includes((value || searchTerm).toLowerCase()),
+        .includes(searchTerm.toLowerCase()), // 👈 siempre usamos searchTerm
     }))
-    .sort((a, b) => (b.match ? 1 : 0) - (a.match ? 1 : 0))
+    .filter((item) => item.match) // 👈 filtra solo los que hagan match
     .map((item) => item.option);
 
   const handleSelectOption = (option: SelectOption) => {
@@ -163,28 +167,30 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
   };
 
   return (
-    <div className="mt-4">
-      <label
-        style={{
-          display: "block",
-          fontSize: 16,
-          fontWeight: 500,
-          fontFamily: "Lato, sans-serif",
-          color: "#555",
-          marginBottom: 8,
-        }}
-      >
-        {label}
-        <span
+    <div className={`${label ? "mt-4" : ""}`}>
+      {label && (
+        <label
           style={{
-            color: "#f56565",
-            marginLeft: 4,
-            visibility: error ? "visible" : "hidden",
+            display: "block",
+            fontSize: 16,
+            fontWeight: 500,
+            fontFamily: "Lato, sans-serif",
+            color: "#555",
+            marginBottom: 8,
           }}
         >
-          *
-        </span>
-      </label>
+          {label}
+          <span
+            style={{
+              color: "#f56565",
+              marginLeft: 4,
+              visibility: error ? "visible" : "hidden",
+            }}
+          >
+            *
+          </span>
+        </label>
+      )}
 
       <div ref={ref} className="relative">
         <div className="relative">
@@ -211,6 +217,7 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
             onFocus={handleInputFocus}
             onClick={() => setSearchBarIsOpen(true)}
             onKeyDown={handleKeyDown}
+            onBlur={onBlur}
           />
 
           <span
@@ -298,8 +305,24 @@ const SelectConSearch: React.FC<SelectConSearchProps> = ({
         )}
 
         {searchTerm && filteredOptions.length === 0 && (
-          <div className="absolute z-10 w-full bg-white border rounded-md shadow-md p-2 text-gray-500 text-sm">
-            No se encontraron resultados
+          <div className="absolute z-10 w-full bg-white border rounded-xl shadow-md mt-1 overflow-hidden">
+            {onCreate ? (
+              <button
+                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-600 transition-colors duration-150"
+                onClick={() => {
+                  onCreate(searchTerm);
+                  setSearchTerm("");
+                  setSearchBarIsOpen(false);
+                }}
+              >
+                <Plus size={16} className="text-orange-500" />
+                <span>Crear “{searchTerm}”</span>
+              </button>
+            ) : (
+              <div className="px-4 py-2 text-sm text-gray-400">
+                No se encontraron resultados
+              </div>
+            )}
           </div>
         )}
       </div>

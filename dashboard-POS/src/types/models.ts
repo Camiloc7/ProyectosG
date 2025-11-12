@@ -1,3 +1,5 @@
+import { IMesa } from "@/stores/mesasStore";
+
 export interface Establecimiento {
   id: string;
   nombre: string;
@@ -253,23 +255,23 @@ export interface IFormPedidos {
 
 export type IPedidos = {
   id: string;
+  created_at: Date;
+  codigo_pedido: string;
   mesa_id: string;
   mesa_numero: string;
+  mesa: IMesa;
   usuario_domiciliario_id?: string;
   estado: string;
   tipo_pedido: string;
+  idOrdenExterna: string;
   cliente_nombre?: string;
   cliente_telefono?: string;
   cliente_direccion?: string;
-  total_estimado: number;
+  total_estimado: string;
   descuentos_aplicados: string;
   notas?: string;
   pedidoItems: IItemsPedidos[];
-  created_at: Date;
-  idOrdenExterna?: string;
-  codigo_pedido?: string;
-  numero_secuencial_diario?: number;
-  factura_id?: string;
+  numero_secuencial_diario: string;
 };
 
 export type IItemsPedidos = {

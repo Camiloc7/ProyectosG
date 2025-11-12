@@ -1,10 +1,14 @@
 import { RUTA } from "@/helpers/rutas";
 import { create } from "zustand";
 import toast from "react-hot-toast";
-import { IFormMedioDePago } from "@/app/configuracion/page";
 import { useAuthStore } from "./authStore";
 
 export type IMediosDePago = {
+  id?: string;
+  es_efectivo: boolean;
+  nombre: string;
+};
+export type ListaMediosDePago = {
   id: string;
   es_efectivo: boolean;
   nombre: string;
@@ -18,14 +22,14 @@ export type IConfiguracionPedidos = {
 
 type ConfiguracionState = {
   loading: boolean;
-  mediosDePago: IMediosDePago[];
+  mediosDePago: ListaMediosDePago[];
   configuracionPedidos: IConfiguracionPedidos | null;
   traerMediosDePago: () => Promise<void>;
   eliminarMedioDePago: (id: string) => Promise<void>;
-  crearMedioDePago: (data: IFormMedioDePago) => Promise<void>;
+  crearMedioDePago: (data: IMediosDePago) => Promise<void>;
   traerConfiguracionEstablecimiento: () => Promise<void>;
   crearOActualizarConfiguracionPedidos: (
-    data: IConfiguracionPedidos,
+    data: IConfiguracionPedidos
   ) => Promise<void>;
 };
 
@@ -36,7 +40,7 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
 
   traerMediosDePago: async () => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/medios-pago`, {
@@ -52,6 +56,7 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
       if (!res.ok) {
         throw new Error(data.message);
       }
+
       set({
         mediosDePago: data.data,
         loading: false,
@@ -66,9 +71,9 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
     }
   },
 
-  crearMedioDePago: async (data: IFormMedioDePago) => {
+  crearMedioDePago: async (data: IMediosDePago) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     console.warn("Lo que le mando al crear (RAW): ", data);
     try {
       const res = await fetch(`${RUTA}/medios-pago`, {
@@ -99,7 +104,7 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
 
   eliminarMedioDePago: async (id: string) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/medios-pago/${id}`, {
@@ -110,19 +115,19 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
       });
       await get().traerMediosDePago();
       toast.success("Medio Eliminado.");
-      set({ loading: true });
+      set({ loading: false });
     } catch (error: any) {
       const mensajeDev = "No se pudo eliminar el medio de pago";
       console.error(mensajeDev, error);
       toast.error(error.message || mensajeDev);
-      set({ loading: true });
+      set({ loading: false });
     }
   },
 
   // Mantengo el nombre de la función y elimino el parámetro `id`
   traerConfiguracionEstablecimiento: async () => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/configuracion-pedidos`, {
@@ -158,7 +163,7 @@ export const useConfiguracionStore = create<ConfiguracionState>((set, get) => ({
 
   crearOActualizarConfiguracionPedidos: async (data: IConfiguracionPedidos) => {
     set({ loading: true });
-    const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
     const configExistente = get().configuracionPedidos;
     const metodo = configExistente ? "PATCH" : "POST";
     const mensajeExito = configExistente

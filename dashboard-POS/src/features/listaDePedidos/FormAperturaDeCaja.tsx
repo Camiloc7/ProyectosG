@@ -37,8 +37,8 @@ const FormAperturaDeCaja: React.FC<ModalFormProps> = ({
       return;
     }
 
-    onSave(denominaciones);
     handleVolverAtras();
+    onSave(denominaciones);
   };
 
   const handleVolverAtras = () => {

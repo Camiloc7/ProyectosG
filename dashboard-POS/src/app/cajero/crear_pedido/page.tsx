@@ -10,6 +10,7 @@ import {
   User,
   Phone,
   NotebookPen,
+  ImageIcon,
 } from "lucide-react";
 import {
   useProductosStore,
@@ -24,6 +25,10 @@ import Spinner from "@/components/feedback/Spinner";
 import { FONDO, ORANGE } from "@/styles/colors";
 import Modal from "@/components/modals/Modal";
 import ModalConfigurable from "@/components/modals/ModalConfigurable";
+import { ResumenPedido } from "@/features/crearPedido/resumenPedido";
+import { useAuthStore } from "@/stores/authStore";
+import Image from "next/image";
+import FormProducto from "@/features/Menu/FormProducto";
 
 export interface CrearPedidoItem {
   id: string;
@@ -96,11 +101,17 @@ export default function CreacionDePedidos() {
     loading,
     traerProductoConfigurable,
   } = useProductosStore();
+  const { user } = useAuthStore();
   const {
     crearPedido,
     actualizarPedido,
     loading: loadingPedidos,
+    imprimirComanda,
+    loadingComanda,
   } = usePedidosStore();
+  const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
+  const [producto, setProducto] = useState<Producto | null>(null);
+
   const { traerMesasLibres, mesasLibres } = useMesasStore();
   const [pedidoItems, setPedidoItems] = useState<CrearPedidoItem[]>([]);
   const [total, setTotal] = useState(0);
@@ -135,11 +146,25 @@ export default function CreacionDePedidos() {
     setSearchMesaTerm(e.target.value);
   };
 
+  const tiposDeOrigenFiltrados = useMemo(() => {
+    if (user?.rol === "MESERO") {
+      return tiposDeOrigen.filter((origen) => origen.id !== "DOMICILIO");
+    }
+    return tiposDeOrigen;
+  }, [user]);
+
+  useEffect(() => {
+    if (mesa) {
+      setInfoPedido((prev) => ({ ...prev, origen: "MESA" }));
+    }
+  }, []);
+
   useEffect(() => {
     traerCategorias();
     traerProductos();
     traerMesasLibres();
   }, [traerCategorias, traerProductos, traerMesasLibres]);
+
   useEffect(() => {
     if (categorias.length > 0 && !activeCat) {
       setActiveCat(categorias[0].nombre);
@@ -252,7 +277,7 @@ export default function CreacionDePedidos() {
     });
   };
 
-  const handleGenerarPedido = () => {
+  const handleGenerarPedido = async () => {
     const newErrors = {
       origen: false,
       telefono: false,
@@ -313,17 +338,20 @@ export default function CreacionDePedidos() {
       ...(isEditing && pedidoId ? { id: pedidoId } : {}),
     };
 
-    if (isEditing) {
-      actualizarPedido(pedido);
-      router.push("/cajero");
-    } else {
-      crearPedido(pedido);
-      router.push("/cajero");
+    const pedidoID = await crearPedido(pedido);
+
+    if (pedidoID === "error") return;
+
+    // Detectar si es móvil
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    if (!isMobile) {
+      await imprimirComanda(pedidoID);
     }
+
+    router.push(user?.rol === "MESERO" ? "/mesero" : "/cajero");
   };
-  const handleCancel = () => {
-    router.back();
-  };
+
   const filteredItems = useMemo(() => {
     if (searchTerm) {
       return productos.filter((item) =>
@@ -343,6 +371,7 @@ export default function CreacionDePedidos() {
       mesa.nombre.toLowerCase().includes(searchMesaTerm.toLowerCase())
     );
   }, [mesasLibres, searchMesaTerm]);
+
   const findCantidad = (id: string) =>
     pedidoItems.find((p) => p.id === id)?.cantidad || 0;
   const findNota = (id: string) =>
@@ -350,24 +379,37 @@ export default function CreacionDePedidos() {
   if (loading || loadingPedidos || loadingInitialData) {
     return <Spinner />;
   }
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setProducto(null);
+  };
+
+  const handleOpenNuevoProducto = () => {
+    setProducto(null);
+    setIsFormOpen(true);
+  };
+
   return (
-    <>
-      <div
-        className="min-h-screen p-6 font-lato flex flex-col lg:flex-row gap-8"
-        style={{ backgroundColor: FONDO }}
-      >
-        <div className="flex-shrink-0 flex flex-col items-center lg:w-1/4">
-          <h1 className="text-2xl font-semibold text-gray-900 m-0 text-center lg:text-left">
-            {isEditing ? "Actualizando" : "Creando"} Pedido
-          </h1>
-          <div className="flex flex-col gap-4 w-full max-w-xs mt-6">
-            {tiposDeOrigen.map((origen) => {
-              const isActive = infoPedido.origen === origen.id;
-              const imgClassName = isActive ? "invert" : "";
-              return (
-                <button
-                  key={origen.id}
-                  className={`
+    <div
+      className="min-h-screen p-6 font-lato flex flex-col lg:flex-row gap-8"
+      style={{ backgroundColor: FONDO }}
+    >
+      {loadingComanda && <Spinner />}
+      {loadingPedidos && <Spinner />}
+      <div className="flex flex-col w-full lg:w-2/3 gap-8">
+        <div className="min-h-screen p-6 font-lato flex flex-col lg:flex-row gap-8">
+          <div className="flex-shrink-0 flex flex-col items-center lg:w-1/4">
+            <h1 className="text-2xl font-semibold text-gray-900 m-0 text-center lg:text-left">
+              {isEditing ? "Actualizando" : "Creando"} Pedido
+            </h1>
+            <div className="flex flex-col gap-4 w-full max-w-xs mt-6">
+              {tiposDeOrigenFiltrados.map((origen) => {
+                const isActive = infoPedido.origen === origen.id;
+                const imgClassName = isActive ? "invert" : "";
+                return (
+                  <button
+                    key={origen.id}
+                    className={`
                     flex flex-col items-center justify-center gap-2 p-6 rounded-xl shadow-md transition-all duration-300
                     ${
                       isActive
@@ -375,107 +417,115 @@ export default function CreacionDePedidos() {
                         : "bg-white text-gray-700 hover:bg-gray-50"
                     }
                   `}
-                  onClick={() =>
-                    setInfoPedido((prev) => ({ ...prev, origen: origen.id }))
-                  }
-                >
-                  <img
-                    src={origen.icon}
-                    alt={origen.nombre}
-                    width={80}
-                    height={80}
-                    className={imgClassName}
-                  />
-                  <h2 className="text-base font-bold text-center">
-                    {origen.nombre}
-                  </h2>
-                </button>
-              );
-            })}
+                    onClick={() =>
+                      setInfoPedido((prev) => ({ ...prev, origen: origen.id }))
+                    }
+                  >
+                    <img
+                      src={origen.icon}
+                      alt={origen.nombre}
+                      width={80}
+                      height={80}
+                      className={imgClassName}
+                    />
+                    <h2 className="text-base font-bold text-center">
+                      {origen.nombre}
+                    </h2>
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
-        <div className="flex flex-col w-full overflow-hidden p-4 lg:w-3/4">
-          {infoPedido.origen && (
-            <div className="space-y-4 mb-8">
-              {infoPedido.origen === "DOMICILIO" && (
-                <>
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Detalles de la entrega
-                  </h2>
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
-                    <Phone size={20} className="text-gray-500 flex-shrink-0" />
-                    <input
-                      type="tel"
-                      name="telefono"
-                      value={infoPedido.telefono}
-                      onChange={handleChange}
-                      placeholder="Teléfono"
-                      className="w-full focus:outline-none bg-white text-gray-700"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
-                    <User size={20} className="text-gray-500 flex-shrink-0" />
-                    <input
-                      type="text"
-                      name="nombre"
-                      value={infoPedido.nombre}
-                      onChange={handleChange}
-                      placeholder="Nombre"
-                      className="w-full focus:outline-none bg-white text-gray-700"
-                    />
-                  </div>
-                  <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
-                    <MapPin size={20} className="text-gray-500 flex-shrink-0" />
-                    <input
-                      type="text"
-                      name="direccion"
-                      value={infoPedido.direccion}
-                      onChange={handleChange}
-                      placeholder="Dirección"
-                      className="w-full focus:outline-none bg-white text-gray-700"
-                    />
-                  </div>
-                </>
-              )}
-              {infoPedido.origen === "MESA" && (
-                <>
-                  <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                    Seleccione una mesa
-                  </h2>
-                  <div className="relative w-full mb-4">
-                    <Search
-                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                      size={20}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Buscar mesa por nombre..."
-                      value={searchMesaTerm}
-                      onChange={handleSearchMesaChange}
-                      className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                    />
-                  </div>
-                  {mesasLibres.length === 0 ? (
-                    <div className="flex items-center gap-3 mb-4 p-4 border border-gray-300 rounded-lg bg-red-50 text-red-700">
-                      <h1 className="text-lg m-0">No hay mesas disponibles</h1>
-                      <BotonRestaurante
-                        label="Recargar"
-                        variacion="claro"
-                        onClick={() => {
-                          toast.success("Recargando...");
-                          traerMesasLibres();
-                        }}
+          <div className="flex flex-col w-full overflow-hidden p-4 lg:w-3/4">
+            {infoPedido.origen && (
+              <div className="space-y-4 mb-8">
+                {infoPedido.origen === "DOMICILIO" && (
+                  <>
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                      Detalles de la entrega
+                    </h2>
+                    <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
+                      <Phone
+                        size={20}
+                        className="text-gray-500 flex-shrink-0"
+                      />
+                      <input
+                        type="tel"
+                        name="telefono"
+                        value={infoPedido.telefono}
+                        onChange={handleChange}
+                        placeholder="Teléfono"
+                        className="w-full focus:outline-none bg-white text-gray-700"
                       />
                     </div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-                      {filteredMesas.map((mesa) => {
-                        const isActive = infoPedido.mesa === mesa.id;
-                        const imgClassName = isActive ? "invert" : "";
-                        return (
-                          <button
-                            key={mesa.id}
-                            className={`
+                    <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
+                      <User size={20} className="text-gray-500 flex-shrink-0" />
+                      <input
+                        type="text"
+                        name="nombre"
+                        value={infoPedido.nombre}
+                        onChange={handleChange}
+                        placeholder="Nombre"
+                        className="w-full focus:outline-none bg-white text-gray-700"
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
+                      <MapPin
+                        size={20}
+                        className="text-gray-500 flex-shrink-0"
+                      />
+                      <input
+                        type="text"
+                        name="direccion"
+                        value={infoPedido.direccion}
+                        onChange={handleChange}
+                        placeholder="Dirección"
+                        className="w-full focus:outline-none bg-white text-gray-700"
+                      />
+                    </div>
+                  </>
+                )}
+                {infoPedido.origen === "MESA" && (
+                  <>
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                      Seleccione una mesa
+                    </h2>
+                    <div className="relative w-full mb-4">
+                      <Search
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Buscar mesa por nombre..."
+                        value={searchMesaTerm}
+                        onChange={handleSearchMesaChange}
+                        className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                      />
+                    </div>
+                    {mesasLibres.length === 0 ? (
+                      <div className="flex items-center gap-3 mb-4 p-4 border border-gray-300 rounded-lg bg-red-50 text-red-700">
+                        <h1 className="text-lg m-0">
+                          No hay mesas disponibles
+                        </h1>
+                        <BotonRestaurante
+                          label="Recargar"
+                          variacion="claro"
+                          onClick={() => {
+                            toast.success("Recargando...");
+                            traerMesasLibres();
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
+                        {filteredMesas.map((mesa) => {
+                          const isActive = infoPedido.mesa === mesa.id;
+                          const imgClassName = isActive ? "invert" : "";
+                          return (
+                            <button
+                              key={mesa.id}
+                              className={`
                     flex flex-col items-center p-4 rounded-lg shadow-sm transition-colors duration-200
                     ${
                       isActive
@@ -483,157 +533,201 @@ export default function CreacionDePedidos() {
                         : "bg-white text-gray-700 hover:bg-gray-100"
                     }
                 `}
-                            onClick={() =>
-                              setInfoPedido((prev) => ({
-                                ...prev,
-                                mesa: mesa.id,
-                              }))
-                            }
-                          >
-                            <img
-                              src="/mesa.svg"
-                              alt="Mesa"
-                              width={60}
-                              height={60}
-                              className={imgClassName}
-                            />
-                            <span className="mt-1 font-semibold">
-                              {mesa.nombre}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-
-              <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
-                <NotebookPen
-                  size={20}
-                  className="text-gray-500 flex-shrink-0"
-                />
-                <input
-                  type="text"
-                  name="notas"
-                  value={infoPedido.notas}
-                  onChange={handleChange}
-                  placeholder="Notas extra del pedido"
-                  className="w-full focus:outline-none bg-white text-gray-700"
-                />
-              </div>
-              <div className="relative w-full mb-4">
-                <Search
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                  size={20}
-                />
-                <input
-                  type="text"
-                  placeholder="Buscar productos por nombre..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
-                />
-              </div>
-              <nav className="flex items-center justify-start gap-2 my-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                {categorias.map((cat: { id: string; nombre: string }) => (
-                  <button
-                    key={cat.id}
-                    className={`py-2 px-4 rounded-full text-sm font-semibold cursor-pointer transition-colors duration-200 ease-in-out flex-shrink-0 ${
-                      activeCat === cat.nombre
-                        ? "bg-orange-500 text-white shadow-md"
-                        : "bg-white text-gray-700 border border-gray-300"
-                    }`}
-                    onClick={() => setActiveCat(cat.nombre)}
-                  >
-                    {cat.nombre}
-                  </button>
-                ))}
-              </nav>
-              <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                {filteredItems.map((item) => {
-                  const isConfigurable = item.tipo === "configurable";
-                  const itemPrecio = isConfigurable
-                    ? item.precio_base
-                    : item.precio;
-                  const cantidadEnCarrito = findCantidad(item.id);
-                  return (
-                    <div
-                      key={item.id}
-                      className="
-                        border border-gray-200 rounded-xl p-4 bg-white shadow-md flex flex-col items-center text-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg
-                      "
-                    >
-                      <h2 className="text-lg font-bold text-gray-800 mb-1">
-                        {item.nombre}
-                      </h2>
-                      <div className="text-sm text-gray-600 mb-3">
-                        Precio: ${Number(itemPrecio).toFixed(2)}
+                              onClick={() =>
+                                setInfoPedido((prev) => ({
+                                  ...prev,
+                                  mesa: mesa.id,
+                                }))
+                              }
+                            >
+                              <img
+                                src="/mesa.svg"
+                                alt="Mesa"
+                                width={60}
+                                height={60}
+                                className={imgClassName}
+                              />
+                              <span className="mt-1 font-semibold">
+                                {mesa.nombre}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
-                      {isConfigurable ? (
-                        <BotonRestaurante
-                          label="Configurar"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenConfigurableModal(item.id);
-                          }}
-                        />
-                      ) : (
-                        <div className="flex items-center gap-2 my-2">
-                          <button
-                            className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-100 transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleCantidad(convertirAItemPedido(item), -1);
-                            }}
-                          >
-                            <Minus size={16} />
-                          </button>
-                          <div className="w-10 text-center font-semibold text-lg">
-                            {cantidadEnCarrito}
-                          </div>
-                          <button
-                            className="w-8 h-8 flex items-center justify-center rounded-full bg-orange-500 text-white shadow-sm hover:bg-orange-600 transition-colors"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAddToPedido(convertirAItemPedido(item));
-                            }}
-                          >
-                            <Plus size={16} />
-                          </button>
+                    )}
+                  </>
+                )}
+
+                <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-gray-300">
+                  <NotebookPen
+                    size={20}
+                    className="text-gray-500 flex-shrink-0"
+                  />
+                  <input
+                    type="text"
+                    name="notas"
+                    value={infoPedido.notas}
+                    onChange={handleChange}
+                    placeholder="Notas extra del pedido"
+                    className="w-full focus:outline-none bg-white text-gray-700"
+                  />
+                </div>
+                <BotonRestaurante
+                  label="Nuevo Producto"
+                  onClick={handleOpenNuevoProducto}
+                  className="w-full sm:w-auto"
+                />
+                <div className="relative w-full mb-4">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Buscar productos por nombre..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
+                  />
+                </div>
+                <nav className="flex items-center justify-start gap-2 my-2 overflow-x-auto whitespace-nowrap scrollbar-hide">
+                  {categorias.map((cat: { id: string; nombre: string }) => (
+                    <button
+                      key={cat.id}
+                      className={`py-2 px-4 rounded-full text-sm font-semibold cursor-pointer transition-colors duration-200 ease-in-out flex-shrink-0 ${
+                        activeCat === cat.nombre
+                          ? "bg-orange-500 text-white shadow-md"
+                          : "bg-white text-gray-700 border border-gray-300"
+                      }`}
+                      onClick={() => setActiveCat(cat.nombre)}
+                    >
+                      {cat.nombre}
+                    </button>
+                  ))}
+                </nav>
+                <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 select-none">
+                  {filteredItems.map((item) => {
+                    const isConfigurable = item.tipo === "configurable";
+                    const itemPrecio = isConfigurable
+                      ? item.precio_base
+                      : item.precio;
+                    const cantidadEnCarrito = findCantidad(item.id);
+                    return (
+                      <div
+                        key={item.id}
+                        className="
+                        border border-gray-200 rounded-xl p-3 bg-white shadow-md flex flex-col text-center cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg
+                                  "
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAddToPedido(convertirAItemPedido(item));
+                        }}
+                      >
+                        <div className="relative w-full h-28 mb-2 rounded-lg overflow-hidden shadow-sm flex items-center justify-center bg-gray-100">
+                          {item.imagen_url ? (
+                            <Image
+                              src={item.imagen_url}
+                              alt={item.nombre}
+                              layout="fill"
+                              objectFit="cover"
+                              className="transition-transform duration-300 hover:scale-110"
+                            />
+                          ) : (
+                            <ImageIcon
+                              size={48}
+                              className="text-gray-400 opacity-80"
+                            />
+                          )}
                         </div>
-                      )}
-                      {(cantidadEnCarrito > 0 || isConfigurable) && (
-                        <textarea
-                          className="w-full border border-gray-800 rounded-lg p-2 text-sm text-black resize-y mt-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                          placeholder="Nota (sin azúcar, etc.)"
-                          value={findNota(item.id)}
-                          onChange={(e) =>
-                            handleNotaChange(item.id, e.target.value)
-                          }
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </section>
-            </div>
-          )}
+                        <h2 className="text-base font-bold text-gray-800 px-1 mb-1">
+                          {item.nombre}
+                        </h2>
+                        <div className="text-sm text-gray-600 mb-2">
+                          Precio: ${Number(itemPrecio).toFixed(2)}
+                        </div>
+                        {isConfigurable ? (
+                          <BotonRestaurante
+                            label="Configurar"
+                            className="!py-1.5 !text-sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenConfigurableModal(item.id);
+                            }}
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <button
+                              className="w-7 h-7 flex items-center justify-center rounded-full bg-white text-gray-700 border border-gray-300 shadow-sm hover:bg-gray-100 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleCantidad(convertirAItemPedido(item), -1);
+                              }}
+                            >
+                              <Minus size={14} />
+                            </button>
+                            <div className="w-8 text-center font-semibold text-base text-gray-700">
+                              {cantidadEnCarrito}
+                            </div>
+                            <button
+                              className="w-7 h-7 flex items-center justify-center rounded-full bg-orange-500 text-white shadow-sm hover:bg-orange-600 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddToPedido(convertirAItemPedido(item));
+                              }}
+                            >
+                              <Plus size={14} />
+                            </button>
+                          </div>
+                        )}
+                        {(cantidadEnCarrito > 0 || isConfigurable) && (
+                          <textarea
+                            className="
+                               w-full border border-gray-300 rounded-lg p-1.5 text-xs text-gray-700 resize-none 
+                               mt-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500 placeholder-gray-500
+                                      "
+                            placeholder="Nota (sin azúcar, etc.)"
+                            rows={1}
+                            value={findNota(item.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleNotaChange(item.id, e.target.value);
+                            }}
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </section>
+              </div>
+            )}
+          </div>
         </div>
+        <footer className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg flex justify-between items-center z-10 ml-16">
+          <BotonRestaurante label="Cancelar" onClick={() => router.back()} />
+          <BotonRestaurante
+            label={
+              isEditing
+                ? "Guardar Cambios"
+                : `Generar Pedido (${readyCount} ítems)`
+            }
+            onClick={handleGenerarPedido}
+          />
+        </footer>
       </div>
-      <footer className="fixed bottom-0 left-0 right-0 p-6 bg-white shadow-lg flex justify-between items-center z-10">
-        <div className="text-xl font-semibold text-gray-900">
-          TOTAL: ${total.toFixed(2)}
-        </div>
-        <BotonRestaurante
-          label={
-            isEditing
-              ? "Guardar Cambios"
-              : `Generar Pedido (${readyCount} ítems)`
-          }
-          onClick={handleGenerarPedido}
-        />
-      </footer>
+
+      <ResumenPedido
+        pedidoItems={pedidoItems}
+        total={total}
+        handleCantidad={handleCantidad}
+        handleNotaChange={handleNotaChange}
+      />
+
+      <FormProducto
+        isOpen={isFormOpen}
+        onClose={handleCloseForm}
+        producto={producto}
+      />
       {(loading || loadingPedidos) && <Spinner />}
       {showConfigurableModal && (
         <ModalConfigurable
@@ -643,6 +737,6 @@ export default function CreacionDePedidos() {
           loading={loading}
         />
       )}
-    </>
+    </div>
   );
 }

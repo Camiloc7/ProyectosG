@@ -18,6 +18,17 @@ export interface IProductoConfigurableCompleto {
   tipo: "configurable";
 }
 
+// export interface ICategoria {
+//   id: string;
+//   establecimiento_id: string;
+//   nombre: string;
+//   descripcion: string;
+//   imagen_url: string;
+//   es_bebida: boolean;
+//   created_at: string;
+//   updated_at: string;
+// }
+
 export interface Producto {
   id: string;
   establecimiento_id: string;
@@ -31,7 +42,7 @@ export interface Producto {
   inc: boolean;
   created_at: string;
   updated_at: string;
-  categoria: string;
+  categoria: any;
   tipo: "simple" | "configurable";
   precio?: number | null;
   precio_base?: number | null;
@@ -70,10 +81,13 @@ type ProductosState = {
   eliminarProducto: (id: string) => Promise<void>;
   traerProductoPorID: (
     id: string,
-    tipo: "simple" | "configurable"
+    tipo: "simple" | "configurable",
+    load?: boolean
   ) => Promise<Producto | null>;
   subirExcel: (file: File) => Promise<{ success: boolean; errors?: string[] }>;
-  traerProductoConfigurable: (id: string) => Promise<IProductoConfigurableCompleto | null>;
+  traerProductoConfigurable: (
+    id: string
+  ) => Promise<IProductoConfigurableCompleto | null>;
 };
 
 // Función de ayuda para limpiar y formatear los datos
@@ -138,8 +152,8 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   traerCategorias: async () => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
-    
+    const token = useAuthStore.getState().token;
+
     try {
       const res = await fetch(`${RUTA}/categorias`, {
         method: "GET",
@@ -152,10 +166,12 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
       if (!res.ok) {
         throw new Error(data.message);
       }
-      const categoriasFormateadas: ISelectCategorias[] = data.data.map((categoria: any) => ({
-        id: categoria.id,
-        nombre: categoria.nombre,
-      }));
+      const categoriasFormateadas: ISelectCategorias[] = data.data.map(
+        (categoria: any) => ({
+          id: categoria.id,
+          nombre: categoria.nombre,
+        })
+      );
       set({
         loading: false,
         categorias: categoriasFormateadas,
@@ -170,7 +186,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   traerProductos: async () => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/productos`, {
@@ -198,9 +214,11 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
     }
   },
 
-  traerProductoPorID: async (id, tipo) => {
-    set({ loading: true });
-        const token = useAuthStore.getState().token; 
+  traerProductoPorID: async (id, tipo, load) => {
+    if (load === true || load === undefined) {
+      set({ loading: true });
+    }
+    const token = useAuthStore.getState().token;
 
     const url =
       tipo === "configurable"
@@ -222,8 +240,12 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
       }
       const data = {
         ...responseData.data,
-        precio: responseData.data.precio ? Number(responseData.data.precio) : null,
-        precio_base: responseData.data.precio_base ? Number(responseData.data.precio_base) : null,
+        precio: responseData.data.precio
+          ? Number(responseData.data.precio)
+          : null,
+        precio_base: responseData.data.precio_base
+          ? Number(responseData.data.precio_base)
+          : null,
       };
       set({ loading: false });
       return limpiarDecimalesCero(data);
@@ -238,7 +260,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   crearProducto: async (data) => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     const { id, ...productoSinId } = data;
     const dataParaEnviar = limpiarProductoParaEnviar(
@@ -276,7 +298,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   actualizarProducto: async (data) => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     const cleanData = limpiarProductoParaEnviar(data);
     delete (cleanData as any).id;
@@ -314,8 +336,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   eliminarProducto: async (id) => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
-
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/productos/${id}`, {
@@ -353,7 +374,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   subirExcel: async (file: File) => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     const formData = new FormData();
     formData.append("file", file);
@@ -396,7 +417,7 @@ export const useProductosStore = create<ProductosState>((set, get) => ({
 
   traerProductoConfigurable: async (id: string) => {
     set({ loading: true });
-        const token = useAuthStore.getState().token; 
+    const token = useAuthStore.getState().token;
 
     try {
       const res = await fetch(`${RUTA}/productos/configurable/${id}`, {
